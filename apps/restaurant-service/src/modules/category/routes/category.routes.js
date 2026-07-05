@@ -1,15 +1,15 @@
 import { Router } from 'express';
 import { body, param } from 'express-validator';
 import { authenticate, authorize } from '../../../middlewares/auth.middleware.js';
-import { validate } from '../../../middlewares/validate.middleware.js';
+import { validateRequest as validate } from '@foodiego/core';
 import { CategoryController } from '../controllers/category.controller.js';
 
 const router = Router();
 const categoryController = new CategoryController();
 
-router.get('/', categoryController.getAllCategories);
+router.get('/', categoryController.getAllCategories.bind(categoryController));
 
-router.get('/:id', categoryController.getCategoryById);
+router.get('/:id', categoryController.getCategoryById.bind(categoryController));
 
 router.post(
   '/',
@@ -21,7 +21,7 @@ router.post(
     body('image_url').optional().isURL().withMessage('Valid URL required')
   ],
   validate,
-  categoryController.createCategory
+  categoryController.createCategory.bind(categoryController)
 );
 
 router.put(
@@ -36,7 +36,7 @@ router.put(
     body('is_active').optional().isBoolean()
   ],
   validate,
-  categoryController.updateCategory
+  categoryController.updateCategory.bind(categoryController)
 );
 
 router.delete(
@@ -45,7 +45,7 @@ router.delete(
   authorize('admin'),
   [param('id').isUUID().withMessage('Invalid category ID')],
   validate,
-  categoryController.deleteCategory
+  categoryController.deleteCategory.bind(categoryController)
 );
 
 export default router;

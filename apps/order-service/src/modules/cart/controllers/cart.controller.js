@@ -1,40 +1,65 @@
-import * as cartService from '../services/cart.service.js';
+import { CartService } from '../services/cart.service.js';
+import { successResponse } from '@foodiego/core';
 
-export const getCart = async (req, res, next) => {
-  try {
-    const items = await cartService.getCart(req.user.id);
-    res.json({ success: true, data: items });
-  } catch (err) {
-    next(err);
-  }
-};
+const cartService = new CartService();
 
-export const addItem = async (req, res, next) => {
-  try {
-    const { menu_item_id, quantity } = req.body;
-    const item = await cartService.addItem(req.user.id, menu_item_id, quantity);
-    res.status(201).json({ success: true, message: 'Item added to cart', data: item });
-  } catch (err) {
-    next(err);
+export class CartController {
+  async getCart(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const traceId = req.headers['x-trace-id'] || 'trace-mock';
+      const cart = await cartService.getCart(userId, traceId);
+      return successResponse(res, cart, 'Cart retrieved successfully');
+    } catch (error) {
+      next(error);
+    }
   }
-};
 
-export const updateItem = async (req, res, next) => {
-  try {
-    const item = await cartService.updateItem(req.user.id, req.params.menuItemId, req.body.quantity);
-    if (!item) return res.status(404).json({ success: false, message: 'Cart item not found' });
-    res.json({ success: true, message: 'Cart item updated', data: item });
-  } catch (err) {
-    next(err);
+  async addItem(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const traceId = req.headers['x-trace-id'] || 'trace-mock';
+      const { menu_item_id, quantity } = req.body;
+      const cart = await cartService.addItem(userId, menu_item_id, quantity, traceId);
+      return successResponse(res, cart, 'Item added to cart', 201);
+    } catch (error) {
+      next(error);
+    }
   }
-};
 
-export const removeItem = async (req, res, next) => {
-  try {
-    const removed = await cartService.removeItem(req.user.id, req.params.menuItemId);
-    if (!removed) return res.status(404).json({ success: false, message: 'Cart item not found' });
-    res.json({ success: true, message: 'Item removed from cart' });
-  } catch (err) {
-    next(err);
+  async updateItemQuantity(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const traceId = req.headers['x-trace-id'] || 'trace-mock';
+      const { id: menu_item_id } = req.params;
+      const { quantity } = req.body;
+      const cart = await cartService.updateItemQuantity(userId, menu_item_id, quantity, traceId);
+      return successResponse(res, cart, 'Cart item updated');
+    } catch (error) {
+      next(error);
+    }
   }
-};
+
+  async removeItem(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const traceId = req.headers['x-trace-id'] || 'trace-mock';
+      const { id: menu_item_id } = req.params;
+      const cart = await cartService.removeItem(userId, menu_item_id, traceId);
+      return successResponse(res, cart, 'Item removed from cart');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async clearCart(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const traceId = req.headers['x-trace-id'] || 'trace-mock';
+      await cartService.clearCart(userId, traceId);
+      return successResponse(res, null, 'Cart cleared');
+    } catch (error) {
+      next(error);
+    }
+  }
+}

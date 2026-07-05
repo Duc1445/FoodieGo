@@ -1,5 +1,6 @@
 import { CategoryRepository } from '../repositories/category.repository.js';
 import redis from '../../../config/redis.js';
+import { NotFoundError } from '@foodiego/core';
 
 export class CategoryService {
   constructor() {
@@ -17,7 +18,11 @@ export class CategoryService {
   }
 
   async getCategoryById(id) {
-    return await this.categoryRepository.findById(id);
+    const category = await this.categoryRepository.findById(id);
+    if (!category) {
+      throw new NotFoundError('Category not found', 'CATEGORY_NOT_FOUND', { id });
+    }
+    return category;
   }
 
   async createCategory(data) {
@@ -28,17 +33,19 @@ export class CategoryService {
 
   async updateCategory(id, data) {
     const category = await this.categoryRepository.update(id, data);
-    if (category) {
-      await redis.del('categories:all');
+    if (!category) {
+      throw new NotFoundError('Category not found', 'CATEGORY_NOT_FOUND', { id });
     }
+    await redis.del('categories:all');
     return category;
   }
 
   async deleteCategory(id) {
     const success = await this.categoryRepository.remove(id);
-    if (success) {
-      await redis.del('categories:all');
+    if (!success) {
+      throw new NotFoundError('Category not found', 'CATEGORY_NOT_FOUND', { id });
     }
+    await redis.del('categories:all');
     return success;
   }
 }

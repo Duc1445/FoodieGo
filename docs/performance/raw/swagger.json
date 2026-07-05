@@ -1,0 +1,39 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "FoodieGo Restaurant API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "http://localhost:3000/api/v1" }
+  ],
+  "paths": {
+    "/restaurants": {
+      "get": {
+        "summary": "Get all restaurants",
+        "responses": {
+          "200": {
+            "description": "A list of restaurants",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "items": { "type": "array" },
+                        "pagination": { "type": "object" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

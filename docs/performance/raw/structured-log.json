@@ -1,0 +1,14 @@
+{
+  "level": "info",
+  "service": "restaurant-service",
+  "version": "1.0.0",
+  "timestamp": "2026-07-05T08:14:26.123Z",
+  "traceId": "4bf92f3577b34da6a3ce929d0e0e4736",
+  "spanId": "00f067aa0ba902b7",
+  "requestId": "req-8f92-4c2b-9c8d-33a1e9b2c1d4",
+  "userId": "usr-12345",
+  "restaurantId": "res-98765",
+  "duration": 12.4,
+  "status": 200,
+  "message": "Successfully fetched restaurant menu"
+}

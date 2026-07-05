@@ -1,0 +1,10 @@
+{
+  "name": "@foodiego/metrics",
+  "version": "1.0.0",
+  "description": "Prometheus Metrics for FoodieGo with strict conventions",
+  "main": "src/index.js",
+  "type": "module",
+  "dependencies": {
+    "prom-client": "^14.2.0"
+  }
+}

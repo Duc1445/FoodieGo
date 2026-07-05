@@ -1,23 +1,24 @@
 import { RestaurantService } from '../services/restaurant.service.js';
+import { successResponse } from '@foodiego/core';
+
 const service = new RestaurantService();
 
 export class RestaurantController {
-  async getAll(req, res) {
+  async getAll(req, res, next) {
     try {
-      const restaurants = await service.getAllRestaurants(req.query);
-      res.json({ success: true, data: restaurants });
+      const { items, pagination } = await service.getAllRestaurants(req.query);
+      return successResponse(res, items, pagination);
     } catch (err) {
-      res.status(500).json({ success: false, message: err.message });
+      next(err);
     }
   }
 
-  async getById(req, res) {
+  async getById(req, res, next) {
     try {
       const restaurant = await service.getRestaurantById(req.params.id);
-      if (!restaurant) return res.status(404).json({ success: false, message: 'Restaurant not found' });
-      res.json({ success: true, data: restaurant });
+      return successResponse(res, restaurant);
     } catch (err) {
-      res.status(500).json({ success: false, message: err.message });
+      next(err);
     }
   }
 }

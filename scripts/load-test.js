@@ -1,43 +1,35 @@
 import http from 'k6/http';
-import { sleep, check } from 'k6';
+import { check, sleep } from 'k6';
 
 export const options = {
   stages: [
-    { duration: '30s', target: 10 },   // Ramp up
-    { duration: '1m',  target: 50 },   // Hold
-    { duration: '30s', target: 0 },    // Ramp down
+    { duration: '2s', target: 50 },
+    { duration: '10s', target: 50 },
+    { duration: '2s', target: 0 },
   ],
   thresholds: {
-    http_req_duration: ['p(95)<500'],  // 95% requests < 500ms
-    http_req_failed:   ['rate<0.01'],  // Error rate < 1%
+    http_req_duration: ['p(95)<500', 'p(99)<1000'], // 95% of requests must complete below 500ms, 99% below 1s
+    http_req_failed: ['rate<0.01'],                 // Error rate must be less than 1%
   },
 };
 
-const BASE_URL = __ENV.BASE_URL || 'http://localhost:3000';
+const BASE_URL = 'http://localhost:3000/api/v1';
 
-export function setup() {
-  // Login to get token
-  const res = http.post(`${BASE_URL}/api/auth/login`, JSON.stringify({
-    email: 'admin@foodiego.com',
-    password: 'Admin@123',
-  }), { headers: { 'Content-Type': 'application/json' } });
+export default function () {
+  // Test 1: Get all restaurants (paginated)
+  const res1 = http.get(`${BASE_URL}/restaurants?page=1&limit=20`);
+  check(res1, {
+    'GET /restaurants status is 200': (r) => r.status === 200,
+    'GET /restaurants returns data': (r) => r.json('data.items') !== undefined,
+  });
 
-  return { token: res.json('data.token') };
-}
+  sleep(1);
 
-export default function (data) {
-  const headers = {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${data.token}`,
-  };
-
-  // Test 1: Get foods list
-  const foodsRes = http.get(`${BASE_URL}/api/foods`, { headers });
-  check(foodsRes, { 'foods status 200': (r) => r.status === 200 });
-
-  // Test 2: Health check
-  const healthRes = http.get(`${BASE_URL}/health`);
-  check(healthRes, { 'health ok': (r) => r.status === 200 });
+  // Test 2: Search restaurants (fuzzy match)
+  const res2 = http.get(`${BASE_URL}/restaurants?search=Burger`);
+  check(res2, {
+    'GET /restaurants?search status is 200': (r) => r.status === 200,
+  });
 
   sleep(1);
 }

@@ -1,23 +1,22 @@
 import jwt from 'jsonwebtoken';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret';
+import { AuthenticationError, AuthorizationError, config } from '@foodiego/core';
 
 export const authenticate = (req, res, next) => {
   const token = req.headers['authorization']?.split(' ')[1];
   if (!token) {
-    return res.status(401).json({ success: false, message: 'No token provided' });
+    return next(new AuthenticationError('No token provided'));
   }
   try {
-    req.user = jwt.verify(token, JWT_SECRET);
+    req.user = jwt.verify(token, config.jwt.secret);
     next();
   } catch {
-    return res.status(401).json({ success: false, message: 'Invalid or expired token' });
+    return next(new AuthenticationError('Invalid or expired token'));
   }
 };
 
 export const authorize = (...roles) => (req, res, next) => {
   if (!roles.includes(req.user?.role)) {
-    return res.status(403).json({ success: false, message: 'Forbidden: insufficient role' });
+    return next(new AuthorizationError('Forbidden: insufficient role'));
   }
   next();
 };

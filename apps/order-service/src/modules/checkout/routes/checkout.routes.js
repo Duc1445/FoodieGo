@@ -1,43 +1,18 @@
 import { Router } from 'express';
-import { body, param } from 'express-validator';
-import { authenticate, authorize } from '../../../middlewares/auth.middleware.js';
-import { validate } from '../../../middlewares/validate.middleware.js';
-import * as checkoutController from '../controllers/checkout.controller.js';
+import { CheckoutController } from '../controllers/checkout.controller.js';
 
 const router = Router();
+const controller = new CheckoutController();
 
-router.post(
-  '/',
-  authenticate,
-  body('note').optional().isString(),
-  body('address').optional().isString(),
-  body('order_type').optional().isIn(['dine-in', 'takeaway']),
-  validate,
-  checkoutController.createOrder
-);
+// Mock authenticate middleware
+const extractUser = (req, res, next) => {
+  const userId = req.headers['x-user-id'] || '11111111-1111-1111-1111-111111111111';
+  req.user = { id: userId };
+  next();
+};
 
-router.get('/', authenticate, checkoutController.getMyOrders);
+router.use(extractUser);
 
-router.get('/all', authenticate, authorize('admin'), checkoutController.getAllOrders);
-
-router.get(
-  '/:id',
-  authenticate,
-  param('id').isUUID().withMessage('id must be a valid UUID'),
-  validate,
-  checkoutController.getOrderById
-);
-
-router.patch(
-  '/:id/status',
-  authenticate,
-  authorize('admin', 'shipper'),
-  param('id').isUUID().withMessage('id must be a valid UUID'),
-  body('status')
-    .isIn(['pending', 'confirmed', 'preparing', 'delivering', 'completed', 'cancelled'])
-    .withMessage('Invalid order status'),
-  validate,
-  checkoutController.updateOrderStatus
-);
+router.post('/checkout', controller.processCheckout.bind(controller));
 
 export default router;

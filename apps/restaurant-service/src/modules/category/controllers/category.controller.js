@@ -1,58 +1,66 @@
 import { CategoryService } from '../services/category.service.js';
+import { successResponse, ConflictError, NotFoundError } from '@foodiego/core';
 
 export class CategoryController {
   constructor() {
     this.categoryService = new CategoryService();
   }
 
-  getAllCategories = async (req, res, next) => {
+  async getAllCategories(req, res, next) {
     try {
       const categories = await this.categoryService.getAllCategories();
-      res.json({ success: true, data: categories });
+      return successResponse(res, categories);
     } catch (err) {
       next(err);
     }
-  };
+  }
 
-  getCategoryById = async (req, res, next) => {
+  async getCategoryById(req, res, next) {
     try {
       const category = await this.categoryService.getCategoryById(req.params.id);
       if (!category) {
-        return res.status(404).json({ success: false, message: 'Category not found' });
+        throw new NotFoundError('Category not found', 'CATEGORY_NOT_FOUND', { id: req.params.id });
       }
-      res.json({ success: true, data: category });
+      return successResponse(res, category);
     } catch (err) {
       next(err);
     }
-  };
+  }
 
-  createCategory = async (req, res, next) => {
+  async createCategory(req, res, next) {
     try {
       const category = await this.categoryService.createCategory(req.body);
-      res.status(201).json({ success: true, data: category });
+      res.status(201);
+      return successResponse(res, category);
     } catch (error) {
-      if (error.code === '23505') return res.status(409).json({ success: false, message: 'Category name exists' });
-      res.status(500).json({ success: false, message: error.message });
+      if (error.code === '23505') {
+        return next(new ConflictError('Category name exists', { name: req.body.name }));
+      }
+      next(error);
     }
-  };
+  }
 
-  updateCategory = async (req, res, next) => {
+  async updateCategory(req, res, next) {
     try {
       const category = await this.categoryService.updateCategory(req.params.id, req.body);
-      if (!category) return res.status(404).json({ success: false, message: 'Category not found' });
-      res.json({ success: true, data: category });
+      if (!category) {
+         throw new NotFoundError('Category not found', 'CATEGORY_NOT_FOUND', { id: req.params.id });
+      }
+      return successResponse(res, category);
     } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
+      next(error);
     }
-  };
+  }
 
-  deleteCategory = async (req, res, next) => {
+  async deleteCategory(req, res, next) {
     try {
       const success = await this.categoryService.deleteCategory(req.params.id);
-      if (!success) return res.status(404).json({ success: false, message: 'Category not found' });
-      res.json({ success: true, message: 'Category deleted' });
+      if (!success) {
+         throw new NotFoundError('Category not found', 'CATEGORY_NOT_FOUND', { id: req.params.id });
+      }
+      return successResponse(res, { deleted: true });
     } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
+      next(error);
     }
-  };
+  }
 }

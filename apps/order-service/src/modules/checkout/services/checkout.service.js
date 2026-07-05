@@ -1,53 +1,101 @@
-import * as checkoutRepository from '../repositories/checkout.repository.js';
-import * as cartRepository from '../../cart/repositories/cart.repository.js';
-import * as deliveryRepository from '../../delivery/repositories/delivery.repository.js';
+import { CheckoutRepository } from '../repositories/checkout.repository.js';
+import { CartService } from '../../cart/services/cart.service.js';
+import { RestaurantGateway } from '../../cart/gateways/restaurant.gateway.js';
+import { PricingService } from '../../pricing/pricing.service.js';
+import { OrderStateMachine, OrderStatus } from '../state/order.state.js';
+import { ValidationError, ConflictError } from '@foodiego/core';
 
-export const createOrder = async (userId, data) => {
-  let items = [];
-  if (data.cart && data.cart.length > 0) {
-    items = data.cart.map(c => ({
-      menu_item_id: c.menu_item_id || c.id,
-      quantity: c.quantity,
-      price: c.price,
-    }));
-  } else {
-    const cartItems = await cartRepository.getCart(userId);
-    if (cartItems.length === 0) {
-      throw new Error('Cart is empty');
+const checkoutRepo = new CheckoutRepository();
+const cartService = new CartService();
+const restaurantGateway = new RestaurantGateway();
+const pricingService = new PricingService();
+
+export class CheckoutService {
+  async processCheckout(userId, payload, traceId) {
+    const { cartVersion, idempotencyKey, addressId, paymentMethod } = payload;
+    
+    // 1. Fetch Cart
+    const cart = await cartService.getCart(userId, traceId);
+    if (!cart || cart.items.length === 0) {
+      throw new ValidationError('Cart is empty');
     }
-    items = cartItems.map((ci) => ({
-      menu_item_id: ci.menu_item_id,
-      quantity: ci.quantity,
-      price: ci.menuItem_price,
-    }));
+
+    // 2. Validate Cart Version (Optimistic Locking)
+    if (cart.version !== cartVersion) {
+      throw new ConflictError('Cart has been modified. Please review your cart again.');
+    }
+
+    // 3. Fetch Full Menu from Restaurant (Gateway)
+    // In real app, we might just fetch the items in the cart or the whole menu.
+    const menuItems = await restaurantGateway.getRestaurantMenu(cart.restaurant_id, traceId);
+    
+    // 4. Validate Prices, Stock, Availability
+    const orderItemsSnapshot = [];
+    for (const cartItem of cart.items) {
+      const menuData = menuItems.find(m => m.id === cartItem.menu_item_id);
+      if (!menuData) {
+        throw new ValidationError(`Item ${cartItem.menu_item_id} is no longer available`);
+      }
+      if (!menuData.availability) {
+        throw new ValidationError(`Item ${menuData.name} is out of stock or unavailable`);
+      }
+      
+      orderItemsSnapshot.push({
+        menuItemId: menuData.id,
+        quantity: cartItem.quantity,
+        itemName: menuData.name,
+        itemPrice: menuData.price,
+        priceVersion: menuData.priceVersion
+      });
+    }
+
+    // Optional: Restaurant-level validations (Open, Active) could be done via another Gateway call
+    // Assuming RestaurantGateway throws if restaurant is inactive.
+
+    // 5. Run Pricing Pipeline
+    // We pass the fresh menu items to calculate the exact final price
+    const pricingContext = pricingService.calculatePricing(cart.items, menuItems, { id: cart.restaurant_id, delivery_fee: 5.00 }, { id: addressId });
+
+    // 6. Build Order State
+    const stateMachine = new OrderStateMachine(OrderStatus.CREATED);
+    stateMachine.transitionTo(OrderStatus.VALIDATING);
+    
+    const orderData = {
+      userId,
+      restaurantId: cart.restaurant_id,
+      status: stateMachine.state,
+      subtotal: pricingContext.subtotal,
+      deliveryFee: pricingContext.deliveryFee,
+      tax: pricingContext.tax,
+      discount: pricingContext.discount,
+      total: pricingContext.total,
+      currency: 'USD',
+      paymentMethod,
+      addressId,
+      idempotencyKey
+    };
+
+    // 7. Outbox Event
+    const outboxEvent = {
+      eventType: 'OrderCreated',
+      payload: {
+        userId,
+        restaurantId: cart.restaurant_id,
+        totalAmount: pricingContext.total,
+        traceId
+      }
+    };
+
+    // 8. Transaction (Insert Order, Order Items, Outbox)
+    const orderId = await checkoutRepo.createOrderWithOutbox(orderData, orderItemsSnapshot, outboxEvent, payload);
+
+    // 9. Clear Cart after successful checkout
+    await cartService.clearCart(userId, traceId);
+
+    return {
+      orderId,
+      status: stateMachine.state,
+      total: pricingContext.total
+    };
   }
-
-  const order = await checkoutRepository.create({
-    userId,
-    note: data.note,
-    address: data.address,
-    orderType: data.order_type || 'takeaway',
-    items,
-  });
-
-  await deliveryRepository.create(order.id);
-  await cartRepository.clearCart(userId);
-
-  return order;
-};
-
-export const findByUserId = async (userId) => {
-  return await checkoutRepository.findByUserId(userId);
-};
-
-export const findAll = async () => {
-  return await checkoutRepository.findAll();
-};
-
-export const findById = async (orderId) => {
-  return await checkoutRepository.findById(orderId);
-};
-
-export const updateStatus = async (orderId, status) => {
-  return await checkoutRepository.updateStatus(orderId, status);
-};
+}

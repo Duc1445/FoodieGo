@@ -1,14 +1,11 @@
 import Redis from 'ioredis';
-import 'dotenv/config';
+import { config, createLogger } from '@foodiego/core';
 
-const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+const logger = createLogger('redis');
 
-redis.on('error', (err) => {
-  console.error('[Redis] error', err);
-});
+const redis = new Redis(config.redis.url);
 
-redis.on('connect', () => {
-  console.log('[Redis] connected');
-});
+redis.on('error', (err) => logger.error({ err }, '[Redis] error'));
+redis.on('connect', () => logger.info('[Redis] connected'));
 
 export default redis;

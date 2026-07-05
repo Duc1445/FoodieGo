@@ -1,0 +1,10 @@
+{
+  "name": "@foodiego/events",
+  "version": "1.0.0",
+  "description": "Event-Driven Abstractions for FoodieGo",
+  "main": "src/index.js",
+  "type": "module",
+  "dependencies": {
+    "amqplib": "^0.10.3"
+  }
+}

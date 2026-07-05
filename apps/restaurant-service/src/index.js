@@ -1,67 +1,63 @@
-import 'dotenv/config';
+// ╔══════════════════════════════════════════════════════════════════════╗
+// ║  IMPORTANT: Tracing MUST be initialized before any other imports. ║
+// ╚══════════════════════════════════════════════════════════════════════╝
+import { initTracing } from '@foodiego/tracing';
+initTracing();
+
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
-import morgan from 'morgan';
-import { register, collectDefaultMetrics, Counter, Histogram } from 'prom-client';
+import dotenv from 'dotenv';
+import { MetricsRegistry } from '@foodiego/metrics';
+import { createLogger as createPlatformLogger, requestLogger } from '@foodiego/logging';
 
-import categoryRoutes from './modules/category/routes/category.routes.js';
-import restaurantRoutes from './modules/restaurant/routes/restaurant.routes.js';
+// Core imports (backward compatibility — correlationId is now handled by requestLogger)
+import { createLogger, correlationIdMiddleware, errorHandlerMiddleware, config } from '@foodiego/core';
+
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3002;
+const PORT = config.server.port || 3002;
 
-// ─── Prometheus ────────────────────────────────────────────────────────────
-collectDefaultMetrics({ prefix: 'food_service_' });
+// ─── Platform SDKs ─────────────────────────────────────────────────────────
+const logger = createPlatformLogger({ service: 'restaurant-service' });
+const metrics = new MetricsRegistry('restaurant-service');
 
-export const httpRequestCounter = new Counter({
-  name: 'food_service_http_requests_total',
-  help: 'Total HTTP requests',
-  labelNames: ['method', 'route', 'status'],
-});
-
-export const httpRequestDuration = new Histogram({
-  name: 'food_service_http_request_duration_seconds',
-  help: 'HTTP request duration in seconds',
-  labelNames: ['method', 'route', 'status'],
-  buckets: [0.05, 0.1, 0.3, 0.5, 1, 2, 5],
-});
-
-// ─── Middleware ─────────────────────────────────────────────────────────────
+// ─── Middleware ────────────────────────────────────────────────────────────
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
-app.use(morgan('combined'));
+app.use(correlationIdMiddleware);
 
-app.use((req, _res, next) => { req._startTime = Date.now(); next(); });
-app.use((req, res, next) => {
-  res.on('finish', () => {
-    const duration = (Date.now() - req._startTime) / 1000;
-    httpRequestCounter.inc({ method: req.method, route: req.path, status: res.statusCode });
-    httpRequestDuration.observe({ method: req.method, route: req.path, status: res.statusCode }, duration);
-  });
-  next();
-});
+// ─── Observability Middleware ──────────────────────────────────────────────
+app.use(requestLogger(logger));       // Structured logging with auto traceId
+app.use(metrics.httpMiddleware());    // Prometheus metrics (standardized)
 
 // ─── Routes ────────────────────────────────────────────────────────────────
-app.get('/health', (_req, res) => res.json({ status: 'ok', service: 'food-service' }));
+import categoryRoutes from './modules/category/routes/category.routes.js';
+import restaurantRoutes from './modules/restaurant/routes/restaurant.routes.js';
+import healthRoutes from './modules/health/health.routes.js';
+
+app.use('/', healthRoutes); // Mount at root for k8s /health, /ready, /live
 app.get('/metrics', async (_req, res) => {
-  res.set('Content-Type', register.contentType);
-  res.end(await register.metrics());
+  res.set('Content-Type', metrics.contentType);
+  res.end(await metrics.getMetrics());
 });
 
-app.use('/api/categories', categoryRoutes);
-app.use('/api/restaurants', restaurantRoutes);
+app.use('/api/v1/categories', categoryRoutes);
+app.use('/api/v1/restaurants', restaurantRoutes);
 
 // ─── Error Handler ─────────────────────────────────────────────────────────
-app.use((err, _req, res, next) => {
-  console.error(err);
+app.use((err, req, res, _next) => {
+  req.log?.error({ err }, 'Unhandled error');
   res.status(err.statusCode || 500).json({ success: false, message: err.message });
 });
 
 // ─── Start ──────────────────────────────────────────────────────────────────
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => console.log(`[Food Service] running on port ${PORT}`));
+  app.listen(PORT, () => {
+    logger.info({ port: PORT }, 'Restaurant Service started');
+  });
 }
 
 export default app;

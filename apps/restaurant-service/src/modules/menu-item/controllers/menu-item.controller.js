@@ -1,32 +1,36 @@
 import { MenuItemService } from '../services/menu-item.service.js';
+import { successResponse, NotFoundError } from '@foodiego/core';
+
 const service = new MenuItemService();
 
 export class MenuItemController {
-  async getByRestaurantId(req, res) {
+  async getByRestaurantId(req, res, next) {
     try {
       const menu = await service.getMenuByRestaurantId(req.params.id);
-      res.json({ success: true, data: menu });
+      return successResponse(res, menu);
     } catch (err) {
-      res.status(500).json({ success: false, message: err.message });
+      next(err);
     }
   }
 
-  async getAll(req, res) {
+  async getAll(req, res, next) {
     try {
       const menuItems = await service.getAllMenuItems();
-      res.json({ success: true, data: menuItems });
+      return successResponse(res, menuItems);
     } catch (err) {
-      res.status(500).json({ success: false, message: err.message });
+      next(err);
     }
   }
 
-  async getById(req, res) {
+  async getById(req, res, next) {
     try {
       const menuItem = await service.getMenuItemById(req.params.id);
-      if (!menuItem) return res.status(404).json({ success: false, message: 'Menu item not found' });
-      res.json({ success: true, data: menuItem });
+      if (!menuItem) {
+        throw new NotFoundError('Menu item not found', 'MENU_ITEM_NOT_FOUND', { id: req.params.id });
+      }
+      return successResponse(res, menuItem);
     } catch (err) {
-      res.status(500).json({ success: false, message: err.message });
+      next(err);
     }
   }
 }

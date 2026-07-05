@@ -5,6 +5,7 @@
 -- EXTENSIONS
 -- ─────────────────────────────────────────────
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 
 -- ─────────────────────────────────────────────
 -- USERS
@@ -50,6 +51,7 @@ CREATE TABLE IF NOT EXISTS restaurants (
 );
 
 CREATE INDEX IF NOT EXISTS idx_restaurants_status ON restaurants(status);
+CREATE INDEX IF NOT EXISTS idx_restaurants_name_trgm ON restaurants USING gin(name gin_trgm_ops);
 
 -- ─────────────────────────────────────────────
 -- CATEGORIES
@@ -89,50 +91,140 @@ CREATE TABLE IF NOT EXISTS menu_items (
 
 CREATE INDEX IF NOT EXISTS idx_menu_items_restaurant ON menu_items(restaurant_id);
 CREATE INDEX IF NOT EXISTS idx_menu_items_category ON menu_items(category_id);
-CREATE INDEX IF NOT EXISTS idx_menu_items_name     ON menu_items USING gin(to_tsvector('simple', name));
+CREATE INDEX IF NOT EXISTS idx_menu_items_name_trgm ON menu_items USING gin(name gin_trgm_ops);
+
+-- ─────────────────────────────────────────────
+-- IDEMPOTENCY
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS idempotency_keys (
+  key           VARCHAR(255) PRIMARY KEY,
+  request_hash  VARCHAR(255),
+  status        VARCHAR(50) NOT NULL, -- IN_PROGRESS, COMPLETED, FAILED
+  response      JSONB,
+  created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  expires_at    TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+-- ─────────────────────────────────────────────
+-- OUTBOX PATTERN
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS outbox_events (
+  event_id        UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  event_type      VARCHAR(100) NOT NULL,
+  event_version   INTEGER NOT NULL DEFAULT 1,
+  aggregate_type  VARCHAR(100) NOT NULL,
+  aggregate_id    UUID NOT NULL,
+  payload         JSONB NOT NULL,
+  metadata        JSONB,
+  status          VARCHAR(20) DEFAULT 'PENDING',
+  locked_by       VARCHAR(100), -- Identity of the Dispatcher worker
+  locked_at       TIMESTAMP WITH TIME ZONE,
+  lease_until     TIMESTAMP WITH TIME ZONE,
+  attempt         INTEGER DEFAULT 0,
+  occurred_at     TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  processed_at    TIMESTAMP WITH TIME ZONE
+);
+
+CREATE INDEX IF NOT EXISTS idx_outbox_status_lease ON outbox_events(status, lease_until);
+
+-- ─────────────────────────────────────────────
+-- INBOX PATTERN
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS inbox_events (
+  event_id              UUID NOT NULL,
+  consumer_name         VARCHAR(100) NOT NULL,
+  status                VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+  processed_at          TIMESTAMP WITH TIME ZONE,
+  processing_duration   INTEGER, -- in milliseconds
+  attempt               INTEGER DEFAULT 0,
+  error                 TEXT,
+  trace_id              VARCHAR(255),
+  created_at            TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  PRIMARY KEY (event_id, consumer_name)
+);
+
+-- ─────────────────────────────────────────────
+-- DEAD LETTER QUEUE (DLQ)
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS dead_letter_events (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  event_id        UUID NOT NULL,
+  event_type      VARCHAR(100) NOT NULL,
+  consumer_name   VARCHAR(100),
+  payload         JSONB NOT NULL,
+  reason          TEXT,
+  retry_count     INTEGER DEFAULT 0,
+  failed_at       TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
 -- ─────────────────────────────────────────────
 -- ORDERS
 -- ─────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS orders (
-  id           UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id      UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  status       VARCHAR(30) NOT NULL DEFAULT 'pending'
-                 CHECK (status IN ('pending','confirmed','preparing','delivering','completed','cancelled')),
-  total_price  DECIMAL(12,2) NOT NULL CHECK (total_price >= 0),
-  note         TEXT,
-  address      TEXT NOT NULL,
-  created_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id             UUID NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+  restaurant_id       UUID NOT NULL REFERENCES restaurants(id) ON DELETE RESTRICT,
+  status              VARCHAR(50) NOT NULL DEFAULT 'CREATED',
+  subtotal            DECIMAL(12,2) NOT NULL,
+  delivery_fee        DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+  tax                 DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+  discount            DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+  total               DECIMAL(12,2) NOT NULL,
+  currency            VARCHAR(3) DEFAULT 'USD',
+  payment_method      VARCHAR(50),
+  address_id          UUID,
+  idempotency_key     VARCHAR(255) UNIQUE,
+  created_at          TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at          TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id);
 CREATE INDEX IF NOT EXISTS idx_orders_status  ON orders(status);
+CREATE INDEX IF NOT EXISTS idx_orders_restaurant ON orders(restaurant_id);
 
 -- ─────────────────────────────────────────────
 -- ORDER ITEMS (SNAPSHOT)
 -- ─────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS order_items (
-  id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  order_id       UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
-  menu_item_id   UUID REFERENCES menu_items(id) ON DELETE SET NULL,
-  menu_item_name VARCHAR(255) NOT NULL,
-  unit_price     DECIMAL(12,2) NOT NULL CHECK (unit_price >= 0),
-  quantity       INTEGER NOT NULL CHECK (quantity > 0),
-  subtotal       DECIMAL(12,2) NOT NULL CHECK (subtotal >= 0),
-  note           TEXT
+  id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  order_id            UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+  menu_item_id        UUID NOT NULL REFERENCES menu_items(id) ON DELETE RESTRICT,
+  quantity            INTEGER NOT NULL CHECK (quantity > 0),
+  -- Snapshot fields (Immutable)
+  item_name           VARCHAR(255) NOT NULL,
+  item_price          DECIMAL(12,2) NOT NULL,
+  price_version       INTEGER NOT NULL,
+  created_at          TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
+CREATE INDEX IF NOT EXISTS idx_outbox_status ON outbox_events(status);
 
 -- ─────────────────────────────────────────────
--- CART ITEMS
+-- CARTS & CART ITEMS
 -- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS carts (
+  id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id           UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  restaurant_id     UUID NOT NULL REFERENCES restaurants(id) ON DELETE CASCADE,
+  currency          VARCHAR(3) DEFAULT 'USD',
+  subtotal_snapshot DECIMAL(12,2) DEFAULT 0.00,
+  version           INTEGER NOT NULL DEFAULT 1,
+  updated_by        UUID,
+  expires_at        TIMESTAMP WITH TIME ZONE,
+  created_at        TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at        TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(user_id) -- A user can only have one active cart
+);
+
 CREATE TABLE IF NOT EXISTS cart_items (
-  user_id      UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  menu_item_id UUID NOT NULL REFERENCES menu_items(id) ON DELETE CASCADE,
-  quantity     INTEGER NOT NULL CHECK (quantity > 0),
-  PRIMARY KEY (user_id, menu_item_id)
+  id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  cart_id       UUID NOT NULL REFERENCES carts(id) ON DELETE CASCADE,
+  menu_item_id  UUID NOT NULL REFERENCES menu_items(id) ON DELETE CASCADE,
+  quantity      INTEGER NOT NULL CHECK (quantity > 0),
+  created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(cart_id, menu_item_id)
 );
 
 -- ─────────────────────────────────────────────

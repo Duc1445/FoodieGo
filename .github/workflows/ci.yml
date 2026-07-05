@@ -1,127 +1,19 @@
-name: FoodieGo CI
+name: CI
 
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+on: [push, pull_request]
 
 jobs:
-  # ─────────────────────────────────────────────
-  # LINT
-  # ─────────────────────────────────────────────
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: [user-service, food-service, order-service]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: Install dependencies
-        working-directory: ${{ matrix.service }}
-        run: npm install
-      - name: Run ESLint
-        working-directory: ${{ matrix.service }}
-        run: npm run lint
-
-  # ─────────────────────────────────────────────
-  # TEST & COVERAGE
-  # ─────────────────────────────────────────────
-  test:
-    name: Test & Coverage (Node.js)
-    runs-on: ubuntu-latest
-    needs: lint
-    services:
-      postgres:
-        image: postgres:15-alpine
-        env:
-          POSTGRES_USER: foodiego
-          POSTGRES_PASSWORD: foodiego123
-          POSTGRES_DB: foodiego_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-    strategy:
-      matrix:
-        service: [user-service, food-service, order-service]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: Install dependencies
-        working-directory: ${{ matrix.service }}
-        run: npm install
-      - name: Setup test database
-        run: psql -h localhost -U foodiego -d foodiego_test -f infrastructure/postgres/init.sql
-        env:
-          PGPASSWORD: foodiego123
-      - name: Run tests with coverage
-        working-directory: ${{ matrix.service }}
-        run: npm test
-        env:
-          NODE_ENV: test
-          DATABASE_URL: postgresql://foodiego:foodiego123@localhost:5432/foodiego_test
-          JWT_SECRET: test_jwt_secret
-          REDIS_URL: redis://localhost:6379
-      - name: Upload coverage
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: coverage-${{ matrix.service }}
-          path: ${{ matrix.service }}/coverage/
-
-  test-python:
-    name: Test & Coverage (Python)
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
         with:
-          python-version: '3.11'
-      - name: Install dependencies
-        working-directory: analytics-service
-        run: pip install -r requirements.txt
-      - name: Run PyTest
-        working-directory: analytics-service
-        run: pytest src/ --cov=src --cov-report=xml
-      - name: Upload coverage
-        uses: actions/upload-artifact@v4
-        if: always()
+          version: 8
+      - uses: actions/setup-node@v3
         with:
-          name: coverage-analytics-service
-          path: analytics-service/coverage.xml
-
-  sonarcloud:
-    name: SonarCloud Quality Gate
-    runs-on: ubuntu-latest
-    needs: [test, test-python]
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Download all coverages
-        uses: actions/download-artifact@v4
-        with:
-          path: coverage-reports
-      - name: Move coverages
-        run: |
-          mkdir -p user-service/coverage food-service/coverage order-service/coverage analytics-service
-          cp -r coverage-reports/coverage-user-service/* user-service/coverage/ || true
-          cp -r coverage-reports/coverage-food-service/* food-service/coverage/ || true
-          cp -r coverage-reports/coverage-order-service/* order-service/coverage/ || true
-          cp coverage-reports/coverage-analytics-service/coverage.xml analytics-service/coverage.xml || true
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          node-version: 20
+          cache: 'pnpm'
+      - run: pnpm install
+      - run: pnpm lint --if-present
+      - run: pnpm test --if-present

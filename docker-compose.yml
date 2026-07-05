@@ -1,0 +1,251 @@
+version: '3.9'
+
+networks:
+  foodiego-net:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
+  prometheus-data:
+  grafana-data:
+
+services:
+  # ─────────────────────────────────────────────
+  # DATABASE
+  # ─────────────────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: foodiego-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-foodiego}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-foodiego123}
+      POSTGRES_DB: ${POSTGRES_DB:-foodiego}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infrastructure/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - foodiego-net
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U foodiego']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────
+  # CACHE
+  # ─────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: foodiego-redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD:-redis123}
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    networks:
+      - foodiego-net
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-a', '${REDIS_PASSWORD:-redis123}', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────
+  # USER SERVICE
+  # ─────────────────────────────────────────────
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    container_name: foodiego-user-service
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-foodiego}:${POSTGRES_PASSWORD:-foodiego123}@postgres:5432/${POSTGRES_DB:-foodiego}
+      JWT_SECRET: ${JWT_SECRET:-supersecretjwtkey}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis123}@redis:6379
+    ports:
+      - '3001:3001'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - foodiego-net
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:3001/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ─────────────────────────────────────────────
+  # FOOD SERVICE
+  # ─────────────────────────────────────────────
+  food-service:
+    build:
+      context: ./food-service
+      dockerfile: Dockerfile
+    container_name: foodiego-food-service
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3002
+      DATABASE_URL: postgresql://${POSTGRES_USER:-foodiego}:${POSTGRES_PASSWORD:-foodiego123}@postgres:5432/${POSTGRES_DB:-foodiego}
+      JWT_SECRET: ${JWT_SECRET:-supersecretjwtkey}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis123}@redis:6379
+      REDIS_TTL: ${REDIS_TTL:-300}
+    ports:
+      - '3002:3002'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - foodiego-net
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:3002/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ─────────────────────────────────────────────
+  # ORDER SERVICE
+  # ─────────────────────────────────────────────
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    container_name: foodiego-order-service
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3003
+      DATABASE_URL: postgresql://${POSTGRES_USER:-foodiego}:${POSTGRES_PASSWORD:-foodiego123}@postgres:5432/${POSTGRES_DB:-foodiego}
+      JWT_SECRET: ${JWT_SECRET:-supersecretjwtkey}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis123}@redis:6379
+      USER_SERVICE_URL: http://user-service:3001
+      FOOD_SERVICE_URL: http://food-service:3002
+    ports:
+      - '3003:3003'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      user-service:
+        condition: service_healthy
+      food-service:
+        condition: service_healthy
+    networks:
+      - foodiego-net
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:3003/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ─────────────────────────────────────────────
+  # ANALYTICS SERVICE
+  # ─────────────────────────────────────────────
+  analytics-service:
+    build:
+      context: ./analytics-service
+      dockerfile: Dockerfile
+    container_name: foodiego-analytics-service
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-foodiego}:${POSTGRES_PASSWORD:-foodiego123}@postgres:5432/${POSTGRES_DB:-foodiego}
+    ports:
+      - '3004:3004'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - foodiego-net
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:3004/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ─────────────────────────────────────────────
+  # API GATEWAY
+  # ─────────────────────────────────────────────
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: foodiego-gateway
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3000
+      JWT_SECRET: ${JWT_SECRET:-supersecretjwtkey}
+      USER_SERVICE_URL: http://user-service:3001
+      FOOD_SERVICE_URL: http://food-service:3002
+      ORDER_SERVICE_URL: http://order-service:3003
+      ANALYTICS_SERVICE_URL: http://analytics-service:3004
+    ports:
+      - '3000:3000'
+    depends_on:
+      user-service:
+        condition: service_healthy
+      food-service:
+        condition: service_healthy
+      order-service:
+        condition: service_healthy
+      analytics-service:
+        condition: service_healthy
+    networks:
+      - foodiego-net
+
+  # ─────────────────────────────────────────────
+  # PROMETHEUS
+  # ─────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: foodiego-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - '9090:9090'
+    networks:
+      - foodiego-net
+
+  # ─────────────────────────────────────────────
+  # GRAFANA
+  # ─────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:latest
+    container_name: foodiego-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin123}
+      GF_USERS_ALLOW_SIGN_UP: 'false'
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./infrastructure/grafana/provisioning:/etc/grafana/provisioning
+      - ./infrastructure/grafana/dashboards:/var/lib/grafana/dashboards
+    ports:
+      - '3100:3000'
+    depends_on:
+      - prometheus
+    networks:
+      - foodiego-net

@@ -82,7 +82,7 @@ const proxyOptions = (target) => ({
 app.use('/api/auth', createProxyMiddleware(proxyOptions(process.env.IDENTITY_SERVICE_URL)));
 app.use('/api/users', createProxyMiddleware(proxyOptions(process.env.IDENTITY_SERVICE_URL)));
 app.use('/api/categories', createProxyMiddleware(proxyOptions(process.env.RESTAURANT_SERVICE_URL)));
-app.use('/api/foods', createProxyMiddleware(proxyOptions(process.env.RESTAURANT_SERVICE_URL)));
+app.use('/api/restaurants', createProxyMiddleware(proxyOptions(process.env.RESTAURANT_SERVICE_URL)));
 app.use('/api/orders', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
 app.use('/api/cart', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
 app.use('/api/delivery', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));

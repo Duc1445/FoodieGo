@@ -1,0 +1,13 @@
+import { Router } from 'express';
+import { RestaurantController } from '../controllers/restaurant.controller.js';
+import { CategoryController } from '../../category/controllers/category.controller.js';
+import { MenuItemController } from '../../menu-item/controllers/menu-item.controller.js';
+const router = Router();
+const controller = new RestaurantController();
+const categoryController = new CategoryController();
+const menuItemController = new MenuItemController();
+router.get('/', controller.getAll.bind(controller));
+router.get('/:id', controller.getById.bind(controller));
+router.get('/:id/categories', categoryController.getByRestaurantId?.bind(categoryController) || ((req,res) => res.json({success:true, data:[]})));
+router.get('/:id/menu', menuItemController.getByRestaurantId?.bind(menuItemController) || ((req,res) => res.json({success:true, data:[]})));
+export default router;

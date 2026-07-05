@@ -1,4 +1,4 @@
-export class MenuEntity {
+export class MenuItemEntity {
   constructor({ id, name, description, price, image_url, category_id, is_available, created_at, updated_at, category_name }) {
     this.id = id;
     this.name = name;

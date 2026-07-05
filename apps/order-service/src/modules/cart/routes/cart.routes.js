@@ -11,25 +11,25 @@ router.get('/', authenticate, cartController.getCart);
 router.post(
   '/',
   authenticate,
-  body('food_id').isUUID().withMessage('food_id must be a valid UUID'),
+  body('menu_item_id').isUUID().withMessage('menu_item_id must be a valid UUID'),
   body('quantity').isInt({ min: 1 }).withMessage('quantity must be at least 1'),
   validate,
   cartController.addItem
 );
 
 router.put(
-  '/:foodId',
+  '/:menuItemId',
   authenticate,
-  param('foodId').isUUID().withMessage('foodId must be a valid UUID'),
+  param('menuItemId').isUUID().withMessage('menuItemId must be a valid UUID'),
   body('quantity').isInt({ min: 1 }).withMessage('quantity must be at least 1'),
   validate,
   cartController.updateItem
 );
 
 router.delete(
-  '/:foodId',
+  '/:menuItemId',
   authenticate,
-  param('foodId').isUUID().withMessage('foodId must be a valid UUID'),
+  param('menuItemId').isUUID().withMessage('menuItemId must be a valid UUID'),
   validate,
   cartController.removeItem
 );

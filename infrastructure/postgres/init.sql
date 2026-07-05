@@ -27,35 +27,69 @@ CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_role  ON users(role);
 
 -- ─────────────────────────────────────────────
+-- RESTAURANTS
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS restaurants (
+  id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name           VARCHAR(255) NOT NULL,
+  description    TEXT,
+  cover_image    VARCHAR(500),
+  logo           VARCHAR(500),
+  rating         DECIMAL(3,2) DEFAULT 0.00,
+  total_reviews  INTEGER DEFAULT 0,
+  delivery_fee   DECIMAL(12,2) DEFAULT 0.00,
+  minimum_order  DECIMAL(12,2) DEFAULT 0.00,
+  opening_time   VARCHAR(10),
+  closing_time   VARCHAR(10),
+  status         VARCHAR(30) DEFAULT 'open',
+  latitude       DECIMAL(10,8),
+  longitude      DECIMAL(11,8),
+  is_active      BOOLEAN NOT NULL DEFAULT true,
+  created_at     TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at     TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_restaurants_status ON restaurants(status);
+
+-- ─────────────────────────────────────────────
 -- CATEGORIES
 -- ─────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS categories (
-  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name        VARCHAR(100) UNIQUE NOT NULL,
-  description TEXT,
-  image_url   VARCHAR(500),
-  is_active   BOOLEAN NOT NULL DEFAULT true,
-  created_at  TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at  TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  restaurant_id UUID NOT NULL REFERENCES restaurants(id) ON DELETE CASCADE,
+  name          VARCHAR(100) NOT NULL,
+  description   TEXT,
+  image_url     VARCHAR(500),
+  display_order INTEGER DEFAULT 0,
+  is_active     BOOLEAN NOT NULL DEFAULT true,
+  created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(restaurant_id, name)
 );
 
+CREATE INDEX IF NOT EXISTS idx_categories_restaurant ON categories(restaurant_id);
+
 -- ─────────────────────────────────────────────
--- FOODS
+-- MENU ITEMS
 -- ─────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS foods (
-  id           UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name         VARCHAR(255) NOT NULL,
-  description  TEXT,
-  price        DECIMAL(12,2) NOT NULL CHECK (price >= 0),
-  image_url    VARCHAR(500),
-  category_id  UUID REFERENCES categories(id) ON DELETE SET NULL,
-  is_available BOOLEAN NOT NULL DEFAULT true,
-  created_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+CREATE TABLE IF NOT EXISTS menu_items (
+  id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  restaurant_id    UUID NOT NULL REFERENCES restaurants(id) ON DELETE CASCADE,
+  category_id      UUID REFERENCES categories(id) ON DELETE SET NULL,
+  name             VARCHAR(255) NOT NULL,
+  description      TEXT,
+  price            DECIMAL(12,2) NOT NULL CHECK (price >= 0),
+  image_url        VARCHAR(500),
+  is_available     BOOLEAN NOT NULL DEFAULT true,
+  preparation_time INTEGER DEFAULT 15,
+  display_order    INTEGER DEFAULT 0,
+  created_at       TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at       TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_foods_category ON foods(category_id);
-CREATE INDEX IF NOT EXISTS idx_foods_name     ON foods USING gin(to_tsvector('simple', name));
+CREATE INDEX IF NOT EXISTS idx_menu_items_restaurant ON menu_items(restaurant_id);
+CREATE INDEX IF NOT EXISTS idx_menu_items_category ON menu_items(category_id);
+CREATE INDEX IF NOT EXISTS idx_menu_items_name     ON menu_items USING gin(to_tsvector('simple', name));
 
 -- ─────────────────────────────────────────────
 -- ORDERS
@@ -76,14 +110,17 @@ CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id);
 CREATE INDEX IF NOT EXISTS idx_orders_status  ON orders(status);
 
 -- ─────────────────────────────────────────────
--- ORDER ITEMS
+-- ORDER ITEMS (SNAPSHOT)
 -- ─────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS order_items (
-  id        UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  order_id  UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
-  food_id   UUID NOT NULL REFERENCES foods(id) ON DELETE RESTRICT,
-  quantity  INTEGER NOT NULL CHECK (quantity > 0),
-  price     DECIMAL(12,2) NOT NULL CHECK (price >= 0)
+  id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  order_id       UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+  menu_item_id   UUID REFERENCES menu_items(id) ON DELETE SET NULL,
+  menu_item_name VARCHAR(255) NOT NULL,
+  unit_price     DECIMAL(12,2) NOT NULL CHECK (unit_price >= 0),
+  quantity       INTEGER NOT NULL CHECK (quantity > 0),
+  subtotal       DECIMAL(12,2) NOT NULL CHECK (subtotal >= 0),
+  note           TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
@@ -92,10 +129,10 @@ CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
 -- CART ITEMS
 -- ─────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS cart_items (
-  user_id   UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  food_id   UUID NOT NULL REFERENCES foods(id) ON DELETE CASCADE,
-  quantity  INTEGER NOT NULL CHECK (quantity > 0),
-  PRIMARY KEY (user_id, food_id)
+  user_id      UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  menu_item_id UUID NOT NULL REFERENCES menu_items(id) ON DELETE CASCADE,
+  quantity     INTEGER NOT NULL CHECK (quantity > 0),
+  PRIMARY KEY (user_id, menu_item_id)
 );
 
 -- ─────────────────────────────────────────────
@@ -123,12 +160,3 @@ VALUES (
   'FoodieGo Admin',
   'admin'
 ) ON CONFLICT (email) DO NOTHING;
-
--- Categories
-INSERT INTO categories (name, description) VALUES
-  ('Cơm', 'Các món cơm'),
-  ('Bún - Phở', 'Bún phở các loại'),
-  ('Bánh mì', 'Bánh mì sandwich'),
-  ('Đồ uống', 'Nước giải khát'),
-  ('Tráng miệng', 'Bánh ngọt, chè')
-ON CONFLICT (name) DO NOTHING;

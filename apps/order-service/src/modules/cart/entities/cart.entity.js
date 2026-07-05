@@ -1,9 +1,9 @@
 export class CartEntity {
-  constructor({ user_id, food_id, quantity, food_name, food_price }) {
+  constructor({ user_id, menu_item_id, quantity, menuItem_name, menuItem_price }) {
     this.userId = user_id;
-    this.foodId = food_id;
+    this.menuItemId = menu_item_id;
     this.quantity = quantity;
-    this.foodName = food_name;
-    this.foodPrice = food_price;
+    this.menuItemName = menuItem_name;
+    this.menuItemPrice = menuItem_price;
   }
 }

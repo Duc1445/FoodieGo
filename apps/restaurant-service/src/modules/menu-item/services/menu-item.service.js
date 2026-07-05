@@ -1,20 +1,20 @@
-import { MenuRepository } from '../repositories/menu.repository.js';
+import { MenuItemRepository } from '../repositories/menuItem.repository.js';
 import redis from '../../../config/redis.js';
 
-export class MenuService {
+export class MenuItemService {
   constructor() {
-    this.menuRepository = new MenuRepository();
+    this.menuRepository = new MenuItemRepository();
   }
 
   async clearMenuCache() {
-    const keys = await redis.keys('menus:*');
+    const keys = await redis.keys('menu_items:*');
     if (keys.length > 0) {
       await redis.del(...keys);
     }
   }
 
   async getMenus({ page, limit, search, category_id }) {
-    const cacheKey = `menus:${page || 1}:${limit || 10}:${search || ''}:${category_id || ''}`;
+    const cacheKey = `menu_items:${page || 1}:${limit || 10}:${search || ''}:${category_id || ''}`;
     const cached = await redis.get(cacheKey);
     if (cached) {
       return JSON.parse(cached);
@@ -42,38 +42,38 @@ export class MenuService {
   }
 
   async getMenuById(id) {
-    const cacheKey = `menu:${id}`;
+    const cacheKey = `menuItem:${id}`;
     const cached = await redis.get(cacheKey);
     if (cached) {
       return JSON.parse(cached);
     }
-    const menu = await this.menuRepository.findById(id);
-    if (menu) {
-      await redis.set(cacheKey, JSON.stringify(menu), 'EX', 3600);
+    const menuItem = await this.menuRepository.findById(id);
+    if (menuItem) {
+      await redis.set(cacheKey, JSON.stringify(menuItem), 'EX', 3600);
     }
-    return menu;
+    return menuItem;
   }
 
   async createMenu(data) {
-    const menu = await this.menuRepository.create(data);
+    const menuItem = await this.menuRepository.create(data);
     await this.clearMenuCache();
-    return menu;
+    return menuItem;
   }
 
   async updateMenu(id, data) {
-    const menu = await this.menuRepository.update(id, data);
-    if (menu) {
+    const menuItem = await this.menuRepository.update(id, data);
+    if (menuItem) {
       await this.clearMenuCache();
-      await redis.del(`menu:${id}`);
+      await redis.del(`menuItem:${id}`);
     }
-    return menu;
+    return menuItem;
   }
 
   async deleteMenu(id) {
     const success = await this.menuRepository.remove(id);
     if (success) {
       await this.clearMenuCache();
-      await redis.del(`menu:${id}`);
+      await redis.del(`menuItem:${id}`);
     }
     return success;
   }

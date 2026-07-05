@@ -4,14 +4,14 @@ export const getCart = async (userId) => {
   return await cartRepository.getCart(userId);
 };
 
-export const addItem = async (userId, foodId, quantity) => {
-  return await cartRepository.addItem(userId, foodId, quantity);
+export const addItem = async (userId, menuItemId, quantity) => {
+  return await cartRepository.addItem(userId, menuItemId, quantity);
 };
 
-export const updateItem = async (userId, foodId, quantity) => {
-  return await cartRepository.updateItem(userId, foodId, quantity);
+export const updateItem = async (userId, menuItemId, quantity) => {
+  return await cartRepository.updateItem(userId, menuItemId, quantity);
 };
 
-export const removeItem = async (userId, foodId) => {
-  return await cartRepository.removeItem(userId, foodId);
+export const removeItem = async (userId, menuItemId) => {
+  return await cartRepository.removeItem(userId, menuItemId);
 };

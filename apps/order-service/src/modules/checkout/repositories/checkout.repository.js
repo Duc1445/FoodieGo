@@ -19,9 +19,9 @@ export const create = async ({ userId, note, address, items, orderType }) => {
 
     for (const item of items) {
       await client.query(
-        `INSERT INTO order_items (id, order_id, food_id, quantity, price)
+        `INSERT INTO order_items (id, order_id, menu_item_id, quantity, price)
          VALUES (gen_random_uuid(), $1, $2, $3, $4)`,
-        [order.id, item.food_id, item.quantity, item.price]
+        [order.id, item.menu_item_id, item.quantity, item.price]
       );
     }
 
@@ -58,9 +58,9 @@ export const findById = async (orderId) => {
   if (orders.length === 0) return null;
 
   const { rows: items } = await pool.query(
-    `SELECT oi.*, f.name AS food_name
+    `SELECT oi.*, f.name AS menuItem_name
      FROM order_items oi
-     JOIN foods f ON f.id = oi.food_id
+     JOIN menuItems f ON f.id = oi.menu_item_id
      WHERE oi.order_id = $1`,
     [orderId]
   );

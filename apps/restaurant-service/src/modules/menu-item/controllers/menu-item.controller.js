@@ -1,8 +1,8 @@
-import { MenuService } from '../services/menu.service.js';
+import { MenuItemService } from '../services/menuItem.service.js';
 
-export class MenuController {
+export class MenuItemController {
   constructor() {
-    this.menuService = new MenuService();
+    this.menuService = new MenuItemService();
   }
 
   getMenus = async (req, res, next) => {
@@ -16,7 +16,7 @@ export class MenuController {
 
   getMenuById = async (req, res, next) => {
     try {
-      const menu = await this.menuService.getMenuById(req.params.id);
+      const const menuItem = await this.menuService.getMenuById(req.params.id);
       if (!menu) {
         return res.status(404).json({ success: false, message: 'Menu not found' });
       }
@@ -28,7 +28,7 @@ export class MenuController {
 
   createMenu = async (req, res, next) => {
     try {
-      const menu = await this.menuService.createMenu(req.body);
+      const const menuItem = await this.menuService.createMenu(req.body);
       res.status(201).json({ success: true, message: 'Menu created', data: menu });
     } catch (err) {
       next(err);
@@ -37,7 +37,7 @@ export class MenuController {
 
   updateMenu = async (req, res, next) => {
     try {
-      const menu = await this.menuService.updateMenu(req.params.id, req.body);
+      const const menuItem = await this.menuService.updateMenu(req.params.id, req.body);
       if (!menu) {
         return res.status(404).json({ success: false, message: 'Menu not found' });
       }

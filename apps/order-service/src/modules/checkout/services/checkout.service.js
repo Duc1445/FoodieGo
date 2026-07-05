@@ -6,7 +6,7 @@ export const createOrder = async (userId, data) => {
   let items = [];
   if (data.cart && data.cart.length > 0) {
     items = data.cart.map(c => ({
-      food_id: c.food_id || c.id,
+      menu_item_id: c.menu_item_id || c.id,
       quantity: c.quantity,
       price: c.price,
     }));
@@ -16,9 +16,9 @@ export const createOrder = async (userId, data) => {
       throw new Error('Cart is empty');
     }
     items = cartItems.map((ci) => ({
-      food_id: ci.food_id,
+      menu_item_id: ci.menu_item_id,
       quantity: ci.quantity,
-      price: ci.food_price,
+      price: ci.menuItem_price,
     }));
   }
 

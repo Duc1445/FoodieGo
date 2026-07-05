@@ -1,0 +1,2 @@
+// @foodiego/config
+export {};

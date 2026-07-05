@@ -56,13 +56,13 @@ services:
       retries: 5
 
   # ─────────────────────────────────────────────
-  # USER SERVICE
+  # IDENTITY SERVICE
   # ─────────────────────────────────────────────
-  user-service:
+  identity-service:
     build:
-      context: ./user-service
+      context: ./apps/identity-service
       dockerfile: Dockerfile
-    container_name: foodiego-user-service
+    container_name: foodiego-identity-service
     restart: unless-stopped
     environment:
       NODE_ENV: ${NODE_ENV:-development}
@@ -87,13 +87,13 @@ services:
       retries: 3
 
   # ─────────────────────────────────────────────
-  # FOOD SERVICE
+  # RESTAURANT SERVICE
   # ─────────────────────────────────────────────
-  food-service:
+  restaurant-service:
     build:
-      context: ./food-service
+      context: ./apps/restaurant-service
       dockerfile: Dockerfile
-    container_name: foodiego-food-service
+    container_name: foodiego-restaurant-service
     restart: unless-stopped
     environment:
       NODE_ENV: ${NODE_ENV:-development}
@@ -122,7 +122,7 @@ services:
   # ─────────────────────────────────────────────
   order-service:
     build:
-      context: ./order-service
+      context: ./apps/order-service
       dockerfile: Dockerfile
     container_name: foodiego-order-service
     restart: unless-stopped
@@ -132,8 +132,8 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-foodiego}:${POSTGRES_PASSWORD:-foodiego123}@postgres:5432/${POSTGRES_DB:-foodiego}
       JWT_SECRET: ${JWT_SECRET:-supersecretjwtkey}
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis123}@redis:6379
-      USER_SERVICE_URL: http://user-service:3001
-      FOOD_SERVICE_URL: http://food-service:3002
+      IDENTITY_SERVICE_URL: http://identity-service:3001
+      RESTAURANT_SERVICE_URL: http://restaurant-service:3002
     ports:
       - '3003:3003'
     depends_on:
@@ -141,9 +141,9 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      user-service:
+      identity-service:
         condition: service_healthy
-      food-service:
+      restaurant-service:
         condition: service_healthy
     networks:
       - foodiego-net
@@ -153,36 +153,14 @@ services:
       timeout: 10s
       retries: 3
 
-  # ─────────────────────────────────────────────
-  # ANALYTICS SERVICE
-  # ─────────────────────────────────────────────
-  analytics-service:
-    build:
-      context: ./analytics-service
-      dockerfile: Dockerfile
-    container_name: foodiego-analytics-service
-    restart: unless-stopped
-    environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-foodiego}:${POSTGRES_PASSWORD:-foodiego123}@postgres:5432/${POSTGRES_DB:-foodiego}
-    ports:
-      - '3004:3004'
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - foodiego-net
-    healthcheck:
-      test: ['CMD', 'wget', '-qO-', 'http://localhost:3004/health']
-      interval: 30s
-      timeout: 10s
-      retries: 3
+
 
   # ─────────────────────────────────────────────
   # API GATEWAY
   # ─────────────────────────────────────────────
   gateway:
     build:
-      context: ./gateway
+      context: ./apps/gateway
       dockerfile: Dockerfile
     container_name: foodiego-gateway
     restart: unless-stopped
@@ -190,20 +168,17 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       PORT: 3000
       JWT_SECRET: ${JWT_SECRET:-supersecretjwtkey}
-      USER_SERVICE_URL: http://user-service:3001
-      FOOD_SERVICE_URL: http://food-service:3002
+      IDENTITY_SERVICE_URL: http://identity-service:3001
+      RESTAURANT_SERVICE_URL: http://restaurant-service:3002
       ORDER_SERVICE_URL: http://order-service:3003
-      ANALYTICS_SERVICE_URL: http://analytics-service:3004
     ports:
       - '3000:3000'
     depends_on:
-      user-service:
+      identity-service:
         condition: service_healthy
-      food-service:
+      restaurant-service:
         condition: service_healthy
       order-service:
-        condition: service_healthy
-      analytics-service:
         condition: service_healthy
     networks:
       - foodiego-net

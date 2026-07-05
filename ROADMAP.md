@@ -22,9 +22,16 @@ FoodieGo is being developed iteratively based on capability milestones.
   - Distributed Tracing (Tempo)
   - Metrics (Prometheus, Grafana)
   - Centralized Logging (Loki)
-- **v0.6 Payment** 🟡 (Pending)
+- **v0.6 Inventory** ⭐ (Next Capability)
+  - Reserve stock
+  - Confirm/Release reservations
+  - Expiration policy
+  - Optimistic locking & Exactly-once event handling
+- **v0.7 Payment** 🟡 (Pending)
   - Payment gateway integration
-- **v0.7 Inventory** 🟡 (Pending)
-  - Stock deduction and reservation
-- **v1.0 MVP** 🟡 (Pending)
+- **v0.8 Notification** 🟡 (Pending)
+  - Email, SMS, Push via Event Consumption
+- **v0.9 Delivery** 🟡 (Pending)
+  - Driver matching and location tracking
+- **v1.0 Production MVP** 🟡 (Pending)
   - Production readiness and final UI integration

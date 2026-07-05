@@ -50,6 +50,8 @@ app.get('/metrics', async (_req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+import employeeRoutes from './routes/employee.routes.js';
+app.use('/api/employees', employeeRoutes);
 
 // ─── Error Handler ─────────────────────────────────────────────────────────
 app.use((err, _req, res, _next) => {

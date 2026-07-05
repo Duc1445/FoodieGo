@@ -78,12 +78,15 @@ const proxyOptions = (target) => ({
 
 app.use('/api/auth', createProxyMiddleware(proxyOptions(process.env.USER_SERVICE_URL)));
 app.use('/api/users', createProxyMiddleware(proxyOptions(process.env.USER_SERVICE_URL)));
+app.use('/api/employees', createProxyMiddleware(proxyOptions(process.env.USER_SERVICE_URL)));
 app.use('/api/categories', createProxyMiddleware(proxyOptions(process.env.FOOD_SERVICE_URL)));
 app.use('/api/foods', createProxyMiddleware(proxyOptions(process.env.FOOD_SERVICE_URL)));
 app.use('/api/orders', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
 app.use('/api/cart', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
 app.use('/api/delivery', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
+app.use('/api/promotions', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
 app.use('/api/analytics', createProxyMiddleware(proxyOptions(process.env.ANALYTICS_SERVICE_URL)));
+app.use('/api/expenses', createProxyMiddleware(proxyOptions(process.env.ANALYTICS_SERVICE_URL)));
 
 // ─── 404 ────────────────────────────────────────────────────────────────────
 app.use((_req, res) => res.status(404).json({ success: false, message: 'Route not found' }));

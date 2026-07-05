@@ -56,6 +56,9 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/delivery', deliveryRoutes);
 
+import promotionRoutes from './routes/promotion.routes.js';
+app.use('/api/promotions', promotionRoutes);
+
 // ─── Error Handler ─────────────────────────────────────────────────────────
 app.use((err, _req, res, _next) => {
   console.error(err);

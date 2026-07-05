@@ -14,27 +14,36 @@ router.post(
   authenticate,
   body('note').optional().isString(),
   body('address').optional().isString(),
+  body('order_type').optional().isIn(['dine-in', 'takeaway']),
   validate,
   async (req, res, next) => {
     try {
-      // 1. Get cart items (with price from foods table)
-      const cartItems = await CartModel.getCart(req.user.id);
-      if (cartItems.length === 0) {
-        return res.status(400).json({ success: false, message: 'Cart is empty' });
+      // 1. Get cart items (from request body or fallback to DB)
+      let items = [];
+      if (req.body.cart && req.body.cart.length > 0) {
+        items = req.body.cart.map(c => ({
+          food_id: c.food_id || c.id,
+          quantity: c.quantity,
+          price: c.price,
+        }));
+      } else {
+        const cartItems = await CartModel.getCart(req.user.id);
+        if (cartItems.length === 0) {
+          return res.status(400).json({ success: false, message: 'Cart is empty' });
+        }
+        items = cartItems.map((ci) => ({
+          food_id: ci.food_id,
+          quantity: ci.quantity,
+          price: ci.food_price,
+        }));
       }
-
-      // 2. Build items array with price from foods join
-      const items = cartItems.map((ci) => ({
-        food_id: ci.food_id,
-        quantity: ci.quantity,
-        price: ci.food_price,
-      }));
 
       // 3. Create order + items in a transaction
       const order = await OrderModel.create({
         userId: req.user.id,
         note: req.body.note,
         address: req.body.address,
+        orderType: req.body.order_type || 'takeaway',
         items,
       });
 
@@ -55,6 +64,16 @@ router.post(
 router.get('/', authenticate, async (req, res, next) => {
   try {
     const orders = await OrderModel.findByUserId(req.user.id);
+    res.json({ success: true, data: orders });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ─── GET /api/orders/all — list all orders (admin) ──────────────────────────
+router.get('/all', authenticate, authorize('admin'), async (req, res, next) => {
+  try {
+    const orders = await OrderModel.findAll();
     res.json({ success: true, data: orders });
   } catch (err) {
     next(err);

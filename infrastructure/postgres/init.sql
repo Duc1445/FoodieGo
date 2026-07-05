@@ -65,6 +65,8 @@ CREATE TABLE IF NOT EXISTS orders (
   user_id      UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   status       VARCHAR(30) NOT NULL DEFAULT 'pending'
                  CHECK (status IN ('pending','confirmed','preparing','delivering','completed','cancelled')),
+  order_type   VARCHAR(20) NOT NULL DEFAULT 'takeaway'
+                 CHECK (order_type IN ('dine-in', 'takeaway')),
   total_price  DECIMAL(12,2) NOT NULL CHECK (total_price >= 0),
   note         TEXT,
   address      TEXT NOT NULL,
@@ -113,13 +115,47 @@ CREATE TABLE IF NOT EXISTS delivery (
 );
 
 -- ─────────────────────────────────────────────
+-- EMPLOYEES
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS employees (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name        VARCHAR(255) NOT NULL,
+  role        VARCHAR(50) NOT NULL,
+  salary      DECIMAL(12,2) NOT NULL DEFAULT 0,
+  created_at  TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at  TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ─────────────────────────────────────────────
+-- PROMOTIONS
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS promotions (
+  id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  code                VARCHAR(50) UNIQUE NOT NULL,
+  discount_percentage INTEGER NOT NULL CHECK (discount_percentage >= 0 AND discount_percentage <= 100),
+  is_active           BOOLEAN NOT NULL DEFAULT true,
+  created_at          TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ─────────────────────────────────────────────
+-- EXPENSES
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS expenses (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  description VARCHAR(255) NOT NULL,
+  amount      DECIMAL(12,2) NOT NULL CHECK (amount >= 0),
+  expense_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  created_at  TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ─────────────────────────────────────────────
 -- SEED DATA
 -- ─────────────────────────────────────────────
 -- Admin account (password: Admin@123)
 INSERT INTO users (email, password, full_name, role)
 VALUES (
   'admin@foodiego.com',
-  '$2b$10$rBV2JDeWW3.vKBBnpkVkpOUwG0Q2K6mOGpT0Gk5dRfBN/8kQR1.9a',
+  '$2a$10$iWAFBcygzItd00CeImMHXeL./ixwfvt3hDK99KWkn/c7TrdSZfB2G',
   'FoodieGo Admin',
   'admin'
 ) ON CONFLICT (email) DO NOTHING;

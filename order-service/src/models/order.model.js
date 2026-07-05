@@ -2,9 +2,9 @@ import pool from '../config/database.js';
 
 /**
  * Create an order with items inside a transaction.
- * @param {{ userId, note, address, items: [{ food_id, quantity, price }] }} data
+ * @param {{ userId, note, address, items: [{ food_id, quantity, price }], orderType: string }} data
  */
-export const create = async ({ userId, note, address, items }) => {
+export const create = async ({ userId, note, address, items, orderType }) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -17,10 +17,10 @@ export const create = async ({ userId, note, address, items }) => {
 
     // Insert order
     const { rows: [order] } = await client.query(
-      `INSERT INTO orders (id, user_id, status, total_price, note, address, created_at, updated_at)
-       VALUES (gen_random_uuid(), $1, 'pending', $2, $3, $4, NOW(), NOW())
+      `INSERT INTO orders (id, user_id, status, total_price, note, address, order_type, created_at, updated_at)
+       VALUES (gen_random_uuid(), $1, 'pending', $2, $3, $4, $5, NOW(), NOW())
        RETURNING *`,
-      [userId, totalPrice, note || null, address || null]
+      [userId, totalPrice, note || null, address || null, orderType || 'takeaway']
     );
 
     // Insert order items
@@ -49,6 +49,16 @@ export const findByUserId = async (userId) => {
   const { rows } = await pool.query(
     `SELECT * FROM orders WHERE user_id = $1 ORDER BY created_at DESC`,
     [userId]
+  );
+  return rows;
+};
+
+/**
+ * Find all orders (admin).
+ */
+export const findAll = async () => {
+  const { rows } = await pool.query(
+    `SELECT * FROM orders ORDER BY created_at DESC`
   );
   return rows;
 };

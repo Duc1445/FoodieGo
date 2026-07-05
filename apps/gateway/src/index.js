@@ -6,9 +6,12 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { register, collectDefaultMetrics, Counter, Histogram } from 'prom-client';
+import { setupSwagger } from './config/swagger.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+setupSwagger(app);
 
 // ─── Prometheus Metrics ────────────────────────────────────────────────────
 collectDefaultMetrics({ prefix: 'gateway_' });

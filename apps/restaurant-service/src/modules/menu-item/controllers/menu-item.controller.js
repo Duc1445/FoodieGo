@@ -1,61 +1,32 @@
-import { MenuItemService } from '../services/menuItem.service.js';
+import { MenuItemService } from '../services/menu-item.service.js';
+const service = new MenuItemService();
 
 export class MenuItemController {
-  constructor() {
-    this.menuService = new MenuItemService();
-  }
-
-  getMenus = async (req, res, next) => {
+  async getByRestaurantId(req, res) {
     try {
-      const responseData = await this.menuService.getMenus(req.query);
-      res.json({ success: true, ...responseData });
-    } catch (err) {
-      next(err);
-    }
-  };
-
-  getMenuById = async (req, res, next) => {
-    try {
-      const const menuItem = await this.menuService.getMenuById(req.params.id);
-      if (!menu) {
-        return res.status(404).json({ success: false, message: 'Menu not found' });
-      }
+      const menu = await service.getMenuByRestaurantId(req.params.id);
       res.json({ success: true, data: menu });
     } catch (err) {
-      next(err);
+      res.status(500).json({ success: false, message: err.message });
     }
-  };
+  }
 
-  createMenu = async (req, res, next) => {
+  async getAll(req, res) {
     try {
-      const const menuItem = await this.menuService.createMenu(req.body);
-      res.status(201).json({ success: true, message: 'Menu created', data: menu });
+      const menuItems = await service.getAllMenuItems();
+      res.json({ success: true, data: menuItems });
     } catch (err) {
-      next(err);
+      res.status(500).json({ success: false, message: err.message });
     }
-  };
+  }
 
-  updateMenu = async (req, res, next) => {
+  async getById(req, res) {
     try {
-      const const menuItem = await this.menuService.updateMenu(req.params.id, req.body);
-      if (!menu) {
-        return res.status(404).json({ success: false, message: 'Menu not found' });
-      }
-      res.json({ success: true, message: 'Menu updated', data: menu });
+      const menuItem = await service.getMenuItemById(req.params.id);
+      if (!menuItem) return res.status(404).json({ success: false, message: 'Menu item not found' });
+      res.json({ success: true, data: menuItem });
     } catch (err) {
-      next(err);
+      res.status(500).json({ success: false, message: err.message });
     }
-  };
-
-  deleteMenu = async (req, res, next) => {
-    try {
-      const success = await this.menuService.deleteMenu(req.params.id);
-      if (!success) {
-        return res.status(404).json({ success: false, message: 'Menu not found' });
-      }
-      res.json({ success: true, message: 'Menu deleted' });
-    } catch (err) {
-      next(err);
-    }
-  };
+  }
 }

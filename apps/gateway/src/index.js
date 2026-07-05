@@ -84,6 +84,13 @@ app.use('/api/users', createProxyMiddleware(proxyOptions(process.env.IDENTITY_SE
 app.use('/api/categories', createProxyMiddleware(proxyOptions(process.env.RESTAURANT_SERVICE_URL)));
 app.use('/api/restaurants', createProxyMiddleware(proxyOptions(process.env.RESTAURANT_SERVICE_URL)));
 app.use('/api/orders', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
+
+// Mock Analytics Endpoint for Sprint B1
+app.post('/api/analytics/events', (req, res) => {
+  const { event, data } = req.body || {};
+  console.log(`\n[ANALYTICS] Event: ${event} | Data:`, data);
+  res.json({ success: true, message: 'Event logged' });
+});
 app.use('/api/cart', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
 app.use('/api/delivery', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
 

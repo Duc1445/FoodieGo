@@ -1,20 +1,21 @@
-import pool from '../../config/database.js';
+import pool from '../../../config/database.js';
+import { CategoryEntity } from '../entities/category.entity.js';
 
-export const CategoryModel = {
+export class CategoryRepository {
   async findAll() {
     const { rows } = await pool.query(
       'SELECT * FROM categories ORDER BY created_at DESC'
     );
-    return rows;
-  },
+    return rows.map(row => new CategoryEntity(row));
+  }
 
   async findById(id) {
     const { rows } = await pool.query(
       'SELECT * FROM categories WHERE id = $1',
       [id]
     );
-    return rows[0] || null;
-  },
+    return rows[0] ? new CategoryEntity(rows[0]) : null;
+  }
 
   async create({ name, description, image_url }) {
     const { rows } = await pool.query(
@@ -23,8 +24,8 @@ export const CategoryModel = {
        RETURNING *`,
       [name, description || null, image_url || null]
     );
-    return rows[0];
-  },
+    return new CategoryEntity(rows[0]);
+  }
 
   async update(id, { name, description, image_url, is_active }) {
     const { rows } = await pool.query(
@@ -38,8 +39,8 @@ export const CategoryModel = {
        RETURNING *`,
       [name, description, image_url, is_active, id]
     );
-    return rows[0] || null;
-  },
+    return rows[0] ? new CategoryEntity(rows[0]) : null;
+  }
 
   async remove(id) {
     const { rowCount } = await pool.query(
@@ -47,5 +48,5 @@ export const CategoryModel = {
       [id]
     );
     return rowCount > 0;
-  },
-};
+  }
+}

@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
 import { register, collectDefaultMetrics, Counter, Histogram } from 'prom-client';
-import authRoutes from './modules/auth/auth.routes.js';
+import authRoutes from './modules/auth/routes/auth.routes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -50,6 +50,8 @@ app.get('/metrics', async (_req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+import employeeRoutes from './routes/employee.routes.js';
+app.use('/api/employees', employeeRoutes);
 
 // ─── Error Handler ─────────────────────────────────────────────────────────
 app.use((err, _req, res, _next) => {

@@ -1,8 +1,5 @@
-import pool from '../../config/database.js';
+import pool from '../../../config/database.js';
 
-/**
- * Create a delivery record for an order.
- */
 export const create = async (orderId) => {
   const { rows } = await pool.query(
     `INSERT INTO delivery (id, order_id, status, created_at, updated_at)
@@ -13,9 +10,6 @@ export const create = async (orderId) => {
   return rows[0];
 };
 
-/**
- * Find delivery by order ID.
- */
 export const findByOrderId = async (orderId) => {
   const { rows } = await pool.query(
     `SELECT * FROM delivery WHERE order_id = $1`,
@@ -24,9 +18,6 @@ export const findByOrderId = async (orderId) => {
   return rows[0] || null;
 };
 
-/**
- * Assign a shipper to a delivery.
- */
 export const assignShipper = async (deliveryId, shipperId) => {
   const { rows } = await pool.query(
     `UPDATE delivery SET shipper_id = $2, status = 'accepted', updated_at = NOW()
@@ -37,9 +28,6 @@ export const assignShipper = async (deliveryId, shipperId) => {
   return rows[0];
 };
 
-/**
- * Update the status of a delivery.
- */
 export const updateStatus = async (deliveryId, status) => {
   const { rows } = await pool.query(
     `UPDATE delivery SET status = $2, updated_at = NOW()

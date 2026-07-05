@@ -6,9 +6,9 @@ import morgan from 'morgan';
 import { register, collectDefaultMetrics, Counter, Histogram } from 'prom-client';
 
 // Routes
-import cartRoutes from './modules/cart/cart.routes.js';
-import orderRoutes from './modules/checkout/order.routes.js';
-import deliveryRoutes from './modules/delivery/delivery.routes.js';
+import cartRoutes from './modules/cart/routes/cart.routes.js';
+import checkoutRoutes from './modules/checkout/routes/checkout.routes.js';
+import deliveryRoutes from './modules/delivery/routes/delivery.routes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3003;
@@ -53,8 +53,11 @@ app.get('/metrics', async (_req, res) => {
 });
 
 app.use('/api/cart', cartRoutes);
-app.use('/api/orders', orderRoutes);
+app.use('/api/orders', checkoutRoutes);
 app.use('/api/delivery', deliveryRoutes);
+
+import promotionRoutes from './routes/promotion.routes.js';
+app.use('/api/promotions', promotionRoutes);
 
 // ─── Error Handler ─────────────────────────────────────────────────────────
 app.use((err, _req, res, _next) => {

@@ -10,7 +10,7 @@ jest.unstable_mockModule('../config/database.js', () => {
 });
 
 const pool = (await import('../config/database.js')).default;
-const { create, findByUserId, findById, updateStatus } = await import('../models/order.model.js');
+const { create, findByUserId, findById, updateStatus } = await import('../modules/checkout/repositories/checkout.repository.js');
 
 describe('Order Model', () => {
   beforeEach(() => {

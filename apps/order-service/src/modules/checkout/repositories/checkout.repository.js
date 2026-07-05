@@ -1,29 +1,22 @@
-import pool from '../../config/database.js';
+import pool from '../../../config/database.js';
 
-/**
- * Create an order with items inside a transaction.
- * @param {{ userId, note, address, items: [{ food_id, quantity, price }] }} data
- */
-export const create = async ({ userId, note, address, items }) => {
+export const create = async ({ userId, note, address, items, orderType }) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
-    // Calculate total price
     const totalPrice = items.reduce(
       (sum, item) => sum + Number(item.price) * item.quantity,
       0
     );
 
-    // Insert order
     const { rows: [order] } = await client.query(
-      `INSERT INTO orders (id, user_id, status, total_price, note, address, created_at, updated_at)
-       VALUES (gen_random_uuid(), $1, 'pending', $2, $3, $4, NOW(), NOW())
+      `INSERT INTO orders (id, user_id, status, total_price, note, address, order_type, created_at, updated_at)
+       VALUES (gen_random_uuid(), $1, 'pending', $2, $3, $4, $5, NOW(), NOW())
        RETURNING *`,
-      [userId, totalPrice, note || null, address || null]
+      [userId, totalPrice, note || null, address || null, orderType || 'takeaway']
     );
 
-    // Insert order items
     for (const item of items) {
       await client.query(
         `INSERT INTO order_items (id, order_id, food_id, quantity, price)
@@ -42,9 +35,6 @@ export const create = async ({ userId, note, address, items }) => {
   }
 };
 
-/**
- * Find all orders belonging to a user.
- */
 export const findByUserId = async (userId) => {
   const { rows } = await pool.query(
     `SELECT * FROM orders WHERE user_id = $1 ORDER BY created_at DESC`,
@@ -53,9 +43,13 @@ export const findByUserId = async (userId) => {
   return rows;
 };
 
-/**
- * Find a single order by ID, including its items joined with foods.
- */
+export const findAll = async () => {
+  const { rows } = await pool.query(
+    `SELECT * FROM orders ORDER BY created_at DESC`
+  );
+  return rows;
+};
+
 export const findById = async (orderId) => {
   const { rows: orders } = await pool.query(
     `SELECT * FROM orders WHERE id = $1`,
@@ -74,9 +68,6 @@ export const findById = async (orderId) => {
   return { ...orders[0], items };
 };
 
-/**
- * Update the status of an order.
- */
 export const updateStatus = async (orderId, status) => {
   const { rows } = await pool.query(
     `UPDATE orders SET status = $2, updated_at = NOW()

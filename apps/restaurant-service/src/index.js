@@ -5,9 +5,8 @@ import cors from 'cors';
 import morgan from 'morgan';
 import { register, collectDefaultMetrics, Counter, Histogram } from 'prom-client';
 
-// Routes
-import categoryRoutes from './modules/category/category.routes.js';
-import foodRoutes from './modules/menu/food.routes.js';
+import categoryRoutes from './modules/category/routes/category.routes.js';
+import menuRoutes from './modules/menu/routes/menu.routes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -52,7 +51,7 @@ app.get('/metrics', async (_req, res) => {
 });
 
 app.use('/api/categories', categoryRoutes);
-app.use('/api/foods', foodRoutes);
+app.use('/api/menus', menuRoutes);
 
 // ─── Error Handler ─────────────────────────────────────────────────────────
 app.use((err, _req, res, _next) => {

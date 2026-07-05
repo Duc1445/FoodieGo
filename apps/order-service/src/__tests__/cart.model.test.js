@@ -9,7 +9,7 @@ jest.unstable_mockModule('../config/database.js', () => {
 });
 
 const pool = (await import('../config/database.js')).default;
-const { getCart, addItem, updateItem, removeItem, clearCart } = await import('../models/cart.model.js');
+const { getCart, addItem, updateItem, removeItem, clearCart } = await import('../modules/cart/repositories/cart.repository.js');
 
 describe('Cart Model', () => {
   beforeEach(() => {

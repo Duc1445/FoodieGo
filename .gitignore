@@ -36,3 +36,14 @@ jest.config.js.bak
 # SonarQube
 .sonar/
 sonar-project.properties.bak
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+coverage.xml
+venv/
+env/
+.venv/

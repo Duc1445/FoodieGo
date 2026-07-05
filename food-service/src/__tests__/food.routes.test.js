@@ -58,12 +58,29 @@ describe('Food Routes', () => {
     expect(res.status).toBe(200);
   });
 
+  it('PUT /api/foods/:id - should return 404 if not found', async () => {
+    pool.query.mockResolvedValueOnce({ rows: [] });
+    const res = await request(app)
+      .put('/api/foods/food-1')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ name: 'Updated', price: 15.99 });
+    expect(res.status).toBe(404);
+  });
+
   it('DELETE /api/foods/:id - should delete food', async () => {
     pool.query.mockResolvedValueOnce({ rowCount: 1, rows: [{ id: 'food-1' }] });
     const res = await request(app)
       .delete('/api/foods/food-1')
       .set('Authorization', `Bearer ${adminToken}`);
     expect(res.status).toBe(200);
+  });
+
+  it('DELETE /api/foods/:id - should return 404 if not found', async () => {
+    pool.query.mockResolvedValueOnce({ rows: [] });
+    const res = await request(app)
+      .delete('/api/foods/food-1')
+      .set('Authorization', `Bearer ${adminToken}`);
+    expect(res.status).toBe(404);
   });
   
   it('GET /health - should return 200', async () => {

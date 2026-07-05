@@ -16,10 +16,16 @@ describe('Delivery Model', () => {
     jest.clearAllMocks();
   });
 
-  it('findByOrderId - should return first row', async () => {
+  it('findByOrderId - should return delivery', async () => {
     pool.query.mockResolvedValueOnce({ rows: [{ id: '1' }] });
     const res = await findByOrderId('order-1');
     expect(res).toEqual({ id: '1' });
+  });
+
+  it('findByOrderId - should return null if not found', async () => {
+    pool.query.mockResolvedValueOnce({ rows: [] });
+    const res = await findByOrderId('order-1');
+    expect(res).toBeNull();
   });
 
   it('updateStatus - should return updated row', async () => {

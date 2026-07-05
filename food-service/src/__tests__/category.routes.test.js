@@ -63,11 +63,28 @@ describe('Category Routes', () => {
     expect(res.status).toBe(200);
   });
 
+  it('PUT /api/categories/:id - should return 404 if not found', async () => {
+    pool.query.mockResolvedValueOnce({ rows: [] });
+    const res = await request(app)
+      .put('/api/categories/cat-1')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ name: 'Updated' });
+    expect(res.status).toBe(404);
+  });
+
   it('DELETE /api/categories/:id - should delete category', async () => {
     pool.query.mockResolvedValueOnce({ rowCount: 1, rows: [{ id: 'cat-1' }] });
     const res = await request(app)
       .delete('/api/categories/cat-1')
       .set('Authorization', `Bearer ${adminToken}`);
     expect(res.status).toBe(200);
+  });
+
+  it('DELETE /api/categories/:id - should return 404 if not found', async () => {
+    pool.query.mockResolvedValueOnce({ rows: [] });
+    const res = await request(app)
+      .delete('/api/categories/cat-1')
+      .set('Authorization', `Bearer ${adminToken}`);
+    expect(res.status).toBe(404);
   });
 });

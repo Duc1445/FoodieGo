@@ -33,21 +33,38 @@ describe('Delivery Routes', () => {
     expect(res.status).toBe(200);
   });
 
-  it('PATCH /api/delivery/:id/accept - should accept delivery (shipper)', async () => {
-    pool.query.mockResolvedValueOnce({ rows: [{ id: deliveryId, shipper_id: '123e4567-e89b-12d3-a456-426614174003', status: 'accepted' }] });
+  it('PATCH /api/delivery/:id/accept - should accept delivery', async () => {
+    pool.query.mockResolvedValueOnce({ rows: [{ id: deliveryId, status: 'accepted' }] });
     const res = await request(app)
       .patch(`/api/delivery/${deliveryId}/accept`)
       .set('Authorization', `Bearer ${shipperToken}`);
     expect(res.status).toBe(200);
   });
 
-  it('PATCH /api/delivery/:id/status - should update status (shipper)', async () => {
+  it('PATCH /api/delivery/:id/accept - should return 404 if not found', async () => {
+    pool.query.mockResolvedValueOnce({ rows: [] });
+    const res = await request(app)
+      .patch(`/api/delivery/${deliveryId}/accept`)
+      .set('Authorization', `Bearer ${shipperToken}`);
+    expect(res.status).toBe(404);
+  });
+
+  it('PATCH /api/delivery/:id/status - should update status', async () => {
     pool.query.mockResolvedValueOnce({ rows: [{ id: deliveryId, status: 'delivering' }] });
     const res = await request(app)
       .patch(`/api/delivery/${deliveryId}/status`)
       .set('Authorization', `Bearer ${shipperToken}`)
       .send({ status: 'delivering' });
     expect(res.status).toBe(200);
+  });
+
+  it('PATCH /api/delivery/:id/status - should return 404 if not found', async () => {
+    pool.query.mockResolvedValueOnce({ rows: [] });
+    const res = await request(app)
+      .patch(`/api/delivery/${deliveryId}/status`)
+      .set('Authorization', `Bearer ${shipperToken}`)
+      .send({ status: 'delivering' });
+    expect(res.status).toBe(404);
   });
   
   it('GET /health - should return 200', async () => {

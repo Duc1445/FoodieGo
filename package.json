@@ -1,0 +1,15 @@
+{
+	"devDependencies": {
+		"husky": "^9.1.7",
+		"lint-staged": "^17.0.8",
+		"@commitlint/cli": "^21.2.0",
+		"@commitlint/config-conventional": "^21.2.0",
+		"eslint": "^8.57.1",
+		"prettier": "^3.9.4"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"seed": "node scripts/seed.js",
+		"prepare": "husky"
+	}
+}

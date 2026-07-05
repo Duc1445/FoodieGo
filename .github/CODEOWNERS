@@ -1,0 +1,4 @@
+/apps/order-service/ @team-order
+/apps/restaurant-service/ @team-restaurant
+/apps/identity-service/ @team-identity
+/apps/gateway/ @team-platform

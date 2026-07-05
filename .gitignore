@@ -7,8 +7,7 @@ coverage/
 
 # Environment
 .env
-.env.local
-.env.*.local
+.env.*
 
 # Logs
 logs/
@@ -30,8 +29,12 @@ Thumbs.db
 *.njsproj
 *.sln
 
-# Test
+# Test & Reports
 jest.config.js.bak
+tmp/
+artifacts/
+reports/
+k6-output/
 
 # SonarQube
 .sonar/
@@ -47,3 +50,13 @@ coverage.xml
 venv/
 env/
 .venv/
+
+# Infrastructure Data
+grafana-data/
+prometheus-data/
+tempo-data/
+loki-data/
+postgres-data/
+redis-data/
+*.sqlite
+*.db

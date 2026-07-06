@@ -199,6 +199,37 @@ services:
       retries: 3
 
   # ─────────────────────────────────────────────
+  # PAYMENT SERVICE
+  # ─────────────────────────────────────────────
+  payment-service:
+    build:
+      context: .
+      dockerfile: ./apps/payment-service/Dockerfile
+    container_name: foodiego-payment-service
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3005
+      DATABASE_URL: postgresql://${POSTGRES_USER:-foodiego}:${POSTGRES_PASSWORD:-foodiego123}@postgres:5432/${POSTGRES_DB:-foodiego}
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672
+      SERVICE_NAME: payment-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
+    ports:
+      - '3005:3005'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - foodiego-net
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:3005/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ─────────────────────────────────────────────
   # API GATEWAY
   # ─────────────────────────────────────────────
   gateway:

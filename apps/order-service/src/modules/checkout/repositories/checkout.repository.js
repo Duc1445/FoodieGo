@@ -1,6 +1,7 @@
 import pool from '../../../config/database.js';
 import { InfrastructureError } from '@foodiego/core';
 import crypto from 'crypto';
+import { context, propagation } from '@opentelemetry/api';
 
 export class CheckoutRepository {
   
@@ -76,17 +77,22 @@ export class CheckoutRepository {
       // 4. Insert Outbox Event with Full Metadata
       if (outboxEvent) {
         const payload = { ...outboxEvent.payload, orderId };
+        
+        // Inject W3C traceparent into metadata
+        const traceHeaders = {};
+        propagation.inject(context.active(), traceHeaders);
+        
         await client.query(`
           INSERT INTO outbox_events (
             event_type, event_version, aggregate_type, aggregate_id, payload, metadata, status
           ) VALUES ($1, $2, $3, $4, $5, $6, 'PENDING')
         `, [
           outboxEvent.eventType, 
-          1, // event_version
+          outboxEvent.eventVersion || 1, // event_version
           'Order', // aggregate_type
           orderId, // aggregate_id
           JSON.stringify(payload),
-          JSON.stringify({ traceId: outboxEvent.payload.traceId }) // metadata
+          JSON.stringify({ ...traceHeaders, traceId: outboxEvent.payload.traceId }) // metadata
         ]);
       }
 
@@ -114,6 +120,15 @@ export class CheckoutRepository {
       }
 
       throw new InfrastructureError(`Database transaction failed during checkout: ${err.message}`);
+    } finally {
+      client.release();
+    }
+  }
+
+  async updateOrderStatus(orderId, status) {
+    const client = await pool.connect();
+    try {
+      await client.query(`UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2`, [status, orderId]);
     } finally {
       client.release();
     }

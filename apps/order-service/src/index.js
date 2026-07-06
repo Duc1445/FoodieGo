@@ -52,8 +52,16 @@ app.use((err, req, res, _next) => {
 });
 
 // ─── Start ──────────────────────────────────────────────────────────────────
+import { startConsumers } from './workers/consumer.worker.js';
+import { startDispatcher } from './workers/dispatcher.worker.js';
+
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => logger.info({ port: PORT }, 'Order Service started'));
+  app.listen(PORT, async () => {
+    logger.info({ port: PORT }, 'Order Service started');
+    await startDispatcher();
+    await startConsumers();
+  });
 }
 
+export { logger, metrics };
 export default app;

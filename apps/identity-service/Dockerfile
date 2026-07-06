@@ -1,14 +1,9 @@
 FROM node:20-alpine
-
 RUN apk add --no-cache wget
-
 WORKDIR /app
-
-COPY package*.json ./
-RUN npm ci --only=production
-
-COPY src/ ./src/
-
-EXPOSE 3001
-
-CMD ["node", "src/index.js"]
+COPY package.json package-lock.json ./
+COPY packages ./packages
+COPY apps ./apps
+RUN npm ci
+WORKDIR /app/apps/identity-service
+CMD ["npm", "start"]

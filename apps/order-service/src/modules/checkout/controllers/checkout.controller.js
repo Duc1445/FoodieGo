@@ -1,5 +1,6 @@
 import { CheckoutService } from '../services/checkout.service.js';
 import { successResponse } from '@foodiego/core';
+import { withSpan } from '@foodiego/tracing';
 
 const checkoutService = new CheckoutService();
 
@@ -18,7 +19,11 @@ export class CheckoutController {
       
       payload.idempotencyKey = idempotencyKey;
 
-      const result = await checkoutService.processCheckout(userId, payload, traceId);
+      const result = await withSpan('CheckoutController.processCheckout', async (span) => {
+        span.setAttribute('order.user_id', userId);
+        return await checkoutService.processCheckout(userId, payload, traceId);
+      });
+      
       return successResponse(res, result, 'Order checkout processed successfully', 201);
     } catch (error) {
       next(error);

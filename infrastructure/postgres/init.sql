@@ -252,3 +252,38 @@ VALUES (
   'FoodieGo Admin',
   'admin'
 ) ON CONFLICT (email) DO NOTHING;
+
+-- ─────────────────────────────────────────────
+-- INVENTORY SERVICE
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS inventory_stock (
+  stock_item_id   VARCHAR(100) PRIMARY KEY, -- SKU
+  total_quantity  INTEGER NOT NULL DEFAULT 0 CHECK (total_quantity >= 0),
+  reserved_quantity INTEGER NOT NULL DEFAULT 0 CHECK (reserved_quantity >= 0),
+  version         INTEGER NOT NULL DEFAULT 1,
+  created_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  CHECK (reserved_quantity <= total_quantity)
+);
+
+CREATE TABLE IF NOT EXISTS inventory_reservations (
+  reservation_id  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  order_id        UUID NOT NULL,
+  status          VARCHAR(20) NOT NULL DEFAULT 'CREATED', -- CREATED, RESERVED, CONFIRMED, EXPIRED, RELEASED
+  expires_at      TIMESTAMP WITH TIME ZONE,
+  created_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_inv_res_order ON inventory_reservations(order_id);
+CREATE INDEX IF NOT EXISTS idx_inv_res_status_expires ON inventory_reservations(status, expires_at);
+
+CREATE TABLE IF NOT EXISTS inventory_reservation_items (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  reservation_id  UUID NOT NULL REFERENCES inventory_reservations(reservation_id) ON DELETE CASCADE,
+  stock_item_id   VARCHAR(100) NOT NULL REFERENCES inventory_stock(stock_item_id) ON DELETE RESTRICT,
+  quantity        INTEGER NOT NULL CHECK (quantity > 0)
+);
+
+CREATE INDEX IF NOT EXISTS idx_inv_res_items_res ON inventory_reservation_items(reservation_id);
+

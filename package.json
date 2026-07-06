@@ -10,6 +10,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "seed": "node scripts/seed.js",
+    "seed:users": "node scripts/seed/users.js",
+    "seed:restaurant": "node scripts/seed/restaurant.js",
+    "seed:inventory": "node scripts/seed/inventory.js",
+    "seed:all": "npm run seed:users && npm run seed:restaurant && npm run seed:inventory",
     "prepare": "husky"
   },
   "devDependencies": {

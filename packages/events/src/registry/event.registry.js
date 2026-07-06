@@ -7,6 +7,7 @@
 export const EventTypes = {
   // Order Domain
   ORDER_CREATED: 'OrderCreated',
+  ORDER_PENDING_RESERVATION: 'OrderPendingReservation',
   ORDER_CONFIRMED: 'OrderConfirmed',
   ORDER_CANCELLED: 'OrderCancelled',
   
@@ -22,6 +23,7 @@ export const EventTypes = {
 
   // Inventory Domain
   INVENTORY_RESERVED: 'InventoryReserved',
+  INVENTORY_RESERVATION_FAILED: 'InventoryReservationFailed',
   INVENTORY_RELEASED: 'InventoryReleased',
 
   // Payment Domain
@@ -42,7 +44,8 @@ export class EventRegistry {
     // Example: OrderCreated -> foodiego.orders.events
     const prefix = eventType.startsWith('Order') ? 'orders' :
                    eventType.startsWith('Cart') || eventType.startsWith('Item') ? 'cart' :
-                   eventType.startsWith('Restaurant') || eventType.startsWith('Menu') ? 'restaurant' : 'general';
+                   eventType.startsWith('Restaurant') || eventType.startsWith('Menu') ? 'restaurant' :
+                   eventType.startsWith('Inventory') ? 'inventory' : 'general';
     return `foodiego.${prefix}.events`;
   }
 }

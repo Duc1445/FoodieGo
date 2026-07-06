@@ -12,7 +12,6 @@ import rateLimit from 'express-rate-limit';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { MetricsRegistry } from '@foodiego/metrics';
 import { createLogger, requestLogger } from '@foodiego/logging';
-import { setupSwagger } from './config/swagger.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,7 +20,6 @@ const PORT = process.env.PORT || 3000;
 const logger = createLogger({ service: 'gateway' });
 const metrics = new MetricsRegistry('gateway');
 
-setupSwagger(app);
 
 // ─── Security Middleware ───────────────────────────────────────────────────
 app.use(helmet());

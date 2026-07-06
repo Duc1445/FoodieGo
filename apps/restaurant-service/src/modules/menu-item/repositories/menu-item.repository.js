@@ -55,8 +55,14 @@ export class MenuItemRepository {
   }
 
   async findById(id) {
-    const { rows } = await pool.query('SELECT * FROM menu_items WHERE id = $1', [id]);
+    const query = `
+      SELECT m.*, c.restaurant_id, c.name as category_name
+      FROM menu_items m
+      JOIN categories c ON m.category_id = c.id
+      WHERE m.id = $1
+    `;
+    const { rows } = await pool.query(query, [id]);
     if (rows.length === 0) return null;
-    return new MenuItemEntity(rows[0]);
+    return { ...new MenuItemEntity(rows[0]), restaurant_id: rows[0].restaurant_id };
   }
 }

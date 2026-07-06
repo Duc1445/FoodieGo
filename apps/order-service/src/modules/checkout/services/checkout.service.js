@@ -58,7 +58,7 @@ export class CheckoutService {
 
     // 6. Build Order State
     const stateMachine = new OrderStateMachine(OrderStatus.CREATED);
-    stateMachine.transitionTo(OrderStatus.VALIDATING);
+    stateMachine.transitionTo(OrderStatus.PENDING_RESERVATION);
     
     const orderData = {
       userId,
@@ -77,11 +77,14 @@ export class CheckoutService {
 
     // 7. Outbox Event
     const outboxEvent = {
-      eventType: 'OrderCreated',
+      eventType: 'OrderPendingReservation',
+      eventVersion: 1,
       payload: {
-        userId,
-        restaurantId: cart.restaurant_id,
-        totalAmount: pricingContext.total,
+        orderId: null, // Will be replaced by repository after INSERT
+        items: cart.items.map(item => ({
+          sku: item.menu_item_id, // Use menu_item_id as SKU
+          quantity: item.quantity
+        })),
         traceId
       }
     };

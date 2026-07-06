@@ -1,4 +1,4 @@
-import pool from '../../../../config/database.js'; // Adjust path depending on refactoring later
+import pool from '../../config/database.js';
 
 export class HealthController {
   async live(req, res) {

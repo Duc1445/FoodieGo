@@ -13,7 +13,7 @@ export class MenuItemService {
     }
     
     const menu = await repository.findByRestaurantIdGroupByCategory(restaurantId);
-    await redis.set(cacheKey, JSON.stringify(menu), 'EX', config.redis.ttl);
+    await redis.set(cacheKey, JSON.stringify(menu), 'EX', 3600);
     return menu;
   }
 
@@ -30,7 +30,7 @@ export class MenuItemService {
     
     const menuItem = await repository.findById(id);
     if (menuItem) {
-      await redis.set(cacheKey, JSON.stringify(menuItem), 'EX', config.redis.ttl);
+      await redis.set(cacheKey, JSON.stringify(menuItem), 'EX', 3600);
     }
     return menuItem;
   }

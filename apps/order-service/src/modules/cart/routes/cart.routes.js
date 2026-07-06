@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { CartController } from '../controllers/cart.controller.js';
-import { authenticate } from '@foodiego/core'; // Assuming authenticate is exposed or we use our own
 
 const router = Router();
 const controller = new CartController();

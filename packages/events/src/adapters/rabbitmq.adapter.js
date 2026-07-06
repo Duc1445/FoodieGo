@@ -12,6 +12,7 @@ export class RabbitMQAdapter extends EventPublisher {
     this.channel = null;
     this.exchangesSetup = new Set();
     this.retryManager = new RetryManager();
+    this.isClosing = false;
   }
 
   async connect() {
@@ -22,10 +23,14 @@ export class RabbitMQAdapter extends EventPublisher {
       this.connection.on('error', (err) => {
         console.error('[RabbitMQ] Connection error', err);
         this.connection = null;
+        process.exit(1);
       });
       this.connection.on('close', () => {
-        console.error('[RabbitMQ] Connection closed');
-        this.connection = null;
+        if (!this.isClosing) {
+          console.error('[RabbitMQ] Connection closed unexpectedly');
+          this.connection = null;
+          process.exit(1);
+        }
       });
     }
   }
@@ -37,36 +42,52 @@ export class RabbitMQAdapter extends EventPublisher {
     }
   }
 
-  async publish(event) {
+  async _publishContent(payload, content) {
     await this.connect();
     
-    const exchangeName = EventRegistry.getTopicFor(event.type);
+    const exchangeName = EventRegistry.getTopicFor(payload.type);
     await this._ensureExchange(exchangeName);
     
-    const routingKey = event.type;
-    const content = Buffer.from(JSON.stringify(event.toJSON()));
+    const routingKey = payload.type;
     
     return new Promise((resolve, reject) => {
       // W3C Context Propagation: inject traceparent into AMQP headers
-      const traceHeaders = {};
-      propagation.inject(context.active(), traceHeaders);
-
-      this.channel.publish(exchangeName, routingKey, content, {
-        persistent: true,
-        messageId: event.id,
-        timestamp: new Date(event.occurredAt).getTime(),
-        headers: {
-          ...traceHeaders,
-          'x-event-version': event.version
+      const headers = {};
+      propagation.inject(context.active(), headers);
+      if (payload.metadata && payload.metadata.correlationId) {
+        headers['x-correlation-id'] = payload.metadata.correlationId;
+      }
+      
+      const published = this.channel.publish(
+        exchangeName,
+        routingKey,
+        content,
+        {
+          persistent: true,
+          messageId: payload.id,
+          timestamp: new Date(payload.occurredAt).getTime(),
+          type: payload.type,
+          headers: headers
+        },
+        (err) => {
+          if (err) return reject(err);
+          resolve(true);
         }
-      }, (err, ok) => {
-        if (err) {
-          console.error(`[RabbitMQ] Publisher Confirm NACK for event ${event.id}:`, err);
-          return reject(err);
-        }
-        resolve(true); 
-      });
+      );
+      if (!published) {
+        reject(new Error('Channel queue is full'));
+      }
     });
+  }
+
+  async publish(event) {
+    const content = Buffer.from(JSON.stringify(event.toJSON()));
+    return this._publishContent(event, content);
+  }
+
+  async publishEnvelope(envelope) {
+    const content = Buffer.from(JSON.stringify(envelope));
+    return this._publishContent(envelope, content);
   }
 
   async publishBatch(events) {
@@ -74,6 +95,7 @@ export class RabbitMQAdapter extends EventPublisher {
   }
 
   async close() {
+    this.isClosing = true;
     if (this.channel) await this.channel.close();
     if (this.connection) await this.connection.close();
   }
@@ -113,9 +135,9 @@ export class RabbitMQAdapter extends EventPublisher {
       const delayMs = actionData.delayMs;
       console.log(`[RabbitMQ] Scheduling retry for event ${eventPayload.id} in ${delayMs}ms (Attempt ${currentAttempt})`);
       
-      // Setup a delayed queue for this specific delay
+      // Setup a delayed queue for this specific delay and event type
       const retryExchange = `foodiego.retry.${delayMs}`;
-      const retryQueue = `foodiego.retry.queue.${delayMs}`;
+      const retryQueue = `foodiego.retry.queue.${eventPayload.type}.${delayMs}`;
       
       await this.channel.assertExchange(retryExchange, 'topic', { durable: true });
       await this.channel.assertQueue(retryQueue, {
@@ -154,7 +176,7 @@ export class RabbitMQAdapter extends EventPublisher {
       // W3C Context Propagation: extract traceparent from AMQP headers
       const parentContext = propagation.extract(context.active(), msg.properties.headers || {});
       const tracer = trace.getTracer('foodiego-consumer');
-      const spanName = `${consumerName || consumer.constructor.name}.Process ${eventType}`;
+      const spanName = `${consumer.constructor.name}.Process ${eventType}`;
 
       // Execute consumer logic within the extracted trace context
       await context.with(parentContext, async () => {
@@ -187,8 +209,17 @@ export class RabbitMQAdapter extends EventPublisher {
       const eventId = eventPayload.id;
       const consumerName = consumer.constructor.name;
       
-      const client = await pool.connect();
+      let client;
       let currentAttempt = (msg.properties.headers?.['x-retry-attempt'] || 0) + 1;
+
+      try {
+        client = await pool.connect();
+      } catch (err) {
+        console.error(`[RabbitMQ] Failed to acquire DB connection in consumer ${consumerName}:`, err.message);
+        span.setStatus({ code: SpanStatusCode.ERROR, message: 'DB connection timeout' });
+        // Requeue the message so it's not lost and can be retried when DB is available
+        return this.channel.nack(msg, false, true);
+      }
 
       try {
         const inboxCheck = await client.query(`
@@ -235,4 +266,5 @@ export class RabbitMQAdapter extends EventPublisher {
       } finally {
         client.release();
       }
+  }
 }

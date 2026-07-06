@@ -1,4 +1,5 @@
 import { EventPublisher } from '../publisher/event.publisher.js';
+import { context, propagation, trace } from '@opentelemetry/api';
 
 export class OutboxDispatcher {
   /**
@@ -132,7 +133,14 @@ export class OutboxDispatcher {
           metadata: row.metadata
         };
 
-        await this.publisher.publish(envelope);
+        // Extract W3C Context from metadata
+        const metadata = row.metadata || {};
+        const activeContext = propagation.extract(context.active(), metadata);
+        
+        await context.with(activeContext, async () => {
+          await this.publisher.publishEnvelope(envelope);
+        });
+        
         successfulEventIds.push(row.event_id);
       } catch (pubErr) {
         console.error(`[OutboxDispatcher] Failed to publish event ${row.event_id}:`, pubErr);

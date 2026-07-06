@@ -13,6 +13,27 @@ async function sleep(ms) {
 async function run() {
   console.log(`[E2E] Starting E2E Payment Verification Flow...`);
 
+  // 0. Ensure item and user exist
+  const pool = new Pool({
+    connectionString:
+      process.env.DATABASE_URL || 'postgres://foodiego:foodiego123@localhost:5432/foodiego',
+  });
+  await pool.query(
+    "INSERT INTO users (id, email, password, full_name) VALUES ('11111111-1111-1111-1111-111111111111', 'test@test.com', 'pwd', 'Test') ON CONFLICT DO NOTHING;",
+  );
+  await pool.query(
+    "INSERT INTO restaurants (id, name, description, status, delivery_fee) VALUES ('20000000-0000-0000-0000-000000000200', 'Test', 'Test', 'open', 15000) ON CONFLICT DO NOTHING;",
+  );
+  await pool.query(
+    "INSERT INTO categories (id, restaurant_id, name, description) VALUES ('30000000-0000-0000-0000-000000000300', '20000000-0000-0000-0000-000000000200', 'Test', 'Test') ON CONFLICT DO NOTHING;",
+  );
+  await pool.query(
+    "INSERT INTO menu_items (id, restaurant_id, category_id, name, price, preparation_time) VALUES ('10000000-0000-0000-0000-000000000100', '20000000-0000-0000-0000-000000000200', '30000000-0000-0000-0000-000000000300', 'Payment Test Item', 10.01, 20) ON CONFLICT (id) DO UPDATE SET price = 10.01;",
+  );
+  await pool.query(
+    "INSERT INTO inventory_stock (stock_item_id, total_quantity, reserved_quantity) VALUES ('10000000-0000-0000-0000-000000000100', 100, 0) ON CONFLICT (stock_item_id) DO UPDATE SET total_quantity = 100;",
+  );
+
   // 1. Add to Cart
   console.log(`[E2E] Adding item to cart...`);
   const traceIdHex = Buffer.from(Date.now().toString() + Math.random().toString())
@@ -75,10 +96,6 @@ async function run() {
   console.log(`[E2E] Checkout successful! Order ID: ${orderId}`);
 
   // 3. Poll DB for status
-  const pool = new Pool({
-    connectionString:
-      process.env.DATABASE_URL || 'postgres://foodiego:foodiego123@localhost:5432/foodiego',
-  });
 
   try {
     console.log(

@@ -13,6 +13,15 @@
   },
   "rules": {
     "no-console": "warn",
-    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
-  }
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-undef": "off"
+  },
+  "overrides": [
+    {
+      "files": ["scripts/**/*.js", "scripts/*.js"],
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ]
 }

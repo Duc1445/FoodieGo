@@ -1,5 +1,4 @@
 import { execSync } from 'child_process';
-import util from 'util';
 
 const exec = (cmd) => {
   try {
@@ -20,17 +19,22 @@ async function runChaos() {
     exec('docker restart foodiego-rabbitmq');
     console.log('Waiting for services to recover...');
     let healthy = false;
-    for(let i=0; i<30; i++) {
+    for (let i = 0; i < 30; i++) {
       try {
         const res = await fetch('http://localhost:3003/health');
-        if (res.ok) { healthy = true; break; }
-      } catch (e) {}
-      await new Promise(r => setTimeout(r, 1000));
+        if (res.ok) {
+          healthy = true;
+          break;
+        }
+      } catch (e) {
+        /* ignore */
+      }
+      await new Promise((r) => setTimeout(r, 1000));
     }
     if (!healthy) throw new Error('Services did not recover');
     console.log('Waiting 5s for background workers to initialize...');
-    await new Promise(r => setTimeout(r, 5000));
-    
+    await new Promise((r) => setTimeout(r, 5000));
+
     exec('node scripts/verify-e2e.js');
     console.log('✅ RabbitMQ Restart handled successfully\n');
 
@@ -39,16 +43,21 @@ async function runChaos() {
     exec('docker restart foodiego-postgres');
     console.log('Waiting for Postgres and services to recover...');
     healthy = false;
-    for(let i=0; i<30; i++) {
+    for (let i = 0; i < 30; i++) {
       try {
         const res = await fetch('http://localhost:3003/health');
-        if (res.ok) { healthy = true; break; }
-      } catch (e) {}
-      await new Promise(r => setTimeout(r, 1000));
+        if (res.ok) {
+          healthy = true;
+          break;
+        }
+      } catch (e) {
+        /* ignore */
+      }
+      await new Promise((r) => setTimeout(r, 1000));
     }
     if (!healthy) throw new Error('Services did not recover from Postgres restart');
     console.log('Waiting 5s for background workers to initialize...');
-    await new Promise(r => setTimeout(r, 5000));
+    await new Promise((r) => setTimeout(r, 5000));
     exec('node scripts/verify-e2e.js');
     console.log('✅ Postgres Restart handled successfully\n');
 
@@ -63,8 +72,8 @@ async function runChaos() {
       console.log('⚠️ System failed without Redis, restoring...');
     }
     exec('docker start foodiego-redis');
-    await new Promise(r => setTimeout(r, 5000));
-    
+    await new Promise((r) => setTimeout(r, 5000));
+
     // 4. Tempo Unavailable
     console.log('>>> [4/7] Chaos Case: Tempo unavailable (Tracing should not crash app)');
     // We don't have Tempo container currently in docker-compose, assuming it's an external endpoint or we just simulate.
@@ -86,16 +95,21 @@ async function runChaos() {
     exec('docker start foodiego-inventory-service');
     console.log('Waiting for recovery...');
     healthy = false;
-    for(let i=0; i<30; i++) {
+    for (let i = 0; i < 30; i++) {
       try {
         const res = await fetch('http://localhost:3004/health');
-        if (res.ok) { healthy = true; break; }
-      } catch (e) {}
-      await new Promise(r => setTimeout(r, 1000));
+        if (res.ok) {
+          healthy = true;
+          break;
+        }
+      } catch (e) {
+        /* ignore */
+      }
+      await new Promise((r) => setTimeout(r, 1000));
     }
     if (!healthy) throw new Error('Inventory Service did not recover');
     console.log('Waiting 5s for background workers to initialize...');
-    await new Promise(r => setTimeout(r, 5000));
+    await new Promise((r) => setTimeout(r, 5000));
     exec('node scripts/verify-e2e.js');
     console.log('✅ Inventory recovery handled successfully\n');
 
@@ -108,7 +122,6 @@ async function runChaos() {
     console.log('============================================');
     console.log('   ALL CHAOS SCENARIOS COMPLETED');
     console.log('============================================');
-
   } catch (err) {
     console.error('❌ Chaos Test Failed:', err.message);
     process.exit(1);

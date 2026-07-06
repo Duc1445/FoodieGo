@@ -45,10 +45,11 @@ export class RabbitMQAdapter extends EventPublisher {
   async _publishContent(payload, content) {
     await this.connect();
 
-    const exchangeName = EventRegistry.getTopicFor(payload.type);
+    const evType = payload.eventType || payload.type;
+    const exchangeName = EventRegistry.getTopicFor(evType);
     await this._ensureExchange(exchangeName);
 
-    const routingKey = payload.type;
+    const routingKey = evType;
 
     return new Promise((resolve, reject) => {
       // W3C Context Propagation: inject traceparent into AMQP headers
@@ -64,9 +65,9 @@ export class RabbitMQAdapter extends EventPublisher {
         content,
         {
           persistent: true,
-          messageId: payload.id,
+          messageId: payload.eventId || payload.id,
           timestamp: new Date(payload.occurredAt).getTime(),
-          type: payload.type,
+          type: evType,
           headers: headers,
         },
         (err) => {

@@ -287,3 +287,22 @@ CREATE TABLE IF NOT EXISTS inventory_reservation_items (
 
 CREATE INDEX IF NOT EXISTS idx_inv_res_items_res ON inventory_reservation_items(reservation_id);
 
+-- ─────────────────────────────────────────────
+-- PAYMENT SERVICE
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS payments (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  order_id        UUID NOT NULL,
+  amount          DECIMAL(12,2) NOT NULL,
+  currency        VARCHAR(3) DEFAULT 'USD',
+  status          VARCHAR(50) NOT NULL DEFAULT 'PENDING', -- PENDING, AUTHORIZED, CAPTURED, REFUNDED, FAILED
+  payment_method  VARCHAR(50) NOT NULL, -- CASH, CARD, etc.
+  gateway_tx_id   VARCHAR(255),
+  idempotency_key VARCHAR(255) UNIQUE NOT NULL,
+  error_reason    TEXT,
+  created_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_payments_order_id ON payments(order_id);
+CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);

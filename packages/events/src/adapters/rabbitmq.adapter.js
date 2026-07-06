@@ -19,7 +19,7 @@ export class RabbitMQAdapter extends EventPublisher {
     if (!this.connection) {
       this.connection = await amqplib.connect(this.connectionUrl);
       this.channel = await this.connection.createConfirmChannel();
-      
+
       this.connection.on('error', (err) => {
         console.error('[RabbitMQ] Connection error', err);
         this.connection = null;
@@ -44,12 +44,12 @@ export class RabbitMQAdapter extends EventPublisher {
 
   async _publishContent(payload, content) {
     await this.connect();
-    
+
     const exchangeName = EventRegistry.getTopicFor(payload.type);
     await this._ensureExchange(exchangeName);
-    
+
     const routingKey = payload.type;
-    
+
     return new Promise((resolve, reject) => {
       // W3C Context Propagation: inject traceparent into AMQP headers
       const headers = {};
@@ -57,7 +57,7 @@ export class RabbitMQAdapter extends EventPublisher {
       if (payload.metadata && payload.metadata.correlationId) {
         headers['x-correlation-id'] = payload.metadata.correlationId;
       }
-      
+
       const published = this.channel.publish(
         exchangeName,
         routingKey,
@@ -67,12 +67,12 @@ export class RabbitMQAdapter extends EventPublisher {
           messageId: payload.id,
           timestamp: new Date(payload.occurredAt).getTime(),
           type: payload.type,
-          headers: headers
+          headers: headers,
         },
         (err) => {
           if (err) return reject(err);
           resolve(true);
-        }
+        },
       );
       if (!published) {
         reject(new Error('Channel queue is full'));
@@ -91,7 +91,7 @@ export class RabbitMQAdapter extends EventPublisher {
   }
 
   async publishBatch(events) {
-    return Promise.all(events.map(ev => this.publish(ev)));
+    return Promise.all(events.map((ev) => this.publish(ev)));
   }
 
   async close() {
@@ -104,23 +104,28 @@ export class RabbitMQAdapter extends EventPublisher {
    * Routes a failed message to a delayed retry queue or DLQ.
    */
   async _handleFailure(msg, eventPayload, currentAttempt, errMessage, pool, consumerName) {
-    const actionData = this.retryManager.getRetryAction(eventPayload.type, currentAttempt);
-    
+    const evType = eventPayload.eventType || eventPayload.type;
+    const evId = eventPayload.eventId || eventPayload.id;
+    const actionData = this.retryManager.getRetryAction(evType, currentAttempt);
+
     if (actionData.action === 'DROP') {
-      console.warn(`[RabbitMQ] Dropping event ${eventPayload.id} after ${currentAttempt - 1} retries.`);
+      console.warn(`[RabbitMQ] Dropping event ${evId} after ${currentAttempt - 1} retries.`);
       this.channel.ack(msg);
       return;
     }
 
     if (actionData.action === 'DLQ') {
-      console.error(`[RabbitMQ] Routing event ${eventPayload.id} to DLQ.`);
-      
+      console.error(`[RabbitMQ] Routing event ${evId} to DLQ.`);
+
       const client = await pool.connect();
       try {
-        await client.query(`
+        await client.query(
+          `
           INSERT INTO dead_letter_events (event_id, event_type, consumer_name, payload, reason, retry_count)
           VALUES ($1, $2, $3, $4, $5, $6)
-        `, [eventPayload.id, eventPayload.type, consumerName, eventPayload, errMessage, currentAttempt]);
+        `,
+          [evId, evType, consumerName, eventPayload, errMessage, currentAttempt],
+        );
       } catch (dbErr) {
         console.error('[RabbitMQ] Failed to insert into dead_letter_events:', dbErr);
       } finally {
@@ -133,25 +138,27 @@ export class RabbitMQAdapter extends EventPublisher {
 
     if (actionData.action === 'RETRY') {
       const delayMs = actionData.delayMs;
-      console.log(`[RabbitMQ] Scheduling retry for event ${eventPayload.id} in ${delayMs}ms (Attempt ${currentAttempt})`);
-      
+      console.log(
+        `[RabbitMQ] Scheduling retry for event ${evId} in ${delayMs}ms (Attempt ${currentAttempt})`,
+      );
+
       // Setup a delayed queue for this specific delay and event type
       const retryExchange = `foodiego.retry.${delayMs}`;
-      const retryQueue = `foodiego.retry.queue.${eventPayload.type}.${delayMs}`;
-      
+      const retryQueue = `foodiego.retry.queue.${evType}.${delayMs}`;
+
       await this.channel.assertExchange(retryExchange, 'topic', { durable: true });
       await this.channel.assertQueue(retryQueue, {
         durable: true,
         deadLetterExchange: msg.fields.exchange, // Route back to original exchange after TTL
         deadLetterRoutingKey: msg.fields.routingKey,
-        messageTtl: delayMs
+        messageTtl: delayMs,
       });
-      await this.channel.bindQueue(retryQueue, retryExchange, eventPayload.type);
+      await this.channel.bindQueue(retryQueue, retryExchange, evType);
 
       // Publish to the delayed queue
-      this.channel.publish(retryExchange, eventPayload.type, msg.content, {
+      this.channel.publish(retryExchange, evType, msg.content, {
         persistent: true,
-        headers: { ...msg.properties.headers, 'x-retry-attempt': currentAttempt }
+        headers: { ...msg.properties.headers, 'x-retry-attempt': currentAttempt },
       });
 
       // ACK the original message so it doesn't block the main queue
@@ -161,18 +168,18 @@ export class RabbitMQAdapter extends EventPublisher {
 
   async registerConsumer(consumer, pool) {
     await this.connect();
-    
+
     const eventType = consumer.getEventType();
     const exchangeName = EventRegistry.getTopicFor(eventType);
     await this._ensureExchange(exchangeName);
-    
+
     const queueName = `foodiego.queue.${consumer.constructor.name}`;
     await this.channel.assertQueue(queueName, { durable: true });
     await this.channel.bindQueue(queueName, exchangeName, eventType);
-    
+
     this.channel.consume(queueName, async (msg) => {
       if (!msg) return;
-      
+
       // W3C Context Propagation: extract traceparent from AMQP headers
       const parentContext = propagation.extract(context.active(), msg.properties.headers || {});
       const tracer = trace.getTracer('foodiego-consumer');
@@ -192,79 +199,97 @@ export class RabbitMQAdapter extends EventPublisher {
    * Internal: Process a consumed message within an active trace span.
    */
   async _processMessage(msg, consumer, pool, span) {
-      const startTime = Date.now();
-      let eventPayload;
-      try {
-        eventPayload = JSON.parse(msg.content.toString());
-      } catch (err) {
-        console.error(`[RabbitMQ] Failed to parse message, dropping:`, err);
-        span.setStatus({ code: SpanStatusCode.ERROR, message: 'Parse failure' });
-        return this.channel.ack(msg); 
-      }
+    const startTime = Date.now();
+    let eventPayload;
+    try {
+      eventPayload = JSON.parse(msg.content.toString());
+    } catch (err) {
+      console.error(`[RabbitMQ] Failed to parse message, dropping:`, err);
+      span.setStatus({ code: SpanStatusCode.ERROR, message: 'Parse failure' });
+      return this.channel.ack(msg);
+    }
 
-      span.setAttribute('messaging.message.id', eventPayload.id || 'unknown');
-      span.setAttribute('messaging.system', 'rabbitmq');
-      span.setAttribute('messaging.operation', 'process');
+    span.setAttribute('messaging.message.id', eventPayload.eventId || eventPayload.id || 'unknown');
+    span.setAttribute('messaging.system', 'rabbitmq');
+    span.setAttribute('messaging.operation', 'process');
 
-      const eventId = eventPayload.id;
-      const consumerName = consumer.constructor.name;
-      
-      let client;
-      let currentAttempt = (msg.properties.headers?.['x-retry-attempt'] || 0) + 1;
+    const eventId = eventPayload.eventId || eventPayload.id;
+    const consumerName = consumer.constructor.name;
 
-      try {
-        client = await pool.connect();
-      } catch (err) {
-        console.error(`[RabbitMQ] Failed to acquire DB connection in consumer ${consumerName}:`, err.message);
-        span.setStatus({ code: SpanStatusCode.ERROR, message: 'DB connection timeout' });
-        // Requeue the message so it's not lost and can be retried when DB is available
-        return this.channel.nack(msg, false, true);
-      }
+    let client;
+    let currentAttempt = (msg.properties.headers?.['x-retry-attempt'] || 0) + 1;
 
-      try {
-        const inboxCheck = await client.query(`
+    try {
+      client = await pool.connect();
+    } catch (err) {
+      console.error(
+        `[RabbitMQ] Failed to acquire DB connection in consumer ${consumerName}:`,
+        err.message,
+      );
+      span.setStatus({ code: SpanStatusCode.ERROR, message: 'DB connection timeout' });
+      // Requeue the message so it's not lost and can be retried when DB is available
+      return this.channel.nack(msg, false, true);
+    }
+
+    try {
+      const inboxCheck = await client.query(
+        `
           INSERT INTO inbox_events (event_id, consumer_name, status, attempt)
           VALUES ($1, $2, 'PENDING', $3)
           ON CONFLICT (event_id, consumer_name) DO NOTHING
           RETURNING *;
-        `, [eventId, consumerName, currentAttempt]);
+        `,
+        [eventId, consumerName, currentAttempt],
+      );
 
-        if (inboxCheck.rowCount === 0) {
-          const existing = await client.query('SELECT status, attempt FROM inbox_events WHERE event_id = $1 AND consumer_name = $2', [eventId, consumerName]);
-          if (existing.rows[0]?.status === 'COMPLETED') {
-            this.channel.ack(msg);
-            return client.release();
-          }
-          // If it's PENDING and attempt < currentAttempt, update attempt.
-          await client.query(`UPDATE inbox_events SET attempt = $1 WHERE event_id = $2 AND consumer_name = $3`, [currentAttempt, eventId, consumerName]);
+      if (inboxCheck.rowCount === 0) {
+        const existing = await client.query(
+          'SELECT status, attempt FROM inbox_events WHERE event_id = $1 AND consumer_name = $2',
+          [eventId, consumerName],
+        );
+        if (existing.rows[0]?.status === 'COMPLETED') {
+          this.channel.ack(msg);
+          return client.release();
         }
+        // If it's PENDING and attempt < currentAttempt, update attempt.
+        await client.query(
+          `UPDATE inbox_events SET attempt = $1 WHERE event_id = $2 AND consumer_name = $3`,
+          [currentAttempt, eventId, consumerName],
+        );
+      }
 
-        await consumer.handle(eventPayload);
-        
-        const processingDuration = Date.now() - startTime;
-        await client.query(`
+      await consumer.handle(eventPayload);
+
+      const processingDuration = Date.now() - startTime;
+      await client.query(
+        `
           UPDATE inbox_events 
           SET status = 'COMPLETED', processed_at = NOW(), processing_duration = $1, error = NULL
           WHERE event_id = $2 AND consumer_name = $3
-        `, [processingDuration, eventId, consumerName]);
+        `,
+        [processingDuration, eventId, consumerName],
+      );
 
-        span.setStatus({ code: SpanStatusCode.OK });
-        this.channel.ack(msg);
-      } catch (err) {
-        span.setStatus({ code: SpanStatusCode.ERROR, message: err.message });
-        span.recordException(err);
-        console.error(`[RabbitMQ] Consumer ${consumerName} failed:`, err.message);
-        
-        await client.query(`
+      span.setStatus({ code: SpanStatusCode.OK });
+      this.channel.ack(msg);
+    } catch (err) {
+      span.setStatus({ code: SpanStatusCode.ERROR, message: err.message });
+      span.recordException(err);
+      console.error(`[RabbitMQ] Consumer ${consumerName} failed:`, err.message);
+
+      await client.query(
+        `
           UPDATE inbox_events 
           SET error = $1
           WHERE event_id = $2 AND consumer_name = $3
-        `, [err.message, eventId, consumerName]);
-        
-        // Delegate to Platform Retry Manager
-        await this._handleFailure(msg, eventPayload, currentAttempt, err.message, pool, consumerName);
-      } finally {
-        client.release();
-      }
+        `,
+        [err.message, eventId, consumerName],
+      );
+
+      // Delegate to Platform Retry Manager
+      await this._handleFailure(msg, eventPayload, currentAttempt, err.message, pool, consumerName);
+    } finally {
+      client.release();
+    }
   }
 }

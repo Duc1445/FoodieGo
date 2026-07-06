@@ -4,7 +4,6 @@ import crypto from 'crypto';
 import { context, propagation } from '@opentelemetry/api';
 
 export class CheckoutRepository {
-  
   /**
    * Generates a request hash to check for payload changes on retry
    */
@@ -23,12 +22,15 @@ export class CheckoutRepository {
       await client.query('BEGIN');
 
       // 1. Idempotency Check (Locking the key)
-      const idempotencyRes = await client.query(`
+      const idempotencyRes = await client.query(
+        `
         INSERT INTO idempotency_keys (key, request_hash, status, expires_at)
         VALUES ($1, $2, 'IN_PROGRESS', NOW() + INTERVAL '24 HOURS')
         ON CONFLICT (key) DO UPDATE SET key = EXCLUDED.key 
         RETURNING request_hash, status, response;
-      `, [order.idempotencyKey, requestHash]);
+      `,
+        [order.idempotencyKey, requestHash],
+      );
 
       const keyRecord = idempotencyRes.rows[0];
 
@@ -39,7 +41,7 @@ export class CheckoutRepository {
         await client.query('ROLLBACK');
         return keyRecord.response.orderId;
       }
-      
+
       if (keyRecord.status === 'IN_PROGRESS' && idempotencyRes.command !== 'INSERT') {
         // Another request is currently processing this
         await client.query('ROLLBACK');
@@ -54,69 +56,98 @@ export class CheckoutRepository {
         RETURNING id;
       `;
       const orderRes = await client.query(insertOrderQuery, [
-        order.userId, order.restaurantId, order.status, 
-        order.subtotal, order.deliveryFee, order.tax, order.discount, order.total,
-        order.currency || 'USD', order.paymentMethod, order.addressId, order.idempotencyKey
+        order.userId,
+        order.restaurantId,
+        order.status,
+        order.subtotal,
+        order.deliveryFee,
+        order.tax,
+        order.discount,
+        order.total,
+        order.currency || 'USD',
+        order.paymentMethod,
+        order.addressId,
+        order.idempotencyKey,
       ]);
       const orderId = orderRes.rows[0].id;
 
       // 3. Insert Order Items (Immutable Snapshots)
       if (orderItems && orderItems.length > 0) {
         for (const item of orderItems) {
-          await client.query(`
+          await client.query(
+            `
             INSERT INTO order_items (
               order_id, menu_item_id, quantity, item_name, item_price, price_version
             ) VALUES ($1, $2, $3, $4, $5, $6)
-          `, [
-            orderId, item.menuItemId, item.quantity, 
-            item.itemName, item.itemPrice, item.priceVersion
-          ]);
+          `,
+            [
+              orderId,
+              item.menuItemId,
+              item.quantity,
+              item.itemName,
+              item.itemPrice,
+              item.priceVersion,
+            ],
+          );
         }
       }
 
       // 4. Insert Outbox Event with Full Metadata
       if (outboxEvent) {
         const payload = { ...outboxEvent.payload, orderId };
-        
+
         // Inject W3C traceparent into metadata
         const traceHeaders = {};
         propagation.inject(context.active(), traceHeaders);
-        
-        await client.query(`
+
+        await client.query(
+          `
           INSERT INTO outbox_events (
             event_type, event_version, aggregate_type, aggregate_id, payload, metadata, status
           ) VALUES ($1, $2, $3, $4, $5, $6, 'PENDING')
-        `, [
-          outboxEvent.eventType, 
-          outboxEvent.eventVersion || 1, // event_version
-          'Order', // aggregate_type
-          orderId, // aggregate_id
-          JSON.stringify(payload),
-          JSON.stringify({ ...traceHeaders, traceId: outboxEvent.payload.traceId }) // metadata
-        ]);
+        `,
+          [
+            outboxEvent.eventType,
+            outboxEvent.eventVersion || 1, // event_version
+            'Order', // aggregate_type
+            orderId, // aggregate_id
+            JSON.stringify(payload),
+            JSON.stringify({ ...traceHeaders, traceId: outboxEvent.payload.traceId }), // metadata
+          ],
+        );
       }
 
       // 5. Update Idempotency Key
-      await client.query(`
+      await client.query(
+        `
         UPDATE idempotency_keys 
         SET status = 'COMPLETED', response = $1
         WHERE key = $2
-      `, [JSON.stringify({ orderId }), order.idempotencyKey]);
+      `,
+        [JSON.stringify({ orderId }), order.idempotencyKey],
+      );
 
       await client.query('COMMIT');
       return orderId;
     } catch (err) {
       await client.query('ROLLBACK');
-      
+
       // Update Idempotency Key on Failure if it was locked by this transaction
-      if (err.message !== 'Request is currently processing' && err.message !== 'Idempotency key already used with a different payload') {
-         // Optionally log the failure, but we let the caller handle it.
-         // A failed request could technically allow the key to be retried by updating to FAILED.
-         try {
-           const client2 = await pool.connect();
-           await client2.query(`UPDATE idempotency_keys SET status = 'FAILED' WHERE key = $1`, [order.idempotencyKey]);
-           client2.release();
-         } catch(e) { /* ignore cleanup error */ }
+      if (
+        err.message !== 'Request is currently processing' &&
+        err.message !== 'Idempotency key already used with a different payload'
+      ) {
+        // Optionally log the failure, but we let the caller handle it.
+        // A failed request could technically allow the key to be retried by updating to FAILED.
+        try {
+          const client2 = await pool.connect();
+          await client2.query(`UPDATE idempotency_keys SET status = 'FAILED' WHERE key = $1`, [
+            order.idempotencyKey,
+          ]);
+          client2.release();
+        } catch (e) {
+          /* ignore cleanup error */
+        }
       }
 
       throw new InfrastructureError(`Database transaction failed during checkout: ${err.message}`);
@@ -125,10 +156,50 @@ export class CheckoutRepository {
     }
   }
 
-  async updateOrderStatus(orderId, status) {
+  async getOrderById(orderId) {
     const client = await pool.connect();
     try {
-      await client.query(`UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2`, [status, orderId]);
+      const res = await client.query('SELECT * FROM orders WHERE id = $1', [orderId]);
+      return res.rows[0];
+    } finally {
+      client.release();
+    }
+  }
+
+  async updateOrderStatus(orderId, status, outboxEvent = null) {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query(`UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2`, [
+        status,
+        orderId,
+      ]);
+
+      if (outboxEvent) {
+        const traceHeaders = {};
+        propagation.inject(context.active(), traceHeaders);
+
+        await client.query(
+          `
+          INSERT INTO outbox_events (
+            event_type, event_version, aggregate_type, aggregate_id, payload, metadata, status
+          ) VALUES ($1, $2, $3, $4, $5, $6, 'PENDING')
+        `,
+          [
+            outboxEvent.eventType,
+            outboxEvent.eventVersion || 1,
+            'Order',
+            orderId,
+            JSON.stringify(outboxEvent.payload),
+            JSON.stringify({ ...traceHeaders, traceId: outboxEvent.payload.traceId }),
+          ],
+        );
+      }
+
+      await client.query('COMMIT');
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
     } finally {
       client.release();
     }

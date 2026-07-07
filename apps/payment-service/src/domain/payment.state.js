@@ -1,4 +1,5 @@
 export const PaymentStatus = {
+  CREATED: 'CREATED',
   PENDING: 'PENDING',
   AUTHORIZED: 'AUTHORIZED',
   CAPTURED: 'CAPTURED',
@@ -7,9 +8,10 @@ export const PaymentStatus = {
 };
 
 export class PaymentStateMachine {
-  constructor(initialState = PaymentStatus.PENDING) {
+  constructor(initialState = PaymentStatus.CREATED) {
     this.state = initialState;
     this.validTransitions = {
+      [PaymentStatus.CREATED]: [PaymentStatus.PENDING, PaymentStatus.FAILED],
       [PaymentStatus.PENDING]: [PaymentStatus.AUTHORIZED, PaymentStatus.FAILED],
       [PaymentStatus.AUTHORIZED]: [PaymentStatus.CAPTURED, PaymentStatus.FAILED],
       [PaymentStatus.CAPTURED]: [PaymentStatus.REFUNDED],

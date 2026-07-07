@@ -295,13 +295,38 @@ CREATE TABLE IF NOT EXISTS payments (
   order_id        UUID NOT NULL,
   amount          DECIMAL(12,2) NOT NULL,
   currency        VARCHAR(3) DEFAULT 'USD',
-  status          VARCHAR(50) NOT NULL DEFAULT 'PENDING', -- PENDING, AUTHORIZED, CAPTURED, REFUNDED, FAILED
+  status          VARCHAR(50) NOT NULL DEFAULT 'PENDING', -- CREATED, PENDING, AUTHORIZED, CAPTURED, REFUNDED, FAILED
   payment_method  VARCHAR(50) NOT NULL, -- CASH, CARD, etc.
   gateway_tx_id   VARCHAR(255),
+  provider_transaction_id VARCHAR(255),
   idempotency_key VARCHAR(255) UNIQUE NOT NULL,
   error_reason    TEXT,
   created_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS webhook_inbox (
+  id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  event_id            VARCHAR(255) NOT NULL UNIQUE,
+  provider            VARCHAR(50) NOT NULL,
+  provider_event_id   VARCHAR(255),
+  signature           TEXT,
+  payload_hash        VARCHAR(255),
+  payload             JSONB,
+  traceparent         VARCHAR(255),
+  status              VARCHAR(20) NOT NULL DEFAULT 'PENDING', -- PENDING, PROCESSED, FAILED
+  received_at         TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  processed_at        TIMESTAMP WITH TIME ZONE,
+  error               TEXT
+);
+
+CREATE TABLE IF NOT EXISTS mock_gateway_jobs (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  payment_id      UUID NOT NULL REFERENCES payments(id) ON DELETE CASCADE,
+  scenario        VARCHAR(50) NOT NULL,
+  execute_after   TIMESTAMP WITH TIME ZONE NOT NULL,
+  status          VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+  created_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_payments_order_id ON payments(order_id);

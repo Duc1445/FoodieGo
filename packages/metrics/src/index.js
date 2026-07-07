@@ -52,6 +52,72 @@ export class MetricsRegistry {
     this._initEventMetrics();
     this._initCacheMetrics();
     this._initDispatcherMetrics();
+    this._initPaymentMetrics();
+  }
+
+  // ═══════════════════════════════════════════
+  // Payment Business Metrics
+  // ═══════════════════════════════════════════
+
+  _initPaymentMetrics() {
+    this.paymentRequestsTotal = new client.Counter({
+      name: 'payment_requests_total',
+      help: 'Total payment requests initiated',
+      registers: [this.registry],
+    });
+    this.paymentSuccessTotal = new client.Counter({
+      name: 'payment_success_total',
+      help: 'Total successful payments',
+      registers: [this.registry],
+    });
+    this.paymentFailedTotal = new client.Counter({
+      name: 'payment_failed_total',
+      help: 'Total failed payments',
+      registers: [this.registry],
+    });
+    this.paymentWebhookDuplicateTotal = new client.Counter({
+      name: 'payment_webhook_duplicate_total',
+      help: 'Total duplicate webhooks received',
+      registers: [this.registry],
+    });
+    this.paymentSignatureFailedTotal = new client.Counter({
+      name: 'payment_signature_failed_total',
+      help: 'Total webhook signature verification failures',
+      registers: [this.registry],
+    });
+    this.paymentTimeoutTotal = new client.Counter({
+      name: 'payment_timeout_total',
+      help: 'Total gateway timeouts',
+      registers: [this.registry],
+    });
+    this.paymentRetryTotal = new client.Counter({
+      name: 'payment_retry_total',
+      help: 'Total payment retry attempts',
+      registers: [this.registry],
+    });
+  }
+
+  increment(metricName, labels = {}) {
+    if (!this.enabled) return;
+
+    switch (metricName) {
+      case 'payment_requests_total':
+        return this.paymentRequestsTotal.inc(labels);
+      case 'payment_success_total':
+        return this.paymentSuccessTotal.inc(labels);
+      case 'payment_failed_total':
+        return this.paymentFailedTotal.inc(labels);
+      case 'payment_webhook_duplicate_total':
+        return this.paymentWebhookDuplicateTotal.inc(labels);
+      case 'payment_signature_failed_total':
+        return this.paymentSignatureFailedTotal.inc(labels);
+      case 'payment_timeout_total':
+        return this.paymentTimeoutTotal.inc(labels);
+      case 'payment_retry_total':
+        return this.paymentRetryTotal.inc(labels);
+      default:
+        console.warn(`[Metrics] Unknown increment: ${metricName}`);
+    }
   }
 
   // ═══════════════════════════════════════════

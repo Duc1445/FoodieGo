@@ -1,10 +1,10 @@
 /**
  * @foodiego/tracing
- * 
+ *
  * OpenTelemetry Node SDK with W3C Context Propagation.
  * Auto-instruments: Express, HTTP, PostgreSQL, Redis, amqplib.
  * Resource Attributes loaded from ENV (service.name, deployment.environment, etc.)
- * 
+ *
  * Usage: import this file BEFORE any other imports in your service entrypoint.
  *   import { initTracing } from '@foodiego/tracing';
  *   initTracing();
@@ -18,7 +18,11 @@ const ATTR_SERVICE_NAME = 'service.name';
 const ATTR_SERVICE_VERSION = 'service.version';
 const ATTR_DEPLOYMENT_ENVIRONMENT_NAME = 'deployment.environment';
 import { W3CTraceContextPropagator } from '@opentelemetry/core';
-import { ParentBasedSampler, TraceIdRatioBasedSampler, AlwaysOnSampler } from '@opentelemetry/sdk-trace-node';
+import {
+  ParentBasedSampler,
+  TraceIdRatioBasedSampler,
+  AlwaysOnSampler,
+} from '@opentelemetry/sdk-trace-node';
 import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
 
 /**
@@ -99,7 +103,9 @@ export function initTracing() {
   });
 
   sdk.start();
-  console.log(`[Tracing] Initialized for "${serviceName}" (env=${deploymentEnv}, sampler=${getSampler().constructor.name})`);
+  console.log(
+    `[Tracing] Initialized for "${serviceName}" (env=${deploymentEnv}, sampler=${getSampler().constructor.name})`,
+  );
 
   // Graceful shutdown
   const shutdown = async () => {
@@ -146,22 +152,26 @@ export async function withSpan(spanName, fn) {
   });
 }
 
-/**
- * Returns the current active trace context for propagation across boundaries.
- * Used by the Messaging Runtime to inject traceparent into AMQP headers.
- */
-export function getActiveTraceHeaders() {
-  const { context, propagation } = require('@opentelemetry/api');
+export async function getActiveTraceHeaders() {
+  const { context, propagation } = await import('@opentelemetry/api');
   const carrier = {};
   propagation.inject(context.active(), carrier);
-  return carrier; // { traceparent: '...', tracestate: '...' }
+  return carrier;
 }
 
 /**
  * Extracts trace context from incoming headers (HTTP or AMQP).
  * Used by Consumers to continue the parent trace.
  */
-export function extractTraceContext(headers) {
-  const { context, propagation } = require('@opentelemetry/api');
+export async function extractTraceContext(headers) {
+  const { context, propagation } = await import('@opentelemetry/api');
   return propagation.extract(context.active(), headers);
+}
+
+/**
+ * Runs a function within the provided trace context.
+ */
+export async function runWithContext(ctx, fn) {
+  const { context } = await import('@opentelemetry/api');
+  return context.with(ctx, fn);
 }

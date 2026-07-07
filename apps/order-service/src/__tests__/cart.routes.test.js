@@ -11,12 +11,15 @@ jest.unstable_mockModule('../config/database.js', () => {
 });
 
 const pool = (await import('../config/database.js')).default;
-const app = (await import('../index.js')).default;
+const app = (await import('../app.js')).default;
 const { default: request } = await import('supertest');
 import jwt from 'jsonwebtoken';
 
 describe('Cart Routes', () => {
-  const token = jwt.sign({ id: '123e4567-e89b-12d3-a456-426614174001', role: 'customer' }, 'fallback_secret');
+  const token = jwt.sign(
+    { id: '123e4567-e89b-12d3-a456-426614174001', role: 'customer' },
+    'fallback_secret',
+  );
   const foodId = '123e4567-e89b-12d3-a456-426614174002';
 
   beforeEach(() => {
@@ -25,9 +28,7 @@ describe('Cart Routes', () => {
 
   it('GET /api/cart - should return cart items', async () => {
     pool.query.mockResolvedValueOnce({ rows: [{ food_id: foodId, quantity: 2, price: 10 }] });
-    const res = await request(app)
-      .get('/api/cart')
-      .set('Authorization', `Bearer ${token}`);
+    const res = await request(app).get('/api/cart').set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
   });
 

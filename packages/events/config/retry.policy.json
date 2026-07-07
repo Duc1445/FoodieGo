@@ -11,15 +11,17 @@
       "routeToDlq": false
     },
     "Payment": {
-      "maxAttempts": 10,
-      "delaysMs": [1000, 2000, 5000, 10000, 30000, 60000, 120000, 300000, 600000, 1800000],
+      "maxAttempts": 7,
+      "delaysMs": [5000, 30000, 60000, 120000, 300000, 600000, 1800000],
       "routeToDlq": true
     }
   },
   "mappings": {
     "OrderCreated": "Reliable",
     "OrderCancelled": "Reliable",
-    "PaymentSucceeded": "Payment",
+    "PaymentAuthorized": "Payment",
+    "PaymentFailed": "Payment",
+    "PaymentRequested": "Payment",
     "NotificationSent": "Fast",
     "default": "Reliable"
   }

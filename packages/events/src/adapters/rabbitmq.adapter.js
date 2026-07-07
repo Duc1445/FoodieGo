@@ -52,32 +52,46 @@ export class RabbitMQAdapter extends EventPublisher {
     const routingKey = evType;
 
     return new Promise((resolve, reject) => {
-      // W3C Context Propagation: inject traceparent into AMQP headers
-      const headers = {};
-      propagation.inject(context.active(), headers);
-      if (payload.metadata && payload.metadata.correlationId) {
-        headers['x-correlation-id'] = payload.metadata.correlationId;
-      }
+      const tracer = trace.getTracer('foodiego-rabbitmq');
+      tracer.startActiveSpan('RabbitMQ Publish', (span) => {
+        // W3C Context Propagation: inject traceparent into AMQP headers
+        const headers = {};
+        propagation.inject(context.active(), headers);
+        if (payload.metadata && payload.metadata.correlationId) {
+          headers['x-correlation-id'] = payload.metadata.correlationId;
+        }
 
-      const published = this.channel.publish(
-        exchangeName,
-        routingKey,
-        content,
-        {
-          persistent: true,
-          messageId: payload.eventId || payload.id,
-          timestamp: new Date(payload.occurredAt).getTime(),
-          type: evType,
-          headers: headers,
-        },
-        (err) => {
-          if (err) return reject(err);
-          resolve(true);
-        },
-      );
-      if (!published) {
-        reject(new Error('Channel queue is full'));
-      }
+        const published = this.channel.publish(
+          exchangeName,
+          routingKey,
+          content,
+          {
+            persistent: true,
+            messageId: payload.eventId || payload.id,
+            timestamp: new Date(payload.occurredAt).getTime(),
+            type: evType,
+            headers: headers,
+          },
+          (err) => {
+            if (err) {
+              span.recordException(err);
+              span.setStatus({ code: 2, message: err.message });
+              span.end();
+              return reject(err);
+            }
+            span.setStatus({ code: 1, message: 'Published' });
+            span.end();
+            resolve(true);
+          },
+        );
+        if (!published) {
+          const err = new Error('Channel queue is full');
+          span.recordException(err);
+          span.setStatus({ code: 2, message: err.message });
+          span.end();
+          reject(err);
+        }
+      });
     });
   }
 
@@ -250,7 +264,7 @@ export class RabbitMQAdapter extends EventPublisher {
         );
         if (existing.rows[0]?.status === 'COMPLETED') {
           this.channel.ack(msg);
-          return client.release();
+          return;
         }
         // If it's PENDING and attempt < currentAttempt, update attempt.
         await client.query(

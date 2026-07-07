@@ -1,95 +1,122 @@
-import crypto from 'crypto';
+import { spawn } from 'child_process';
 
 async function verifyTrace() {
   console.log('[Verify Trace] Executing a test checkout flow to generate trace...');
 
-  const userId = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22';
+  let traceId = null;
 
-  // 1. Add to cart
-  const cartRes = await fetch('http://localhost:3000/api/v1/cart/items', {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-user-id': userId,
-    },
-    body: JSON.stringify({
-      menu_item_id: '10000000-0000-0000-0000-000000000100',
-      quantity: 1,
-    }),
+  // 1. Run verify-payment.js
+  await new Promise((resolve, reject) => {
+    const child = spawn('node', ['scripts/verify-payment.js']);
+
+    child.stdout.on('data', (data) => {
+      process.stdout.write(data);
+      const output = data.toString();
+      const match = output.match(/\[E2E\] Trace ID: ([a-f0-9]{32})/);
+      if (match) {
+        traceId = match[1];
+      }
+    });
+
+    child.stderr.on('data', (data) => {
+      process.stderr.write(data);
+    });
+
+    child.on('close', (code) => {
+      if (code !== 0) reject(new Error('verify-payment.js failed'));
+      else resolve();
+    });
   });
 
-  const cartData = await cartRes.json();
-  if (cartRes.status !== 200) {
-    console.error('Failed to add to cart:', cartData);
-    process.exit(1);
-  }
-  const cartVersion = cartData.data.version;
-
-  // 2. Checkout
-  const checkoutRes = await fetch('http://localhost:3000/api/v1/orders/checkout', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-user-id': userId,
-      'idempotency-key': crypto.randomUUID(),
-    },
-    body: JSON.stringify({
-      cartVersion: cartVersion,
-      addressId: '12345678-1234-1234-1234-123456789012',
-      paymentMethod: 'CASH',
-    }),
-  });
-  const checkoutData = await checkoutRes.json();
-  console.log('Checkout response:', checkoutData);
-
-  // Wait for saga to process
-  console.log('[Verify Trace] Waiting 5 seconds for Saga and OTEL exporter to finish...');
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-
-  console.log('[Verify Trace] Fetching traces from Tempo...');
-  const searchRes = await fetch('http://localhost:3200/api/search');
-  const searchData = await searchRes.json();
-
-  if (!searchData.traces || searchData.traces.length === 0) {
-    console.error('❌ Tempo Search Failed: No traces found.');
+  if (!traceId) {
+    console.error('❌ Failed to capture Trace ID from verify-payment.js');
     process.exit(1);
   }
 
-  const orderTrace = searchData.traces.find((t) => t.rootServiceName === 'order-service');
-  if (!orderTrace) {
-    console.error('❌ Tempo Search Failed: No order-service trace found.');
-    process.exit(1);
-  }
+  // Wait for saga to process and spans to be exported
+  console.log('[Verify Trace] Waiting 10 seconds for Saga and OTEL exporter to finish...');
+  await new Promise((resolve) => setTimeout(resolve, 10000));
 
-  // Pick the most recent trace
-  const traceId = orderTrace.traceID;
-  console.log(`[Verify Trace] Found Trace ID: ${traceId}`);
-
-  console.log(`[Verify Trace] Fetching trace details...`);
+  console.log(`[Verify Trace] Fetching trace details for ${traceId}...`);
   const traceDetailRes = await fetch(`http://localhost:3200/api/traces/${traceId}`);
   const traceDetailData = await traceDetailRes.json();
 
   let services = new Set();
+  let spans = new Set();
+
+  let spanList = [];
 
   if (traceDetailData.batches) {
     for (const batch of traceDetailData.batches) {
+      let serviceName = 'unknown';
       if (batch.resource && batch.resource.attributes) {
         const serviceNameAttr = batch.resource.attributes.find((a) => a.key === 'service.name');
         if (serviceNameAttr) {
-          services.add(serviceNameAttr.value.stringValue);
+          serviceName = serviceNameAttr.value.stringValue;
+          services.add(serviceName);
+        }
+      }
+      if (batch.scopeSpans) {
+        for (const scopeSpan of batch.scopeSpans) {
+          if (scopeSpan.spans) {
+            for (const span of scopeSpan.spans) {
+              spans.add(span.name);
+              spanList.push({ ...span, serviceName });
+            }
+          }
         }
       }
     }
   }
 
-  console.log(`[Verify Trace] Services involved in this trace:`, Array.from(services));
+  console.log(`\n[Verify Trace] Trace Hierarchy (Tempo Equivalent):`);
+  const rootSpans = spanList.filter((s) => !s.parentSpanId);
+  const printSpan = (span, indent = '') => {
+    console.log(`${indent}✔ [${span.serviceName}] ${span.name} (${span.spanId})`);
+    const children = spanList.filter((s) => s.parentSpanId === span.spanId);
+    for (const child of children) {
+      printSpan(child, indent + '  ');
+    }
+  };
+  for (const root of rootSpans) {
+    printSpan(root);
+  }
+  console.log('\n');
 
-  if (services.has('order-service')) {
-    console.log('✅ Distributed Tracing Verified! Spans are successfully recorded in Tempo.');
+  console.log(`[Verify Trace] Services involved in this trace:`, Array.from(services));
+  console.log(`[Verify Trace] Distinct Spans in this trace:`, Array.from(spans));
+
+  if (
+    services.has('order-service') &&
+    services.has('inventory-service') &&
+    services.has('payment-service')
+  ) {
+    console.log(
+      '✅ Distributed Tracing Verified! All services are successfully recorded in the same trace in Tempo.',
+    );
   } else {
     console.error('❌ Missing expected services in trace. Found:', Array.from(services));
     process.exit(1);
   }
+
+  // Assert presence of Webhook spans
+  const requiredWebhookSpans = [
+    'Webhook Receive',
+    'Verify Signature',
+    'Persist Inbox',
+    'Webhook Worker',
+    'Payment Service',
+    'Outbox Dispatcher',
+    'RabbitMQ Publish',
+  ];
+
+  const missingWebhookSpans = requiredWebhookSpans.filter((spanName) => !spans.has(spanName));
+  if (missingWebhookSpans.length > 0) {
+    console.error('❌ Missing expected webhook spans in trace:', missingWebhookSpans);
+    process.exit(1);
+  } else {
+    console.log('✅ Webhook Sequence Trace Verified! Required webhook spans are present.');
+  }
 }
 
-verifyTrace();
+verifyTrace().catch(console.error);

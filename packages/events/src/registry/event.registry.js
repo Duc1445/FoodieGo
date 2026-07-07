@@ -28,7 +28,7 @@ export const EventTypes = {
 
   // Payment Domain
   PAYMENT_REQUESTED: 'PaymentRequested',
-  PAYMENT_SUCCEEDED: 'PaymentSucceeded',
+  PAYMENT_AUTHORIZED: 'PaymentAuthorized',
   PAYMENT_FAILED: 'PaymentFailed',
 };
 

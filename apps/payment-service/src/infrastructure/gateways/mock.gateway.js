@@ -1,6 +1,7 @@
 import { IPaymentGateway } from '../../domain/interfaces/payment-gateway.interface.js';
 import crypto from 'crypto';
-import { logger } from '../../index.js';
+import { logger } from '../../app.js';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Mock Gateway supporting deterministic scenarios based on amount.
@@ -14,9 +15,10 @@ import { logger } from '../../index.js';
  * Default => SUCCESS
  */
 export class MockGateway extends IPaymentGateway {
-  constructor(webhookSecret) {
+  constructor(webhookSecret, repository) {
     super();
     this.webhookSecret = webhookSecret || 'mock-secret';
+    this.repository = repository;
   }
 
   _getScenario(amount) {
@@ -32,16 +34,18 @@ export class MockGateway extends IPaymentGateway {
         return 'SLOW';
       case 5:
         return 'DUPLICATE_WEBHOOK';
+      case 6:
+        return 'FAST_TIMEOUT';
       default:
         return 'SUCCESS';
     }
   }
 
-  async processPayment(params) {
+  async authorize(params) {
     const { paymentId, amount, currency, paymentMethod, idempotencyKey } = params;
     const scenario = this._getScenario(amount);
 
-    logger.info({ paymentId, scenario }, 'MockGateway processing payment');
+    logger.info({ paymentId, scenario }, 'MockGateway processing payment authorization');
 
     if (scenario === 'TIMEOUT') {
       // Simulate a network timeout that exceeds the HTTP client timeout
@@ -49,25 +53,36 @@ export class MockGateway extends IPaymentGateway {
       throw new Error('Gateway Timeout');
     }
 
-    if (scenario === 'SLOW') {
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-    } else {
-      await new Promise((resolve) => setTimeout(resolve, 200));
+    if (paymentMethod === 'TIMEOUT_TEST' || scenario === 'FAST_TIMEOUT') {
+      logger.warn(
+        { paymentId, amount, scenario: 'FAST_TIMEOUT' },
+        'MockGateway forcing timeout error',
+      );
+
+      // Simulate that the gateway DID receive the request and is processing it,
+      // it just timed out responding to our synchronous HTTP call.
+      // So it will send a webhook later.
+      const executeAfter = new Date(Date.now() + 5000);
+      await this.repository.createMockGatewayJob(paymentId, 'SUCCESS', executeAfter);
+
+      throw new Error('Gateway Timeout');
     }
 
+    let delayMs = 1000;
+    if (scenario === 'SLOW') {
+      delayMs = 5000;
+    }
+
+    const executeAfter = new Date(Date.now() + delayMs);
     const gatewayTxId = `mock_tx_${crypto.randomBytes(8).toString('hex')}`;
 
-    if (scenario === 'FAIL') {
-      return {
-        gatewayTxId,
-        status: 'DECLINED',
-        errorReason: 'Insufficient funds',
-      };
-    }
+    // Create the background job for the worker to pick up and send the webhook later
+    await this.repository.createMockGatewayJob(paymentId, scenario, executeAfter);
 
+    // Always return PENDING asynchronously for real gateways (Stripe, VNPay, etc.)
     return {
       gatewayTxId,
-      status: 'AUTHORIZED', // Usually gateway returns authorized initially, then captures
+      status: 'PENDING',
     };
   }
 
@@ -83,23 +98,29 @@ export class MockGateway extends IPaymentGateway {
   }
 
   /**
-   * Helper to generate a webhook payload with signature for testing
+   * Helper to generate a webhook payload with signature for testing.
+   * In a real system, the external Gateway (e.g. Stripe) would do this.
    */
-  generateWebhookPayload(gatewayTxId, status) {
-    const payload = {
+  generateWebhookPayload(gatewayTxId, status, paymentReference, customTimestamp) {
+    const timestamp = customTimestamp || Math.floor(Date.now() / 1000);
+    const webhookId = uuidv4();
+
+    const payloadObj = {
+      id: webhookId,
       event: 'payment.updated',
       data: {
         tx_id: gatewayTxId,
-        status: status, // e.g. 'CAPTURED', 'FAILED'
-        timestamp: new Date().toISOString(),
+        reference: paymentReference, // This corresponds to paymentId
+        status: status, // e.g. 'AUTHORIZED', 'FAILED'
       },
     };
 
-    const signature = crypto
-      .createHmac('sha256', this.webhookSecret)
-      .update(JSON.stringify(payload))
-      .digest('hex');
+    // Raw body exactly as it will be transmitted over HTTP
+    const rawBody = JSON.stringify(payloadObj);
 
-    return { payload, signature };
+    // HMAC_SHA256(raw_body, gateway_secret)
+    const signature = crypto.createHmac('sha256', this.webhookSecret).update(rawBody).digest('hex');
+
+    return { rawBody, signature, timestamp, webhookId, payloadObj };
   }
 }

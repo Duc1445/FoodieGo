@@ -1,13 +1,34 @@
 import pg from 'pg';
 import crypto from 'crypto';
+import fetch from 'node-fetch';
+import { v4 as uuidv4 } from 'uuid';
 
 const { Pool } = pg;
 const ORDER_SERVICE_URL = 'http://localhost:3000/api/v1';
+const WEBHOOK_URL = 'http://localhost:3005/webhook/payment';
+const SECRET = process.env.WEBHOOK_SECRET || 'mock-secret';
 const USER_ID = '11111111-1111-1111-1111-111111111111';
 const MENU_ITEM_ID = '10000000-0000-0000-0000-000000000100';
 
 async function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
+}
+
+function createWebhookPayload(status, reference, timestamp, webhookId) {
+  const payloadObj = {
+    id: webhookId,
+    event: 'payment.updated',
+    data: {
+      tx_id: `mock_tx_${crypto.randomBytes(8).toString('hex')}`,
+      reference,
+      status,
+    },
+  };
+  return JSON.stringify(payloadObj);
+}
+
+function signPayload(rawBody, secret) {
+  return crypto.createHmac('sha256', secret).update(rawBody).digest('hex');
 }
 
 async function run() {
@@ -45,6 +66,7 @@ async function run() {
     .padEnd(16, '0')
     .slice(0, 16);
   const traceparent = `00-${traceIdHex}-${spanIdHex}-01`;
+  console.log(`[E2E] Trace ID: ${traceIdHex}`);
 
   const cartRes = await fetch(`${ORDER_SERVICE_URL}/cart/items`, {
     method: 'PUT',
@@ -95,12 +117,55 @@ async function run() {
   const orderId = checkoutData.data.orderId;
   console.log(`[E2E] Checkout successful! Order ID: ${orderId}`);
 
-  // 3. Poll DB for status
+  // 3. Poll DB for Payment to become PENDING
+  let paymentId = null;
+  console.log(`[E2E] Waiting for Payment Record to be created and PENDING...`);
+  for (let i = 0; i < 40; i++) {
+    const { rows } = await pool.query('SELECT id, status FROM payments WHERE order_id = $1', [
+      orderId,
+    ]);
+    if (rows.length > 0) {
+      if (rows[0].status === 'PENDING') {
+        paymentId = rows[0].id;
+        break;
+      }
+    }
+    await sleep(500);
+  }
 
+  if (!paymentId) {
+    console.error(`[E2E] ❌ Payment record not found or not in PENDING state.`);
+    process.exit(1);
+  }
+  console.log(`[E2E] ✅ Payment is PENDING! Triggering Zero-trust Webhook...`);
+
+  // 4. Trigger Webhook
+  const ts = Math.floor(Date.now() / 1000);
+  const webhookId = uuidv4();
+  const rawBody = createWebhookPayload('AUTHORIZED', paymentId, ts, webhookId);
+  const signature = signPayload(rawBody, SECRET);
+
+  const webhookRes = await fetch(WEBHOOK_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-signature': signature,
+      'x-timestamp': ts.toString(),
+      'x-webhook-id': webhookId,
+      traceparent: traceparent,
+    },
+    body: rawBody,
+  });
+
+  if (!webhookRes.ok) {
+    console.error(`[E2E] ❌ Webhook failed with status ${webhookRes.status}`);
+    process.exit(1);
+  }
+  console.log(`[E2E] ✅ Webhook accepted!`);
+
+  // 5. Poll DB for Order to become PAID
   try {
-    console.log(
-      `[E2E] Waiting for Saga (Order -> Inventory -> Order -> Payment -> Order) to complete...`,
-    );
+    console.log(`[E2E] Waiting for Order to complete Saga and reach PAID...`);
     let orderStatus = 'CREATED';
     for (let i = 0; i < 40; i++) {
       const { rows } = await pool.query('SELECT status FROM orders WHERE id = $1', [orderId]);
@@ -119,7 +184,7 @@ async function run() {
     }
     console.log(`[E2E] ✅ Order reached PAID!`);
 
-    // Verify Payment Record
+    // Verify Payment Record is AUTHORIZED
     console.log(`[E2E] Verifying Payment Record...`);
     const { rows: paymentRows } = await pool.query(
       'SELECT status, gateway_tx_id FROM payments WHERE order_id = $1',

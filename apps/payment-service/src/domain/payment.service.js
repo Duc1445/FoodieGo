@@ -1,7 +1,8 @@
 import { PaymentRepository } from '../infrastructure/payment.repository.js';
 import { PaymentStatus } from './payment.state.js';
-import { logger } from '../index.js';
-import { v4 as uuidv4 } from 'uuid';
+import { logger, metrics } from '../app.js';
+import crypto from 'crypto';
+import { withSpan } from '@foodiego/tracing';
 
 export class PaymentDomainService {
   /**
@@ -16,6 +17,9 @@ export class PaymentDomainService {
   async processPaymentRequest(event) {
     const { orderId, amount, currency, paymentMethod, traceId } = event.payload;
     const idempotencyKey = event.eventId; // From PaymentRequested EventEnvelope
+    const correlationId = event.metadata?.correlation_id || idempotencyKey;
+
+    metrics.increment('payment_requests_total');
 
     // 1. Create Payment Record (Idempotent)
     const paymentData = {
@@ -23,7 +27,7 @@ export class PaymentDomainService {
       amount,
       currency,
       paymentMethod,
-      status: PaymentStatus.PENDING,
+      status: PaymentStatus.CREATED,
       idempotencyKey,
     };
 
@@ -31,7 +35,10 @@ export class PaymentDomainService {
 
     // Check current status if not new
     const existingPayment = await this.repository.getPaymentByOrderId(orderId);
-    if (existingPayment.status !== PaymentStatus.PENDING) {
+    if (
+      existingPayment.status !== PaymentStatus.CREATED &&
+      existingPayment.status !== PaymentStatus.PENDING
+    ) {
       logger.info({ paymentId, status: existingPayment.status }, 'Payment already processed');
       return; // Already processed
     }
@@ -39,7 +46,10 @@ export class PaymentDomainService {
     // 2. Call Gateway
     try {
       logger.info({ paymentId, amount }, 'Calling Payment Gateway');
-      const gatewayRes = await this.gateway.processPayment({
+      // Update state to PENDING before sending to gateway
+      await this.repository.updatePaymentStatus(paymentId, PaymentStatus.PENDING);
+
+      const gatewayRes = await this.gateway.authorize({
         paymentId,
         amount,
         currency,
@@ -47,37 +57,13 @@ export class PaymentDomainService {
         idempotencyKey,
       });
 
-      // 3. Handle Gateway Response
-      if (gatewayRes.status === 'AUTHORIZED' || gatewayRes.status === 'CAPTURED') {
-        const outboxEvent = {
-          eventType: 'PaymentSucceeded',
-          eventVersion: 1,
-          payload: {
-            orderId,
-            paymentId,
-            gatewayTxId: gatewayRes.gatewayTxId,
-            amount,
-            traceId,
-          },
-        };
-        await this.repository.updatePaymentStatus(
-          paymentId,
-          PaymentStatus.AUTHORIZED,
-          gatewayRes.gatewayTxId,
-          null,
-          outboxEvent,
-        );
-        logger.info({ paymentId }, 'Payment successful');
-      } else {
+      // 3. Handle Synchronous Gateway Response (usually PENDING or DECLINED immediately)
+      if (gatewayRes.status === 'DECLINED') {
         const outboxEvent = {
           eventType: 'PaymentFailed',
           eventVersion: 1,
-          payload: {
-            orderId,
-            paymentId,
-            reason: gatewayRes.errorReason,
-            traceId,
-          },
+          payload: { orderId, paymentId, reason: gatewayRes.errorReason, traceId },
+          metadata: { correlation_id: correlationId, causation_id: idempotencyKey },
         };
         await this.repository.updatePaymentStatus(
           paymentId,
@@ -86,14 +72,108 @@ export class PaymentDomainService {
           gatewayRes.errorReason,
           outboxEvent,
         );
-        logger.info({ paymentId, reason: gatewayRes.errorReason }, 'Payment declined');
+        metrics.increment('payment_failed_total');
+        logger.info({ paymentId, reason: gatewayRes.errorReason }, 'Payment declined by gateway');
+      } else {
+        // gatewayRes.status === 'PENDING'
+        // We do not dispatch PaymentAuthorized yet. We wait for Webhook.
+        await this.repository.updatePaymentStatus(
+          paymentId,
+          PaymentStatus.PENDING,
+          gatewayRes.gatewayTxId,
+        );
+        logger.info({ paymentId }, 'Payment pending asynchronous webhook confirmation');
       }
     } catch (err) {
+      metrics.increment('payment_timeout_total');
       logger.error({ paymentId, err: err.message }, 'Gateway error');
       // We don't update DB to FAILED immediately on network errors/timeouts
       // We let the consumer throw, which triggers RabbitMQ Retry mechanisms.
       // The idempotency key ensures we can safely retry this operation.
       throw err;
     }
+  }
+
+  async processVerifiedWebhook(
+    eventId,
+    provider,
+    providerTransactionId,
+    status,
+    payload,
+    traceparentHeader,
+  ) {
+    return await withSpan('Payment Service', async (span) => {
+      // This payload is guaranteed to be trusted (verified by WebhookController)
+      const { reference } = payload.data; // reference corresponds to paymentId
+
+      const payment = await this.repository.getPaymentById(reference);
+      if (!payment) {
+        throw new Error(`Payment not found for reference: ${reference}`);
+      }
+
+      const correlationId = payment.idempotency_key; // Using idempotencyKey of creation as correlation
+
+      // 4. State transition
+      let newStatus = PaymentStatus.FAILED;
+      let outboxEvent = null;
+      let errorReason = null;
+
+      if (status === 'AUTHORIZED' || status === 'CAPTURED') {
+        newStatus = PaymentStatus.AUTHORIZED;
+        outboxEvent = {
+          eventType: 'PaymentAuthorized',
+          eventVersion: 1,
+          payload: {
+            orderId: payment.order_id,
+            paymentId: payment.id,
+            gatewayTxId: providerTransactionId,
+            amount: payment.amount,
+            traceId: payment.idempotency_key, // using idempotencyKey as a fallback traceId context if needed
+          },
+          metadata: {
+            traceparent: traceparentHeader,
+            correlation_id: correlationId,
+            causation_id: eventId,
+          },
+        };
+      } else {
+        errorReason = 'Gateway reported failure via webhook';
+        outboxEvent = {
+          eventType: 'PaymentFailed',
+          eventVersion: 1,
+          payload: {
+            orderId: payment.order_id,
+            paymentId: payment.id,
+            reason: errorReason,
+            traceId: payment.idempotency_key,
+          },
+          metadata: {
+            traceparent: traceparentHeader,
+            correlation_id: correlationId,
+            causation_id: eventId,
+          },
+        };
+      }
+
+      // 5. Update DB inside transaction
+      await this.repository.updatePaymentAfterWebhook(
+        payment.id,
+        newStatus,
+        providerTransactionId,
+        errorReason,
+        outboxEvent,
+      );
+
+      if (newStatus === PaymentStatus.AUTHORIZED) {
+        metrics.increment('payment_authorized_total');
+      } else {
+        metrics.increment('payment_failed_total');
+      }
+      logger.info(
+        { eventId, paymentId: payment.id, status: newStatus },
+        'Webhook business logic processed successfully',
+      );
+      span.setStatus({ code: 1, message: 'Processed' });
+    });
   }
 }

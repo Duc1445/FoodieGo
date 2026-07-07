@@ -11,16 +11,22 @@ jest.unstable_mockModule('../config/database.js', () => {
 });
 
 const pool = (await import('../config/database.js')).default;
-const app = (await import('../index.js')).default;
+const app = (await import('../app.js')).default;
 const { default: request } = await import('supertest');
 import jwt from 'jsonwebtoken';
 
 describe('Delivery Routes', () => {
-  const token = jwt.sign({ id: '123e4567-e89b-12d3-a456-426614174001', role: 'customer' }, 'fallback_secret');
-  const shipperToken = jwt.sign({ id: '123e4567-e89b-12d3-a456-426614174003', role: 'shipper' }, 'fallback_secret');
+  const token = jwt.sign(
+    { id: '123e4567-e89b-12d3-a456-426614174001', role: 'customer' },
+    'fallback_secret',
+  );
+  const shipperToken = jwt.sign(
+    { id: '123e4567-e89b-12d3-a456-426614174003', role: 'shipper' },
+    'fallback_secret',
+  );
   const orderId = '123e4567-e89b-12d3-a456-426614174004';
   const deliveryId = '123e4567-e89b-12d3-a456-426614174005';
-  
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -66,7 +72,7 @@ describe('Delivery Routes', () => {
       .send({ status: 'delivering' });
     expect(res.status).toBe(404);
   });
-  
+
   it('GET /health - should return 200', async () => {
     const res = await request(app).get('/health');
     expect(res.status).toBe(200);

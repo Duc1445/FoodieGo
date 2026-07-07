@@ -140,7 +140,21 @@ export class OutboxDispatcher {
         const activeContext = propagation.extract(context.active(), metadata);
 
         await context.with(activeContext, async () => {
-          await this.publisher.publishEnvelope(envelope);
+          const tracer = trace.getTracer('foodiego-outbox');
+          await tracer.startActiveSpan('Outbox Dispatcher', async (span) => {
+            try {
+              span.setAttribute('event.id', row.event_id);
+              span.setAttribute('event.type', row.event_type);
+              await this.publisher.publishEnvelope(envelope);
+              span.setStatus({ code: 1, message: 'Published' });
+            } catch (err) {
+              span.recordException(err);
+              span.setStatus({ code: 2, message: err.message });
+              throw err;
+            } finally {
+              span.end();
+            }
+          });
         });
 
         successfulEventIds.push(row.event_id);

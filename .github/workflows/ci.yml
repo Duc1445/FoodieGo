@@ -36,8 +36,22 @@ jobs:
       - name: Run Linter
         run: npm run lint
 
-      - name: Run Unit Tests
-        run: echo "No unit tests specified yet" # Replace with npm test when ready
+      - name: Start Infrastructure (Docker Compose)
+        run: docker compose up -d
 
-      - name: Run Build
-        run: echo "No build step required for Node.js backend" # Replace if build step is needed
+      - name: Wait for services to be healthy
+        run: |
+          echo "Waiting for services to be ready..."
+          sleep 20
+
+      - name: Run E2E Verification Scripts
+        run: |
+          node scripts/verify-payment.js
+          node scripts/verify-timeout.js
+          node scripts/verify-duplicate-webhook.js
+          node scripts/verify-trace.js
+          node scripts/verify-metrics.js
+
+      - name: Tear down Infrastructure
+        if: always()
+        run: docker compose down

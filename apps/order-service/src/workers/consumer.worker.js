@@ -1,7 +1,7 @@
 import { EventConsumer, RabbitMQAdapter } from '@foodiego/events';
 import { CheckoutRepository } from '../modules/checkout/repositories/checkout.repository.js';
 import { OrderStatus } from '../modules/checkout/state/order.state.js';
-import { logger } from '../index.js';
+import { logger } from '../app.js';
 import pool from '../config/database.js';
 
 class InventoryReservedConsumer extends EventConsumer {
@@ -32,7 +32,11 @@ class InventoryReservedConsumer extends EventConsumer {
         amount: parseFloat(order.total),
         currency: order.currency,
         paymentMethod: order.payment_method,
-        traceId: event.traceId,
+        traceId: event.payload?.traceId,
+      },
+      metadata: {
+        correlation_id: event.metadata?.correlation_id || event.eventId,
+        causation_id: event.eventId,
       },
     };
 
@@ -59,19 +63,19 @@ class InventoryReservationFailedConsumer extends EventConsumer {
   }
 }
 
-class PaymentSucceededConsumer extends EventConsumer {
+class PaymentAuthorizedConsumer extends EventConsumer {
   constructor(checkoutRepo) {
     super();
     this.checkoutRepo = checkoutRepo;
   }
 
   getEventType() {
-    return 'PaymentSucceeded';
+    return 'PaymentAuthorized';
   }
 
   async handle(event) {
     const { orderId } = event.payload;
-    logger.info({ orderId }, 'Processing PaymentSucceeded');
+    logger.info({ orderId }, 'Processing PaymentAuthorized');
     await this.checkoutRepo.updateOrderStatus(orderId, OrderStatus.PAID);
   }
 }
@@ -97,7 +101,11 @@ class PaymentFailedConsumer extends EventConsumer {
       payload: {
         orderId,
         reason,
-        traceId: event.traceId,
+        traceId: event.payload?.traceId,
+      },
+      metadata: {
+        correlation_id: event.metadata?.correlation_id || event.eventId,
+        causation_id: event.eventId,
       },
     };
 
@@ -114,12 +122,12 @@ export async function startConsumers() {
 
   const reservedConsumer = new InventoryReservedConsumer(checkoutRepo);
   const failedConsumer = new InventoryReservationFailedConsumer(checkoutRepo);
-  const paymentSucceededConsumer = new PaymentSucceededConsumer(checkoutRepo);
+  const paymentAuthorizedConsumer = new PaymentAuthorizedConsumer(checkoutRepo);
   const paymentFailedConsumer = new PaymentFailedConsumer(checkoutRepo);
 
   await rabbitMQ.registerConsumer(reservedConsumer, pool);
   await rabbitMQ.registerConsumer(failedConsumer, pool);
-  await rabbitMQ.registerConsumer(paymentSucceededConsumer, pool);
+  await rabbitMQ.registerConsumer(paymentAuthorizedConsumer, pool);
   await rabbitMQ.registerConsumer(paymentFailedConsumer, pool);
 
   logger.info('Event Consumers started successfully');

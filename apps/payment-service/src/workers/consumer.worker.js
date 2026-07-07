@@ -2,7 +2,7 @@ import { EventConsumer, RabbitMQAdapter } from '@foodiego/events';
 import { PaymentRepository } from '../infrastructure/payment.repository.js';
 import { PaymentDomainService } from '../domain/payment.service.js';
 import { MockGateway } from '../infrastructure/gateways/mock.gateway.js';
-import { logger } from '../index.js';
+import { logger } from '../app.js';
 import pool from '../config/database.js';
 
 class PaymentRequestedConsumer extends EventConsumer {
@@ -16,13 +16,20 @@ class PaymentRequestedConsumer extends EventConsumer {
   }
 
   async handle(event) {
-    await this.paymentService.processPaymentRequest(event);
+    try {
+      await this.paymentService.processPaymentRequest(event);
+    } catch (err) {
+      import('../app.js').then(({ metrics }) => {
+        metrics.increment('payment_retry_total');
+      });
+      throw err;
+    }
   }
 }
 
 export async function startConsumers() {
   const paymentRepo = new PaymentRepository();
-  const gateway = new MockGateway(process.env.WEBHOOK_SECRET);
+  const gateway = new MockGateway(process.env.WEBHOOK_SECRET, paymentRepo);
   const paymentService = new PaymentDomainService(paymentRepo, gateway);
 
   const rabbitMQ = new RabbitMQAdapter(

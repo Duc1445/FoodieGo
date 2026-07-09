@@ -25,5 +25,5 @@ jobs:
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
 
-    - name: Run Unit Tests with Coverage
-      run: pnpm run test:unit -- --coverage
+    - name: Run Unit Tests
+      run: pnpm run test:unit

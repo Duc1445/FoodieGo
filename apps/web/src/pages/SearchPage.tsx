@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { FoodAPI } from '../services/food.api';
+import { FoodAPI, Food } from '../services/food.api';
 import { Card, CardHeader, CardTitle, CardDescription, Input, Button, FoodCardSkeleton } from '@foodiego/ui';
 import { Search as SearchIcon } from 'lucide-react';
 
@@ -54,7 +54,7 @@ export function SearchPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {foods.map((food) => (
+            {foods.map((food: Food) => (
               <Link key={food.id} to={`/food/${food.id}`} className="block focus:outline-none focus:ring-2 focus:ring-primary rounded-lg">
                 <Card 
                   className="overflow-hidden hover:shadow-lg transition-all group h-full"

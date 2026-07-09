@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { RestaurantAPI } from '../services/restaurant.api';
+import { RestaurantAPI, Restaurant } from '../services/restaurant.api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, RestaurantCardSkeleton } from '@foodiego/ui';
 
 export function LandingPage() {
@@ -22,7 +22,7 @@ export function LandingPage() {
           {isLoading ? (
             Array.from({ length: 6 }).map((_, i) => <RestaurantCardSkeleton key={i} />)
           ) : (
-            restaurants.map((restaurant) => (
+            restaurants.map((restaurant: Restaurant) => (
               <Link key={restaurant.id} to={`/restaurant/${restaurant.id}`} className="block focus:outline-none focus:ring-2 focus:ring-primary rounded-lg">
                 <Card className="overflow-hidden hover:shadow-lg transition-shadow h-full">
                   <div 

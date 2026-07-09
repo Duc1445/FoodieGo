@@ -33,5 +33,9 @@
     "jest": "^29.7.0",
     "lint-staged": "^17.0.8",
     "prettier": "^3.9.4"
+  },
+  "resolutions": {
+    "uuid": "^11.1.1",
+    "@opentelemetry/core": "^1.30.1"
   }
 }

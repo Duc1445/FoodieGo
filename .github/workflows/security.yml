@@ -46,7 +46,7 @@ jobs:
       with:
         config: "p/default"
         # Fail on high/critical only
-        auditOn: ["medium", "low"]
+        auditOn: '["medium", "low"]'
 
   dependencies-and-license:
     name: Supply Chain & Licenses

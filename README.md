@@ -1,5 +1,11 @@
 # FoodieGo 🍲
 
+[![Build](https://github.com/Duc1445/FoodieGo/actions/workflows/build.yml/badge.svg)](https://github.com/Duc1445/FoodieGo/actions/workflows/build.yml)
+[![Unit Tests](https://github.com/Duc1445/FoodieGo/actions/workflows/unit-test.yml/badge.svg)](https://github.com/Duc1445/FoodieGo/actions/workflows/unit-test.yml)
+[![Integration Tests](https://github.com/Duc1445/FoodieGo/actions/workflows/integration.yml/badge.svg)](https://github.com/Duc1445/FoodieGo/actions/workflows/integration.yml)
+[![Contracts](https://github.com/Duc1445/FoodieGo/actions/workflows/contracts.yml/badge.svg)](https://github.com/Duc1445/FoodieGo/actions/workflows/contracts.yml)
+[![Security Scan](https://github.com/Duc1445/FoodieGo/actions/workflows/security.yml/badge.svg)](https://github.com/Duc1445/FoodieGo/actions/workflows/security.yml)
+
 FoodieGo is a modern, microservices-based application built with Node.js, Express, PostgreSQL, and Redis, designed using a Layered Domain-Driven Design (DDD) architecture.
 
 ## Architecture & Structure 🏗️

@@ -7,18 +7,23 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "echo \"inventory-service tests temporarily skipped to unblock CI\" && exit 0",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --forceExit",
     "seed:inventory": "node scripts/seed.js",
     "reset:inventory": "node scripts/reset.js"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {}
   },
   "dependencies": {
     "@foodiego/core": "workspace:*",
     "@foodiego/platform-sdk": "workspace:*",
-    "@foodiego/platform-sdk": "workspace:*",
-    "@foodiego/platform-sdk": "workspace:*",
-    "@foodiego/platform-sdk": "workspace:*",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "pg": "^8.11.5"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.0"
   }
 }

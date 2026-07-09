@@ -67,9 +67,8 @@ jobs:
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
 
-    - name: Dependency Audit (Warning Only)
-      # Non-blocking audit as per CTO requirement
-      run: pnpm audit --audit-level=high || true
+    - name: Dependency Audit (Blocking)
+      run: pnpm audit --audit-level=high
 
     - name: License Scan (Block GPL/AGPL)
       # Uses license-checker to fail if forbidden licenses are found

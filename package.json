@@ -10,9 +10,8 @@
   "scripts": {
     "build": "pnpm -r run build",
     "test": "pnpm -r run test",
-    "test:unit": "pnpm -r run test:unit",
-    "test:contracts": "pnpm -r run test:contracts",
-    "test:integration": "pnpm -r run test:integration",
+    "test:unit": "pnpm -r run test",
+    "test:contracts": "node scripts/test-contracts.js",
     "lint": "pnpm -r run lint",
     "dev": "pnpm -r run dev",
     "seed": "node scripts/seed.js",

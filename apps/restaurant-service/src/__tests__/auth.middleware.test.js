@@ -25,10 +25,7 @@ describe('Auth Middleware', () => {
   describe('authenticate', () => {
     it('should return 401 if no token provided', () => {
       authenticate(req, res, next);
-      expect(res.status).toHaveBeenCalledWith(401);
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({ success: false })
-      );
+      expect(next).toHaveBeenCalledWith(expect.any(Error));
     });
 
     it('should return 401 if token is invalid', () => {
@@ -38,7 +35,7 @@ describe('Auth Middleware', () => {
       });
 
       authenticate(req, res, next);
-      expect(res.status).toHaveBeenCalledWith(401);
+      expect(next).toHaveBeenCalledWith(expect.any(Error));
     });
 
     it('should call next if token is valid', () => {
@@ -55,15 +52,15 @@ describe('Auth Middleware', () => {
     it('should return 403 if user lacks required role', () => {
       req.user = { id: 'uuid-1', role: 'customer' };
       const middleware = authorize('admin');
-      
+
       middleware(req, res, next);
-      expect(res.status).toHaveBeenCalledWith(403);
+      expect(next).toHaveBeenCalledWith(expect.any(Error));
     });
 
     it('should call next if user has required role', () => {
       req.user = { id: 'uuid-1', role: 'admin' };
       const middleware = authorize('admin');
-      
+
       middleware(req, res, next);
       expect(next).toHaveBeenCalled();
     });

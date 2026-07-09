@@ -6,8 +6,8 @@
   "type": "module",
   "dependencies": {
     "@opentelemetry/api": "^1.6.0",
-    "@opentelemetry/sdk-node": "^0.43.0",
-    "@opentelemetry/auto-instrumentations-node": "^0.39.3",
-    "@opentelemetry/exporter-trace-otlp-grpc": "^0.43.0"
+    "@opentelemetry/auto-instrumentations-node": "^0.78.0",
+    "@opentelemetry/exporter-trace-otlp-grpc": "^0.43.0",
+    "@opentelemetry/sdk-node": "^0.220.0"
   }
 }

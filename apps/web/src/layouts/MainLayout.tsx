@@ -1,12 +1,26 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
 
 export function MainLayout() {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          <span className="font-bold text-xl tracking-tight text-primary">FoodieGo</span>
-          {/* Navigation will go here */}
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
+        <div className="container flex h-16 items-center px-8">
+          <Link to="/" className="font-extrabold text-2xl tracking-tight text-primary mr-8">
+            FoodieGo
+          </Link>
+          <nav className="flex items-center space-x-6 text-sm font-medium">
+            <Link to="/" className="transition-colors hover:text-foreground/80 text-foreground/60">
+              Home
+            </Link>
+            <Link to="/search" className="transition-colors hover:text-foreground/80 text-foreground/60">
+              Search
+            </Link>
+          </nav>
+          <div className="ml-auto flex items-center space-x-4">
+            <Link to="/admin" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+              Restaurant Portal
+            </Link>
+          </div>
         </div>
       </header>
       <main className="flex-1">

@@ -19,11 +19,8 @@ const app = express();
 const PORT = process.env.PORT || 3004;
 
 // ─── Platform SDKs ─────────────────────────────────────────────────────────
-// logger moved
-// metrics moved
-
-// Custom metrics removed to use standardized SDK metrics
-
+export const logger = createLogger('inventory-service');
+export const metrics = new MetricsRegistry('inventory-service');
 // ─── Middleware ─────────────────────────────────────────────────────────────
 app.use(helmet());
 app.use(cors());
@@ -50,7 +47,7 @@ app.use((err, req, res, _next) => {
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, async () => {
     logger.info({ port: PORT }, 'Inventory Service started');
-    
+
     // Start background workers
     await startDispatcher();
     await startConsumers();
@@ -58,5 +55,4 @@ if (process.env.NODE_ENV !== 'test') {
   });
 }
 
-export { metrics, logger };
 export default app;

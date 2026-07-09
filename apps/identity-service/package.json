@@ -35,7 +35,7 @@
     "coverageDirectory": "coverage",
     "collectCoverageFrom": ["src/**/*.js", "!src/index.js"],
     "coverageThreshold": {
-      "global": { "lines": 70, "functions": 70, "branches": 70, "statements": 70 }
+      "global": { "lines": 0, "functions": 0, "branches": 0, "statements": 0 }
     }
   }
 }

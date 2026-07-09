@@ -16,9 +16,8 @@ const app = express();
 const PORT = process.env.PORT || 3003;
 
 // ─── Platform SDKs ─────────────────────────────────────────────────────────
-// logger moved
-// metrics moved
-
+export const logger = createLogger('order-service');
+export const metrics = new MetricsRegistry('order-service');
 // ─── Middleware ─────────────────────────────────────────────────────────────
 app.use(helmet());
 app.use(cors());
@@ -58,5 +57,4 @@ if (process.env.NODE_ENV !== 'test') {
   });
 }
 
-export { logger, metrics };
 export default app;

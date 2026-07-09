@@ -54,14 +54,15 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 10
+
     - name: Use Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20.x'
-        cache: 'npm' # Note: adjust if pnpm caching is preferred
-
-    - name: Install pnpm
-      run: npm i -g pnpm
+        cache: 'pnpm'
 
     - name: Install dependencies
       run: pnpm install --frozen-lockfile

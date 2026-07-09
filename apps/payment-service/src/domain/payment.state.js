@@ -5,6 +5,7 @@ export const PaymentStatus = {
   CAPTURED: 'CAPTURED',
   REFUNDED: 'REFUNDED',
   FAILED: 'FAILED',
+  EXPIRED: 'EXPIRED',
 };
 
 export class PaymentStateMachine {
@@ -12,11 +13,12 @@ export class PaymentStateMachine {
     this.state = initialState;
     this.validTransitions = {
       [PaymentStatus.CREATED]: [PaymentStatus.PENDING, PaymentStatus.FAILED],
-      [PaymentStatus.PENDING]: [PaymentStatus.AUTHORIZED, PaymentStatus.FAILED],
-      [PaymentStatus.AUTHORIZED]: [PaymentStatus.CAPTURED, PaymentStatus.FAILED],
+      [PaymentStatus.PENDING]: [PaymentStatus.AUTHORIZED, PaymentStatus.FAILED, PaymentStatus.EXPIRED],
+      [PaymentStatus.AUTHORIZED]: [PaymentStatus.CAPTURED, PaymentStatus.FAILED, PaymentStatus.REFUNDED],
       [PaymentStatus.CAPTURED]: [PaymentStatus.REFUNDED],
       [PaymentStatus.FAILED]: [],
       [PaymentStatus.REFUNDED]: [],
+      [PaymentStatus.EXPIRED]: [],
     };
   }
 

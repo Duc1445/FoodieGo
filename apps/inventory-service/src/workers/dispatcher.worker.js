@@ -1,6 +1,6 @@
 import { OutboxDispatcher, RabbitMQAdapter } from '@foodiego/events';
 import pool from '../config/database.js';
-import { logger } from '../index.js';
+import { logger } from '../context.js';
 
 export async function startDispatcher() {
   const publisher = new RabbitMQAdapter(process.env.RABBITMQ_URL || 'amqp://guest:guest@localhost:5672');

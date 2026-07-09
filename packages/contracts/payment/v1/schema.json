@@ -1,0 +1,59 @@
+{
+  "$id": "https://foodiego.local/schemas/payment/v1/PaymentAuthorizedV1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PaymentAuthorizedV1",
+  "type": "object",
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "correlationId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "causationId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "occurredOn": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "aggregateId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "paymentId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "orderId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "amount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 3
+        },
+        "gateway": {
+          "type": "string"
+        },
+        "transactionId": {
+          "type": "string"
+        }
+      },
+      "required": ["paymentId", "orderId", "amount", "currency", "gateway"]
+    }
+  },
+  "required": ["eventId", "correlationId", "occurredOn", "aggregateId", "payload"],
+  "additionalProperties": false
+}

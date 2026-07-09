@@ -1,0 +1,19 @@
+{
+  "name": "@foodiego/platform-sdk",
+  "version": "1.0.0",
+  "description": "FoodieGo Platform SDK",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@foodiego/logger": "workspace:*",
+    "@foodiego/metrics": "workspace:*",
+    "@foodiego/otel": "workspace:*",
+    "@foodiego/rabbit": "workspace:*",
+    "@foodiego/problem": "workspace:*",
+    "@foodiego/retry": "workspace:*",
+    "@foodiego/testing": "workspace:*"
+  }
+}

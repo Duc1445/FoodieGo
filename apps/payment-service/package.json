@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@foodiego/core": "file:../../packages/core",
-    "@foodiego/events": "file:../../packages/events",
+    "@foodiego/platform-sdk": "workspace:*",
     "@opentelemetry/api": "^1.8.0",
     "@opentelemetry/auto-instrumentations-node": "^0.43.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.49.1",

@@ -1,5 +1,5 @@
 import { OutboxDispatcher, RabbitMQAdapter } from '@foodiego/events';
-import { logger } from '../app.js';
+import { logger } from '../context.js';
 import pool from '../config/database.js';
 
 let dispatcher;

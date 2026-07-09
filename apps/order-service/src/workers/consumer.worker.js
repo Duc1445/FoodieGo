@@ -1,7 +1,7 @@
 import { EventConsumer, RabbitMQAdapter } from '@foodiego/events';
 import { CheckoutRepository } from '../modules/checkout/repositories/checkout.repository.js';
 import { OrderStatus } from '../modules/checkout/state/order.state.js';
-import { logger } from '../app.js';
+import { logger } from '../context.js';
 import pool from '../config/database.js';
 
 class InventoryReservedConsumer extends EventConsumer {
@@ -113,6 +113,70 @@ class PaymentFailedConsumer extends EventConsumer {
   }
 }
 
+class RestaurantRejectedConsumer extends EventConsumer {
+  constructor(checkoutRepo) {
+    super();
+    this.checkoutRepo = checkoutRepo;
+  }
+
+  getEventType() {
+    return 'RestaurantRejected';
+  }
+
+  async handle(event) {
+    const { orderId, reason } = event.payload;
+    logger.info({ orderId, reason }, 'Processing RestaurantRejected');
+
+    const outboxEvent = {
+      eventType: 'OrderCancelled',
+      eventVersion: 1,
+      payload: {
+        orderId,
+        reason: reason || 'Restaurant rejected order',
+        traceId: event.payload?.traceId,
+      },
+      metadata: {
+        correlation_id: event.metadata?.correlation_id || event.eventId,
+        causation_id: event.eventId,
+      },
+    };
+
+    await this.checkoutRepo.updateOrderStatus(orderId, OrderStatus.CANCELLED, outboxEvent);
+  }
+}
+
+class InventoryExpiredConsumer extends EventConsumer {
+  constructor(checkoutRepo) {
+    super();
+    this.checkoutRepo = checkoutRepo;
+  }
+
+  getEventType() {
+    return 'InventoryExpired';
+  }
+
+  async handle(event) {
+    const { orderId, reason } = event.payload;
+    logger.info({ orderId, reason }, 'Processing InventoryExpired');
+
+    const outboxEvent = {
+      eventType: 'OrderCancelled',
+      eventVersion: 1,
+      payload: {
+        orderId,
+        reason: reason || 'Inventory reservation expired',
+        traceId: event.payload?.traceId,
+      },
+      metadata: {
+        correlation_id: event.metadata?.correlation_id || event.eventId,
+        causation_id: event.eventId,
+      },
+    };
+
+    await this.checkoutRepo.updateOrderStatus(orderId, OrderStatus.CANCELLED, outboxEvent);
+  }
+}
+
 export async function startConsumers() {
   const checkoutRepo = new CheckoutRepository();
 
@@ -124,11 +188,15 @@ export async function startConsumers() {
   const failedConsumer = new InventoryReservationFailedConsumer(checkoutRepo);
   const paymentAuthorizedConsumer = new PaymentAuthorizedConsumer(checkoutRepo);
   const paymentFailedConsumer = new PaymentFailedConsumer(checkoutRepo);
+  const restaurantRejectedConsumer = new RestaurantRejectedConsumer(checkoutRepo);
+  const inventoryExpiredConsumer = new InventoryExpiredConsumer(checkoutRepo);
 
   await rabbitMQ.registerConsumer(reservedConsumer, pool);
   await rabbitMQ.registerConsumer(failedConsumer, pool);
   await rabbitMQ.registerConsumer(paymentAuthorizedConsumer, pool);
   await rabbitMQ.registerConsumer(paymentFailedConsumer, pool);
+  await rabbitMQ.registerConsumer(restaurantRejectedConsumer, pool);
+  await rabbitMQ.registerConsumer(inventoryExpiredConsumer, pool);
 
   logger.info('Event Consumers started successfully');
 }

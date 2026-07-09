@@ -1,5 +1,5 @@
 import pool from '../config/database.js';
-import { InventoryRepository } from '../infrastructure/InventoryRepository.js';
+
 import { Reservation, ReservationStatus } from '../domain/Reservation.js';
 
 export class InventoryService {

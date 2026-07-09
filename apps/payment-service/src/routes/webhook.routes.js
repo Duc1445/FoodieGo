@@ -2,9 +2,9 @@ import { Router } from 'express';
 import express from 'express';
 import { WebhookController } from './webhook.controller.js';
 
-export function setupWebhookRoutes(repository, webhookSecret) {
+export function setupWebhookRoutes(repository, secretMapping) {
   const router = Router();
-  const webhookController = new WebhookController(repository, webhookSecret);
+  const webhookController = new WebhookController(repository, secretMapping);
 
   // We need the raw body for HMAC signature verification
   // We use express.raw to get exactly what was sent over the wire.

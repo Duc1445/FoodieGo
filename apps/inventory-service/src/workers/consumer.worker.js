@@ -1,7 +1,7 @@
 import { EventConsumer, RabbitMQAdapter } from '@foodiego/events';
 import pool from '../config/database.js';
 import { InventoryService } from '../application/InventoryService.js';
-import { logger } from '../index.js';
+import { logger } from '../context.js';
 
 class OrderPendingReservationConsumer extends EventConsumer {
   constructor(inventoryService) {

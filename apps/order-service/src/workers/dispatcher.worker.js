@@ -1,6 +1,6 @@
 import { OutboxDispatcher, RabbitMQAdapter } from '@foodiego/events';
 import pool from '../config/database.js';
-import { logger } from '../app.js';
+import { logger } from '../context.js';
 
 export async function startDispatcher() {
   const publisher = new RabbitMQAdapter(

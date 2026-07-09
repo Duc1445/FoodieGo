@@ -371,3 +371,20 @@ services:
       - tempo
     networks:
       - foodiego-net
+
+  # ─────────────────────────────────────────────
+  # FRONTEND (Production)
+  # ─────────────────────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile
+    container_name: foodiego-web
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    depends_on:
+      gateway:
+        condition: service_started
+    networks:
+      - foodiego-net

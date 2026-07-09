@@ -1,0 +1,106 @@
+name: Security Pipeline
+
+on:
+  workflow_call:
+  push:
+    branches: [ "develop", "main" ]
+  pull_request:
+    branches: [ "develop", "main" ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  sast:
+    name: Static Application Security Testing
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Run Gitleaks (Secrets)
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITLEAKS_ENABLE_UPLOAD: true
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: javascript
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:javascript"
+
+    - name: Run Semgrep
+      uses: returntocorp/semgrep-action@v1
+      with:
+        config: "p/default"
+        # Fail on high/critical only
+        auditOn: ["medium", "low"]
+
+  dependencies-and-license:
+    name: Supply Chain & Licenses
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm' # Note: adjust if pnpm caching is preferred
+
+    - name: Install pnpm
+      run: npm i -g pnpm
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+
+    - name: Dependency Audit (Warning Only)
+      # Non-blocking audit as per CTO requirement
+      run: pnpm audit --audit-level=high || true
+
+    - name: License Scan (Block GPL/AGPL)
+      # Uses license-checker to fail if forbidden licenses are found
+      run: npx license-checker-rseidelsohn --excludeLicenses "GPL-1.0-only, GPL-1.0-or-later, GPL-2.0-only, GPL-2.0-or-later, GPL-3.0-only, GPL-3.0-or-later, AGPL-1.0-only, AGPL-1.0-or-later, AGPL-3.0-only, AGPL-3.0-or-later" --failOn "GPL-1.0-only;GPL-1.0-or-later;GPL-2.0-only;GPL-2.0-or-later;GPL-3.0-only;GPL-3.0-or-later;AGPL-1.0-only;AGPL-1.0-or-later;AGPL-3.0-only;AGPL-3.0-or-later"
+
+    - name: Generate SBOM (CycloneDX)
+      uses: anchore/sbom-action@v0
+      with:
+        path: .
+        format: cyclonedx-json
+        output-file: sbom.cyclonedx.json
+
+    - name: Upload SBOM Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: sbom
+        path: sbom.cyclonedx.json
+
+  container-scan:
+    name: Container & Filesystem Scan
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Trivy Filesystem Scan (Misconfig & Vulnerabilities)
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
+        # Medium/Low are ignored or exit-code 0

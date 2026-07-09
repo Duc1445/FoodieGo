@@ -19,8 +19,8 @@ const app = express();
 const PORT = process.env.PORT || 3004;
 
 // ─── Platform SDKs ─────────────────────────────────────────────────────────
-const logger = createLogger({ service: 'inventory-service' });
-const metrics = new MetricsRegistry('inventory-service');
+// logger moved
+// metrics moved
 
 // Custom metrics removed to use standardized SDK metrics
 

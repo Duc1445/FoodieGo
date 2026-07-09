@@ -1,5 +1,5 @@
 import pool from '../config/database.js';
-import { logger } from '../app.js';
+import { logger } from '../context.js';
 import { MockGateway } from '../infrastructure/gateways/mock.gateway.js';
 
 export async function startMockGatewayWorker() {
@@ -20,7 +20,7 @@ export async function startMockGatewayWorker() {
          WHERE status = 'PENDING' AND execute_after <= NOW() 
          ORDER BY execute_after ASC 
          FOR UPDATE SKIP LOCKED 
-         LIMIT 10`,
+         LIMIT 100`,
       );
 
       for (const job of res.rows) {
@@ -46,6 +46,7 @@ export async function startMockGatewayWorker() {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'x-key-id': 'default',
               'x-signature': signature,
               'x-timestamp': timestamp.toString(),
               'x-webhook-id': webhookId,

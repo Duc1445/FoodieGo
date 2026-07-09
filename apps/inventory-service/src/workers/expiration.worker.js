@@ -1,5 +1,5 @@
 import pool from '../config/database.js';
-import { logger, metrics } from '../index.js';
+import { logger, metrics } from '../context.js';
 import { ReservationStatus } from '../domain/Reservation.js';
 
 export function startExpirationWorker() {

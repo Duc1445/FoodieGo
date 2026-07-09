@@ -158,6 +158,19 @@ CREATE TABLE IF NOT EXISTS dead_letter_events (
 );
 
 -- ─────────────────────────────────────────────
+-- REPLAY HISTORY (Audit Log)
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS replay_history (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  dlq_id          UUID NOT NULL REFERENCES dead_letter_events(id) ON DELETE CASCADE,
+  replay_id       VARCHAR(255) NOT NULL,
+  operator        VARCHAR(100) DEFAULT 'system',
+  reason          TEXT,
+  replayed_at     TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  result          VARCHAR(50) NOT NULL DEFAULT 'PENDING'
+);
+
+-- ─────────────────────────────────────────────
 -- ORDERS
 -- ─────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS orders (
@@ -295,7 +308,7 @@ CREATE TABLE IF NOT EXISTS payments (
   order_id        UUID NOT NULL,
   amount          DECIMAL(12,2) NOT NULL,
   currency        VARCHAR(3) DEFAULT 'USD',
-  status          VARCHAR(50) NOT NULL DEFAULT 'PENDING', -- CREATED, PENDING, AUTHORIZED, CAPTURED, REFUNDED, FAILED
+  status          VARCHAR(50) NOT NULL DEFAULT 'PENDING', -- CREATED, PENDING, AUTHORIZED, CAPTURED, REFUNDED, FAILED, EXPIRED
   payment_method  VARCHAR(50) NOT NULL, -- CASH, CARD, etc.
   gateway_tx_id   VARCHAR(255),
   provider_transaction_id VARCHAR(255),

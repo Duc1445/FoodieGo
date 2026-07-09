@@ -1,0 +1,8 @@
+{
+  "name": "@foodiego/retry",
+  "version": "1.0.0",
+  "description": "Retry and Circuit Breaker helper",
+  "main": "src/index.js",
+  "type": "module",
+  "dependencies": {}
+}

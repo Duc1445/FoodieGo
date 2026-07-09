@@ -1,0 +1,8 @@
+{
+  "name": "@foodiego/testing",
+  "version": "1.0.0",
+  "description": "Testing utilities for FoodieGo",
+  "main": "src/index.js",
+  "type": "module",
+  "dependencies": {}
+}

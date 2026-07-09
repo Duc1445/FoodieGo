@@ -1,0 +1,8 @@
+{
+  "name": "@foodiego/problem",
+  "version": "1.0.0",
+  "description": "RFC 7807 Problem Details for HTTP APIs",
+  "main": "src/index.js",
+  "type": "module",
+  "dependencies": {}
+}

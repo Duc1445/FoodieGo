@@ -1,0 +1,22 @@
+# Development Compose (Local overrides for HMR)
+version: '3.8'
+
+services:
+  web:
+    image: node:20-alpine
+    container_name: foodiego-web-dev
+    command: sh -c "corepack enable && corepack prepare pnpm@latest --activate && pnpm install && cd apps/web && pnpm run dev --host 0.0.0.0"
+    volumes:
+      - .:/app
+    working_dir: /app
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_DEMO_MODE=true
+      - VITE_GATEWAY_URL=http://localhost:3000
+    networks:
+      - foodiego-network
+
+networks:
+  foodiego-network:
+    external: true

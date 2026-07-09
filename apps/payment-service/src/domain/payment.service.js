@@ -1,25 +1,29 @@
-import { PaymentRepository } from '../infrastructure/payment.repository.js';
+
+import { PaymentAggregate } from './payment.aggregate.js';
+import { IntegrationEventMapper } from './integration-event.mapper.js';
 import { PaymentStatus } from './payment.state.js';
-import { logger, metrics } from '../app.js';
-import crypto from 'crypto';
+import { logger, metrics } from '../context.js';
 import { withSpan } from '@foodiego/tracing';
 
 export class PaymentDomainService {
   /**
    * @param {PaymentRepository} repository
-   * @param {import('./interfaces/payment-gateway.interface.js').IPaymentGateway} gateway
+   * @param {import('../infrastructure/gateways/gateway.registry.js').GatewayRegistry} gatewayRegistry
    */
-  constructor(repository, gateway) {
+  constructor(repository, gatewayRegistry) {
     this.repository = repository;
-    this.gateway = gateway;
+    this.gatewayRegistry = gatewayRegistry;
   }
 
   async processPaymentRequest(event) {
-    const { orderId, amount, currency, paymentMethod, traceId } = event.payload;
+    const { orderId, amount, currency, paymentMethod, traceId, providerId } = event.payload;
     const idempotencyKey = event.eventId; // From PaymentRequested EventEnvelope
     const correlationId = event.metadata?.correlation_id || idempotencyKey;
 
     metrics.increment('payment_requests_total');
+
+    // Resolve Gateway
+    const gateway = this.gatewayRegistry.resolve(providerId || 'mock');
 
     // 1. Create Payment Record (Idempotent)
     const paymentData = {
@@ -33,23 +37,26 @@ export class PaymentDomainService {
 
     const { paymentId, isNew } = await this.repository.createPayment(paymentData);
 
-    // Check current status if not new
-    const existingPayment = await this.repository.getPaymentByOrderId(orderId);
-    if (
-      existingPayment.status !== PaymentStatus.CREATED &&
-      existingPayment.status !== PaymentStatus.PENDING
-    ) {
-      logger.info({ paymentId, status: existingPayment.status }, 'Payment already processed');
-      return; // Already processed
+    // Rehydrate Aggregate
+    const existingPayment = await this.repository.getPaymentById(paymentId);
+    const aggregate = new PaymentAggregate(paymentId, {
+      ...existingPayment,
+      orderId: existingPayment.order_id,
+      gatewayTxId: existingPayment.gateway_tx_id,
+      providerTransactionId: existingPayment.provider_transaction_id,
+    });
+
+    if (aggregate.status !== PaymentStatus.CREATED && aggregate.status !== PaymentStatus.PENDING) {
+      logger.info({ paymentId, status: aggregate.status }, 'Payment already processed');
+      return; 
     }
 
     // 2. Call Gateway
     try {
-      logger.info({ paymentId, amount }, 'Calling Payment Gateway');
-      // Update state to PENDING before sending to gateway
+      logger.info({ paymentId, amount, providerId }, 'Calling Payment Gateway');
       await this.repository.updatePaymentStatus(paymentId, PaymentStatus.PENDING);
 
-      const gatewayRes = await this.gateway.authorize({
+      const gatewayRes = await gateway.authorize({
         paymentId,
         amount,
         currency,
@@ -57,123 +64,132 @@ export class PaymentDomainService {
         idempotencyKey,
       });
 
-      // 3. Handle Synchronous Gateway Response (usually PENDING or DECLINED immediately)
       if (gatewayRes.status === 'DECLINED') {
-        const outboxEvent = {
-          eventType: 'PaymentFailed',
-          eventVersion: 1,
-          payload: { orderId, paymentId, reason: gatewayRes.errorReason, traceId },
-          metadata: { correlation_id: correlationId, causation_id: idempotencyKey },
-        };
-        await this.repository.updatePaymentStatus(
-          paymentId,
-          PaymentStatus.FAILED,
-          gatewayRes.gatewayTxId,
-          gatewayRes.errorReason,
-          outboxEvent,
-        );
-        metrics.increment('payment_failed_total');
-        logger.info({ paymentId, reason: gatewayRes.errorReason }, 'Payment declined by gateway');
+        aggregate.fail(gatewayRes.errorReason);
       } else {
-        // gatewayRes.status === 'PENDING'
-        // We do not dispatch PaymentAuthorized yet. We wait for Webhook.
-        await this.repository.updatePaymentStatus(
-          paymentId,
-          PaymentStatus.PENDING,
-          gatewayRes.gatewayTxId,
-        );
+        // Wait for webhook for authorization
+        await this.repository.updatePaymentStatus(paymentId, PaymentStatus.PENDING, gatewayRes.gatewayTxId);
         logger.info({ paymentId }, 'Payment pending asynchronous webhook confirmation');
+        return;
       }
+
     } catch (err) {
       metrics.increment('payment_timeout_total');
       logger.error({ paymentId, err: err.message }, 'Gateway error');
-      // We don't update DB to FAILED immediately on network errors/timeouts
-      // We let the consumer throw, which triggers RabbitMQ Retry mechanisms.
-      // The idempotency key ensures we can safely retry this operation.
       throw err;
     }
+
+    // Persist Domain Events if any (e.g. Failure)
+    await this._persistAggregateState(aggregate, correlationId, idempotencyKey, event.payload.traceId);
   }
 
-  async processVerifiedWebhook(
-    eventId,
-    provider,
-    providerTransactionId,
-    status,
-    payload,
-    traceparentHeader,
-  ) {
+  async processVerifiedWebhook(eventId, provider, providerTransactionId, status, payload, traceparentHeader) {
     return await withSpan('Payment Service', async (span) => {
-      // This payload is guaranteed to be trusted (verified by WebhookController)
       const { reference } = payload.data; // reference corresponds to paymentId
 
-      const payment = await this.repository.getPaymentById(reference);
-      if (!payment) {
-        throw new Error(`Payment not found for reference: ${reference}`);
-      }
+      const paymentRecord = await this.repository.getPaymentById(reference);
+      if (!paymentRecord) throw new Error(`Payment not found for reference: ${reference}`);
 
-      const correlationId = payment.idempotency_key; // Using idempotencyKey of creation as correlation
+      const aggregate = new PaymentAggregate(paymentRecord.id, {
+        ...paymentRecord,
+        orderId: paymentRecord.order_id,
+        gatewayTxId: paymentRecord.gateway_tx_id,
+        providerTransactionId: paymentRecord.provider_transaction_id,
+      });
 
-      // 4. State transition
-      let newStatus = PaymentStatus.FAILED;
-      let outboxEvent = null;
-      let errorReason = null;
+      const correlationId = paymentRecord.idempotency_key;
 
       if (status === 'AUTHORIZED' || status === 'CAPTURED') {
-        newStatus = PaymentStatus.AUTHORIZED;
-        outboxEvent = {
-          eventType: 'PaymentAuthorized',
-          eventVersion: 1,
-          payload: {
-            orderId: payment.order_id,
-            paymentId: payment.id,
-            gatewayTxId: providerTransactionId,
-            amount: payment.amount,
-            traceId: payment.idempotency_key, // using idempotencyKey as a fallback traceId context if needed
-          },
-          metadata: {
-            traceparent: traceparentHeader,
-            correlation_id: correlationId,
-            causation_id: eventId,
-          },
-        };
-      } else {
-        errorReason = 'Gateway reported failure via webhook';
-        outboxEvent = {
-          eventType: 'PaymentFailed',
-          eventVersion: 1,
-          payload: {
-            orderId: payment.order_id,
-            paymentId: payment.id,
-            reason: errorReason,
-            traceId: payment.idempotency_key,
-          },
-          metadata: {
-            traceparent: traceparentHeader,
-            correlation_id: correlationId,
-            causation_id: eventId,
-          },
-        };
-      }
-
-      // 5. Update DB inside transaction
-      await this.repository.updatePaymentAfterWebhook(
-        payment.id,
-        newStatus,
-        providerTransactionId,
-        errorReason,
-        outboxEvent,
-      );
-
-      if (newStatus === PaymentStatus.AUTHORIZED) {
-        metrics.increment('payment_authorized_total');
-      } else {
+        if (aggregate.status === PaymentStatus.PENDING) {
+           aggregate.authorize(providerTransactionId);
+           metrics.increment('payment_authorized_total');
+        } else if (aggregate.status === PaymentStatus.AUTHORIZED && status === 'CAPTURED') {
+           aggregate.capture(providerTransactionId);
+        }
+      } else if (status === 'FAILED') {
+        aggregate.fail('Gateway reported failure via webhook');
         metrics.increment('payment_failed_total');
       }
-      logger.info(
-        { eventId, paymentId: payment.id, status: newStatus },
-        'Webhook business logic processed successfully',
-      );
+
+      await this._persistAggregateState(aggregate, correlationId, eventId, paymentRecord.idempotency_key, traceparentHeader);
       span.setStatus({ code: 1, message: 'Processed' });
     });
+  }
+
+  async refundPayment(orderId, reason, traceId) {
+    const paymentRecord = await this.repository.getPaymentByOrderId(orderId);
+    if (!paymentRecord) {
+      logger.warn({ orderId }, 'No payment found to refund for cancelled order');
+      return;
+    }
+
+    const aggregate = new PaymentAggregate(paymentRecord.id, {
+      ...paymentRecord,
+      orderId: paymentRecord.order_id,
+      gatewayTxId: paymentRecord.gateway_tx_id,
+    });
+
+    if (aggregate.status === PaymentStatus.REFUNDED) return;
+
+    // Must be idempotent
+    const refundIdempotencyKey = `${paymentRecord.id}_${reason}_v1`;
+    const correlationId = paymentRecord.idempotency_key;
+
+    // Call gateway
+    const gateway = this.gatewayRegistry.resolve('mock'); // For now fallback to mock or parse provider
+    try {
+      logger.info({ paymentId: aggregate.id, reason }, 'Requesting refund from gateway');
+      const refundRes = await gateway.refund({
+        paymentId: aggregate.id,
+        gatewayTxId: aggregate.gatewayTxId,
+        amount: aggregate.amount,
+        idempotencyKey: refundIdempotencyKey
+      });
+
+      if (refundRes.status === 'REFUNDED') {
+        aggregate.refund(reason);
+      }
+    } catch (err) {
+      logger.error({ err: err.message }, 'Failed to refund payment');
+      throw err;
+    }
+
+    await this._persistAggregateState(aggregate, correlationId, refundIdempotencyKey, traceId);
+  }
+
+  async _persistAggregateState(aggregate, correlationId, causationId, traceId, traceparent = null) {
+    const domainEvents = aggregate.pullDomainEvents();
+    
+    // We only process the first domain event for simplicity in this PoC Outbox
+    // In a real system, you'd insert multiple outbox records.
+    let outboxEvent = null;
+    
+    if (domainEvents.length > 0) {
+      const integrationEvent = IntegrationEventMapper.mapDomainToIntegration(domainEvents[0], {
+        orderId: aggregate.orderId,
+        traceId: traceId
+      });
+
+      if (integrationEvent) {
+        outboxEvent = {
+          eventType: integrationEvent.eventType,
+          eventVersion: integrationEvent.eventVersion,
+          payload: integrationEvent.payload,
+          metadata: {
+            traceparent: traceparent,
+            correlation_id: correlationId,
+            causation_id: causationId,
+          }
+        };
+      }
+    }
+
+    await this.repository.updatePaymentAfterWebhook(
+      aggregate.id,
+      aggregate.status,
+      aggregate.gatewayTxId,
+      aggregate.errorReason,
+      outboxEvent
+    );
   }
 }

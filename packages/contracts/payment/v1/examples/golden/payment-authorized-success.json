@@ -1,0 +1,15 @@
+{
+  "eventId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000",
+  "causationId": "b1b72e9a-9e11-4770-b74e-6e828e53df4e",
+  "occurredOn": "2026-07-07T10:00:00.000Z",
+  "aggregateId": "p-12345",
+  "payload": {
+    "paymentId": "p-12345",
+    "orderId": "o-67890",
+    "amount": 250000,
+    "currency": "VND",
+    "gateway": "vnpay",
+    "transactionId": "vnp-99999"
+  }
+}

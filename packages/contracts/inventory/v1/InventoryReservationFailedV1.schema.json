@@ -1,0 +1,30 @@
+{
+  "$id": "https://foodiego.com/schemas/events/inventory/InventoryReservationFailedV1.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "InventoryReservationFailedV1",
+  "type": "object",
+  "properties": {
+    "eventId": { "type": "string", "format": "uuid" },
+    "eventType": { "const": "InventoryReservationFailedV1" },
+    "eventVersion": { "const": 1 },
+    "occurredAt": { "type": "string", "format": "date-time" },
+    "correlationId": { "type": "string", "format": "uuid" },
+    "causationId": { "type": "string", "format": "uuid" },
+    "aggregateId": { "type": "string" },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "reservationId": { "type": "string", "format": "uuid" },
+        "orderId": { "type": "string", "format": "uuid" },
+        "reason": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["reservationId", "orderId", "reason", "timestamp"],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "eventId", "eventType", "eventVersion", "occurredAt", "correlationId", "causationId", "aggregateId", "payload"
+  ],
+  "additionalProperties": false
+}

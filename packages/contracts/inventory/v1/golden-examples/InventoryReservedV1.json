@@ -1,0 +1,21 @@
+{
+  "eventId": "123e4567-e89b-12d3-a456-426614174000",
+  "eventType": "InventoryReservedV1",
+  "eventVersion": 1,
+  "occurredAt": "2026-07-07T10:00:00Z",
+  "correlationId": "223e4567-e89b-12d3-a456-426614174001",
+  "causationId": "323e4567-e89b-12d3-a456-426614174002",
+  "aggregateId": "423e4567-e89b-12d3-a456-426614174003",
+  "payload": {
+    "reservationId": "423e4567-e89b-12d3-a456-426614174003",
+    "orderId": "523e4567-e89b-12d3-a456-426614174004",
+    "items": [
+      {
+        "foodId": "f123e456-e89b-12d3-a456-426614174005",
+        "variantId": "v123e456-e89b-12d3-a456-426614174006",
+        "quantity": 2
+      }
+    ],
+    "timestamp": "2026-07-07T10:00:00.000Z"
+  }
+}

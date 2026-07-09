@@ -1,11 +1,11 @@
 import crypto from 'crypto';
-import { logger, metrics } from '../app.js';
+import { logger, metrics } from '../context.js';
 import { withSpan, extractTraceContext, runWithContext } from '@foodiego/tracing';
 
 export class WebhookController {
-  constructor(repository, webhookSecret) {
+  constructor(repository, secretMapping) {
     this.repository = repository;
-    this.webhookSecret = webhookSecret;
+    this.secretMapping = secretMapping;
   }
 
   async handlePaymentWebhook(req, res) {
@@ -46,10 +46,19 @@ export class WebhookController {
             return res.status(403).send('Forbidden: Expired timestamp');
           }
 
+          // Resolve secret using kid
+          const kid = req.headers['x-key-id'] || req.headers['kid'];
+          let secretToUse = this.secretMapping[kid];
+          
+          if (!secretToUse) {
+            logger.warn({ kid }, 'Missing or unknown key ID, falling back to default secret');
+            secretToUse = this.secretMapping['default'];
+          }
+
           // 2. Signature Verification (Zero Trust)
           await withSpan('Verify Signature', async (sigSpan) => {
             const expectedSignature = crypto
-              .createHmac('sha256', this.webhookSecret)
+              .createHmac('sha256', secretToUse)
               .update(rawBody)
               .digest('hex');
 

@@ -16,8 +16,8 @@ const app = express();
 const PORT = process.env.PORT || 3003;
 
 // ─── Platform SDKs ─────────────────────────────────────────────────────────
-const logger = createLogger({ service: 'order-service' });
-const metrics = new MetricsRegistry('order-service');
+// logger moved
+// metrics moved
 
 // ─── Middleware ─────────────────────────────────────────────────────────────
 app.use(helmet());

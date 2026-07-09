@@ -1,0 +1,16 @@
+{
+  "name": "@foodiego/api-sdk",
+  "version": "1.0.0",
+  "description": "FoodieGo API SDK",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*"
+  },
+  "dependencies": {
+    "axios": "^1.7.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}

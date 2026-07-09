@@ -1,4 +1,4 @@
-import { logger, metrics } from '../app.js';
+import { logger, metrics } from '../context.js';
 import { withSpan, extractTraceContext, runWithContext } from '@foodiego/tracing';
 
 export async function startWebhookWorker(paymentService, paymentRepository) {

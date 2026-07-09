@@ -1,0 +1,15 @@
+{
+  "eventId": "123e4567-e89b-12d3-a456-426614174000",
+  "eventType": "VariantAddedV1",
+  "eventVersion": 1,
+  "occurredAt": "2026-07-07T10:00:00Z",
+  "correlationId": "223e4567-e89b-12d3-a456-426614174001",
+  "causationId": "323e4567-e89b-12d3-a456-426614174002",
+  "aggregateId": "423e4567-e89b-12d3-a456-426614174003",
+  "payload": {
+    "foodId": "423e4567-e89b-12d3-a456-426614174003",
+    "variantId": "523e4567-e89b-12d3-a456-426614174004",
+    "sku": "SKU-BURGER-123",
+    "timestamp": "2026-07-07T10:00:00.000Z"
+  }
+}

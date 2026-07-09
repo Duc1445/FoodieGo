@@ -1,6 +1,6 @@
 import { IPaymentGateway } from '../../domain/interfaces/payment-gateway.interface.js';
 import crypto from 'crypto';
-import { logger } from '../../app.js';
+import { logger } from '../../context.js';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -86,9 +86,19 @@ export class MockGateway extends IPaymentGateway {
     };
   }
 
-  async refundPayment(params) {
-    const { gatewayTxId, amount, reason } = params;
-    logger.info({ gatewayTxId, amount, reason }, 'MockGateway processing refund');
+  async capture(params) {
+    const { paymentId, gatewayTxId, amount } = params;
+    logger.info({ paymentId, gatewayTxId, amount }, 'MockGateway processing capture');
+    
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    return {
+      status: 'CAPTURED',
+    };
+  }
+
+  async refund(params) {
+    const { paymentId, gatewayTxId, amount, idempotencyKey } = params;
+    logger.info({ paymentId, gatewayTxId, amount, idempotencyKey }, 'MockGateway processing refund');
 
     await new Promise((resolve) => setTimeout(resolve, 300));
 

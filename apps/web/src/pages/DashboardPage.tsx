@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardHeader, CardTitle, CardContent } from '@foodiego/ui';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import api from '../services/api';
+import { api } from '../lib/api';
 
 interface AnalyticsData {
   overview: {
@@ -128,7 +128,7 @@ export function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {data.recentOrders.map((order) => (
+              {data.recentOrders.map((order: any) => (
                 <div key={order.id} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0">
                   <div>
                     <p className="text-sm font-medium">{order.customer}</p>

@@ -266,6 +266,15 @@ VALUES (
   'admin'
 ) ON CONFLICT (email) DO NOTHING;
 
+-- Customer account (password: Admin@123)
+INSERT INTO users (email, password, full_name, role)
+VALUES (
+  'customer@foodiego.com',
+  '$2b$10$rBV2JDeWW3.vKBBnpkVkpOUwG0Q2K6mOGpT0Gk5dRfBN/8kQR1.9a',
+  'FoodieGo Customer',
+  'customer'
+) ON CONFLICT (email) DO NOTHING;
+
 -- ─────────────────────────────────────────────
 -- INVENTORY SERVICE
 -- ─────────────────────────────────────────────

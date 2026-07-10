@@ -7,14 +7,15 @@
 - Added shared auth-session helpers for JWT validation and redirect paths.
 - Converted Sprint 1 dashboards to skeleton-only layouts.
 - Kept shared mocks limited to analytics only.
+- Fixed monorepo TypeScript configuration so `pnpm typecheck` passes across all workspace packages.
 
 ## Verification
-- `pnpm --filter web build` ✅
-- `pnpm lint` ✅ with pre-existing warnings outside Sprint 1 scope
-- `pnpm typecheck` ⚠️ fails in workspace packages because several package `tsconfig.json` files are missing
+- `pnpm typecheck` ✅ passes (exit 0, no errors)
+- `pnpm lint` ✅ with pre-existing warnings outside Sprint 1 scope (0 errors)
 - `pnpm build` ✅
-- `docker compose up --build -d web` ✅
+- `docker compose up --build` ✅ all containers up
 
 ## Notes
 - Live test accounts use `Admin@123`.
 - Customer, merchant, and admin login all now succeed against the live stack.
+- See walkthrough.md for the full root-cause analysis of the tsconfig fix.

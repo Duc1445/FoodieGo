@@ -20,7 +20,6 @@ const PORT = process.env.PORT || 3000;
 const logger = createLogger({ service: 'gateway' });
 const metrics = new MetricsRegistry('gateway');
 
-
 // ─── Security Middleware ───────────────────────────────────────────────────
 app.use(helmet());
 app.use(cors({ origin: '*', methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] }));
@@ -34,8 +33,8 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // ─── Observability Middleware ──────────────────────────────────────────────
-app.use(requestLogger(logger));       // Structured logging with auto traceId
-app.use(metrics.httpMiddleware());    // Prometheus metrics (standardized)
+app.use(requestLogger(logger)); // Structured logging with auto traceId
+app.use(metrics.httpMiddleware()); // Prometheus metrics (standardized)
 
 // ─── Health & Metrics ──────────────────────────────────────────────────────
 app.get('/health', (_req, res) => res.json({ status: 'ok', service: 'gateway' }));
@@ -59,8 +58,15 @@ const proxyOptions = (target) => ({
 
 app.use('/api/v1/auth', createProxyMiddleware(proxyOptions(process.env.IDENTITY_SERVICE_URL)));
 app.use('/api/v1/users', createProxyMiddleware(proxyOptions(process.env.IDENTITY_SERVICE_URL)));
-app.use('/api/v1/categories', createProxyMiddleware(proxyOptions(process.env.RESTAURANT_SERVICE_URL)));
-app.use('/api/v1/restaurants', createProxyMiddleware(proxyOptions(process.env.RESTAURANT_SERVICE_URL)));
+app.use(
+  '/api/v1/categories',
+  createProxyMiddleware(proxyOptions(process.env.RESTAURANT_SERVICE_URL)),
+);
+app.use(
+  '/api/v1/restaurants',
+  createProxyMiddleware(proxyOptions(process.env.RESTAURANT_SERVICE_URL)),
+);
+app.use('/api/v1/menus', createProxyMiddleware(proxyOptions(process.env.RESTAURANT_SERVICE_URL)));
 app.use('/api/v1/orders', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
 app.use('/api/v1/cart', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
 app.use('/api/v1/delivery', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));

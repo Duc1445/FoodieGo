@@ -3,7 +3,7 @@ import { jest } from '@jest/globals';
 
 // Mock the database module
 const mockQuery = jest.fn();
-jest.unstable_mockModule('../models/user.model.js', () => ({
+jest.unstable_mockModule('../modules/user/repositories/user.repository.js', () => ({
   findUserByEmail: jest.fn(),
   findUserById: jest.fn(),
   createUser: jest.fn(),
@@ -22,10 +22,10 @@ jest.unstable_mockModule('bcryptjs', () => ({
   },
 }));
 
-const { findUserByEmail, findUserById, createUser, updateUser } = await import('../models/user.model.js');
+const { findUserByEmail, findUserById, createUser, updateUser } = await import('../modules/user/repositories/user.repository.js');
 const { generateToken } = await import('../config/jwt.js');
 const bcrypt = (await import('bcryptjs')).default;
-const { register, login, getProfile, updateProfile } = await import('../services/auth.service.js');
+const { register, login, getProfile, updateProfile } = await import('../modules/auth/services/auth.service.js');
 
 describe('Auth Service', () => {
   beforeEach(() => {

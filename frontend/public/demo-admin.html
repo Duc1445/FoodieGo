@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FoodieGo Demo - Admin</title>
+    <style>
+      html, body { margin: 0; width: 100%; height: 100%; background: #fcf8f2; }
+      iframe { width: 100%; height: 100%; border: 0; display: block; }
+    </style>
+    <script>
+      localStorage.setItem('token', 'admin-token');
+      localStorage.setItem('user', JSON.stringify({ id: 'admin-id', full_name: 'Admin Demo', role: 'admin' }));
+      window.__FOODIEGO_DEMO__ = {
+        defaultRole: 'admin',
+        user: { id: 'admin-id', full_name: 'Admin Demo', role: 'admin' },
+      };
+    </script>
+  </head>
+  <body>
+    <iframe src="./admin.html#/dashboard"></iframe>
+  </body>
+</html>

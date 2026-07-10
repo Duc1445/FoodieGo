@@ -17,14 +17,14 @@ import jwt from 'jsonwebtoken';
 
 describe('Cart Routes', () => {
   const token = jwt.sign({ id: '123e4567-e89b-12d3-a456-426614174001', role: 'customer' }, 'fallback_secret');
-  const foodId = '123e4567-e89b-12d3-a456-426614174002';
+  const menuId = '123e4567-e89b-12d3-a456-426614174002';
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('GET /api/cart - should return cart items', async () => {
-    pool.query.mockResolvedValueOnce({ rows: [{ food_id: foodId, quantity: 2, price: 10 }] });
+    pool.query.mockResolvedValueOnce({ rows: [{ menu_id: menuId, quantity: 2, price: 10 }] });
     const res = await request(app)
       .get('/api/cart')
       .set('Authorization', `Bearer ${token}`);
@@ -32,44 +32,44 @@ describe('Cart Routes', () => {
   });
 
   it('POST /api/cart - should add item to cart', async () => {
-    pool.query.mockResolvedValueOnce({ rows: [{ food_id: foodId, quantity: 1 }] });
+    pool.query.mockResolvedValueOnce({ rows: [{ menu_id: menuId, quantity: 1 }] });
     const res = await request(app)
       .post('/api/cart')
       .set('Authorization', `Bearer ${token}`)
-      .send({ food_id: foodId, quantity: 1 });
+      .send({ menu_id: menuId, quantity: 1 });
     expect(res.status).toBe(201);
   });
 
-  it('PUT /api/cart/:foodId - should update quantity', async () => {
-    pool.query.mockResolvedValueOnce({ rows: [{ food_id: foodId, quantity: 5 }] });
+  it('PUT /api/cart/:menuId - should update quantity', async () => {
+    pool.query.mockResolvedValueOnce({ rows: [{ menu_id: menuId, quantity: 5 }] });
     const res = await request(app)
-      .put(`/api/cart/${foodId}`)
+      .put(`/api/cart/${menuId}`)
       .set('Authorization', `Bearer ${token}`)
       .send({ quantity: 5 });
     expect(res.status).toBe(200);
   });
 
-  it('PUT /api/cart/:foodId - should return 404 if not found', async () => {
+  it('PUT /api/cart/:menuId - should return 404 if not found', async () => {
     pool.query.mockResolvedValueOnce({ rows: [] });
     const res = await request(app)
-      .put(`/api/cart/${foodId}`)
+      .put(`/api/cart/${menuId}`)
       .set('Authorization', `Bearer ${token}`)
       .send({ quantity: 5 });
     expect(res.status).toBe(404);
   });
 
-  it('DELETE /api/cart/:foodId - should remove item', async () => {
+  it('DELETE /api/cart/:menuId - should remove item', async () => {
     pool.query.mockResolvedValueOnce({ rowCount: 1, rows: [] });
     const res = await request(app)
-      .delete(`/api/cart/${foodId}`)
+      .delete(`/api/cart/${menuId}`)
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
   });
 
-  it('DELETE /api/cart/:foodId - should return 404 if not found', async () => {
+  it('DELETE /api/cart/:menuId - should return 404 if not found', async () => {
     pool.query.mockResolvedValueOnce({ rowCount: 0, rows: [] });
     const res = await request(app)
-      .delete(`/api/cart/${foodId}`)
+      .delete(`/api/cart/${menuId}`)
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(404);
   });

@@ -9,7 +9,7 @@ jest.unstable_mockModule('../config/database.js', () => {
 });
 
 const pool = (await import('../config/database.js')).default;
-const { getCart, addItem, updateItem, removeItem, clearCart } = await import('../models/cart.model.js');
+const { getCart, addItem, updateItem, removeItem, clearCart } = await import('../modules/cart/repositories/cart.repository.js');
 
 describe('Cart Model', () => {
   beforeEach(() => {
@@ -17,21 +17,21 @@ describe('Cart Model', () => {
   });
 
   it('getCart - should return rows', async () => {
-    pool.query.mockResolvedValueOnce({ rows: [{ food_id: '1' }] });
+    pool.query.mockResolvedValueOnce({ rows: [{ menu_id: '1' }] });
     const res = await getCart('user-1');
-    expect(res).toEqual([{ food_id: '1' }]);
+    expect(res).toEqual([{ menu_id: '1' }]);
   });
 
   it('addItem - should return created row', async () => {
-    pool.query.mockResolvedValueOnce({ rows: [{ food_id: '1' }] });
+    pool.query.mockResolvedValueOnce({ rows: [{ menu_id: '1' }] });
     const res = await addItem('user-1', '1', 2);
-    expect(res).toEqual({ food_id: '1' });
+    expect(res).toEqual({ menu_id: '1' });
   });
 
   it('updateItem - should return updated row', async () => {
-    pool.query.mockResolvedValueOnce({ rows: [{ food_id: '1' }] });
+    pool.query.mockResolvedValueOnce({ rows: [{ menu_id: '1' }] });
     const res = await updateItem('user-1', '1', 5);
-    expect(res).toEqual({ food_id: '1' });
+    expect(res).toEqual({ menu_id: '1' });
   });
 
   it('removeItem - should return true if rowCount > 0', async () => {

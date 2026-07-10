@@ -10,7 +10,7 @@ jest.unstable_mockModule('../config/database.js', () => {
 });
 
 const pool = (await import('../config/database.js')).default;
-const { create, findByUserId, findById, updateStatus } = await import('../models/order.model.js');
+const { create, findByUserId, findById, updateStatus } = await import('../modules/checkout/repositories/checkout.repository.js');
 
 describe('Order Model', () => {
   beforeEach(() => {
@@ -25,9 +25,9 @@ describe('Order Model', () => {
 
   it('findById - should return order with items', async () => {
     pool.query.mockResolvedValueOnce({ rows: [{ id: '1' }] }); // order
-    pool.query.mockResolvedValueOnce({ rows: [{ food_id: 'food-1' }] }); // items
+    pool.query.mockResolvedValueOnce({ rows: [{ menu_id: 'menu-1' }] }); // items
     const res = await findById('1');
-    expect(res).toEqual({ id: '1', items: [{ food_id: 'food-1' }] });
+    expect(res).toEqual({ id: '1', items: [{ menu_id: 'menu-1' }] });
   });
 
   it('findById - should return null if not found', async () => {
@@ -58,7 +58,7 @@ describe('Order Model', () => {
       userId: 'user-1',
       note: 'note',
       address: 'address',
-      items: [{ food_id: 'food-1', quantity: 2, price: 50 }],
+      items: [{ menu_id: 'menu-1', quantity: 2, price: 50 }],
     });
 
     expect(res).toEqual({ id: '1', total_price: 100 });
@@ -80,7 +80,7 @@ describe('Order Model', () => {
         userId: 'user-1',
         note: 'note',
         address: 'address',
-        items: [{ food_id: 'food-1', quantity: 2, price: 50 }],
+        items: [{ menu_id: 'menu-1', quantity: 2, price: 50 }],
       })
     ).rejects.toThrow('DB error');
 

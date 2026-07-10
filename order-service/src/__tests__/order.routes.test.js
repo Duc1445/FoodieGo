@@ -19,7 +19,7 @@ describe('Order Routes', () => {
   const token = jwt.sign({ id: '123e4567-e89b-12d3-a456-426614174001', role: 'customer' }, 'fallback_secret');
   const adminToken = jwt.sign({ id: '123e4567-e89b-12d3-a456-426614174009', role: 'admin' }, 'fallback_secret');
   const orderId = '123e4567-e89b-12d3-a456-426614174004';
-  const foodId = '123e4567-e89b-12d3-a456-426614174002';
+  const menuId = '123e4567-e89b-12d3-a456-426614174002';
   
   beforeEach(() => {
     jest.clearAllMocks();
@@ -37,7 +37,7 @@ describe('Order Routes', () => {
     // 1st query: order details
     pool.query.mockResolvedValueOnce({ rows: [{ id: orderId, total_price: 100, user_id: '123e4567-e89b-12d3-a456-426614174001' }] });
     // 2nd query: order items
-    pool.query.mockResolvedValueOnce({ rows: [{ food_id: foodId, quantity: 2 }] });
+    pool.query.mockResolvedValueOnce({ rows: [{ menu_id: menuId, quantity: 2 }] });
     const res = await request(app)
       .get(`/api/orders/${orderId}`)
       .set('Authorization', `Bearer ${token}`);
@@ -75,7 +75,7 @@ describe('Order Routes', () => {
     pool.connect.mockResolvedValueOnce(mockClient);
     
     // cart items query (getCart) uses pool.query
-    pool.query.mockResolvedValueOnce({ rows: [{ food_id: foodId, quantity: 2, price: 50 }] });
+    pool.query.mockResolvedValueOnce({ rows: [{ menu_id: menuId, quantity: 2, price: 50 }] });
     
     // OrderModel.create transaction uses mockClient.query
     mockClient.query.mockResolvedValueOnce({ rows: [] }); // BEGIN

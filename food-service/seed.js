@@ -15,7 +15,7 @@ const categories = [
   { id: crypto.randomUUID(), name: 'Tráng miệng', description: 'Chè, bánh ngọt' }
 ];
 
-const foods = [
+const menus = [
   // Phở & Bún
   { name: 'Phở bò tái nạm', desc: 'Phở bò nước dùng ngọt thanh', price: 45000, img: 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?q=80&w=1974&auto=format&fit=crop', c_idx: 0 },
   { name: 'Phở gà ta', desc: 'Phở gà thịt mềm, da giòn', price: 40000, img: 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?q=80&w=1974&auto=format&fit=crop', c_idx: 0 },
@@ -80,9 +80,9 @@ const foods = [
 ];
 
 async function seed() {
-  console.log('Seeding Database with 50+ Vietnamese foods...');
+  console.log('Seeding Database with 50+ Vietnamese menus...');
   try {
-    // Clear out foods & categories
+    // Clear out menus & categories
     console.log('Truncating tables...');
     await pool.query('TRUNCATE TABLE categories CASCADE');
 
@@ -93,11 +93,11 @@ async function seed() {
       );
     }
 
-    for (const f of foods) {
+    for (const f of menus) {
       const catId = categories[f.c_idx].id;
       const fId = crypto.randomUUID();
       await pool.query(
-        'INSERT INTO foods (id, name, description, price, image_url, category_id, is_available) VALUES ($1, $2, $3, $4, $5, $6, true)',
+        'INSERT INTO menus (id, name, description, price, image_url, category_id, is_available) VALUES ($1, $2, $3, $4, $5, $6, true)',
         [fId, f.name, f.desc, f.price, f.img, catId]
       );
     }

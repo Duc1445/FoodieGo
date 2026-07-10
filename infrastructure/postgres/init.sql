@@ -40,9 +40,9 @@ CREATE TABLE IF NOT EXISTS categories (
 );
 
 -- ─────────────────────────────────────────────
--- FOODS
+-- MENUS
 -- ─────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS foods (
+CREATE TABLE IF NOT EXISTS menus (
   id           UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name         VARCHAR(255) NOT NULL,
   description  TEXT,
@@ -54,8 +54,8 @@ CREATE TABLE IF NOT EXISTS foods (
   updated_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_foods_category ON foods(category_id);
-CREATE INDEX IF NOT EXISTS idx_foods_name     ON foods USING gin(to_tsvector('simple', name));
+CREATE INDEX IF NOT EXISTS idx_menus_category ON menus(category_id);
+CREATE INDEX IF NOT EXISTS idx_menus_name     ON menus USING gin(to_tsvector('simple', name));
 
 -- ─────────────────────────────────────────────
 -- ORDERS
@@ -83,7 +83,7 @@ CREATE INDEX IF NOT EXISTS idx_orders_status  ON orders(status);
 CREATE TABLE IF NOT EXISTS order_items (
   id        UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   order_id  UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
-  food_id   UUID NOT NULL REFERENCES foods(id) ON DELETE RESTRICT,
+  menu_id   UUID NOT NULL REFERENCES menus(id) ON DELETE RESTRICT,
   quantity  INTEGER NOT NULL CHECK (quantity > 0),
   price     DECIMAL(12,2) NOT NULL CHECK (price >= 0)
 );
@@ -95,9 +95,9 @@ CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
 -- ─────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS cart_items (
   user_id   UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  food_id   UUID NOT NULL REFERENCES foods(id) ON DELETE CASCADE,
+  menu_id   UUID NOT NULL REFERENCES menus(id) ON DELETE CASCADE,
   quantity  INTEGER NOT NULL CHECK (quantity > 0),
-  PRIMARY KEY (user_id, food_id)
+  PRIMARY KEY (user_id, menu_id)
 );
 
 -- ─────────────────────────────────────────────

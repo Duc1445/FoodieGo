@@ -80,7 +80,7 @@ app.use('/api/auth', createProxyMiddleware(proxyOptions(process.env.USER_SERVICE
 app.use('/api/users', createProxyMiddleware(proxyOptions(process.env.USER_SERVICE_URL)));
 app.use('/api/employees', createProxyMiddleware(proxyOptions(process.env.USER_SERVICE_URL)));
 app.use('/api/categories', createProxyMiddleware(proxyOptions(process.env.FOOD_SERVICE_URL)));
-app.use('/api/foods', createProxyMiddleware(proxyOptions(process.env.FOOD_SERVICE_URL)));
+app.use('/api/menus', createProxyMiddleware(proxyOptions(process.env.FOOD_SERVICE_URL)));
 app.use('/api/orders', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
 app.use('/api/cart', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
 app.use('/api/delivery', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));

@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
   phone       VARCHAR(20),
   address     TEXT,
   role        VARCHAR(20) NOT NULL DEFAULT 'customer'
-                CHECK (role IN ('customer', 'admin', 'shipper')),
+                CHECK (role IN ('customer', 'admin', 'shipper', 'merchant')),
   is_active   BOOLEAN NOT NULL DEFAULT true,
   created_at  TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at  TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -261,7 +261,7 @@ CREATE TABLE IF NOT EXISTS delivery (
 INSERT INTO users (email, password, full_name, role)
 VALUES (
   'admin@foodiego.com',
-  '$2b$10$rBV2JDeWW3.vKBBnpkVkpOUwG0Q2K6mOGpT0Gk5dRfBN/8kQR1.9a',
+  '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS',
   'FoodieGo Admin',
   'admin'
 ) ON CONFLICT (email) DO NOTHING;
@@ -270,9 +270,18 @@ VALUES (
 INSERT INTO users (email, password, full_name, role)
 VALUES (
   'customer@foodiego.com',
-  '$2b$10$rBV2JDeWW3.vKBBnpkVkpOUwG0Q2K6mOGpT0Gk5dRfBN/8kQR1.9a',
+  '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS',
   'FoodieGo Customer',
   'customer'
+) ON CONFLICT (email) DO NOTHING;
+
+-- Merchant account (password: Admin@123)
+INSERT INTO users (email, password, full_name, role)
+VALUES (
+  'merchant@foodiego.com',
+  '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS',
+  'FoodieGo Merchant',
+  'merchant'
 ) ON CONFLICT (email) DO NOTHING;
 
 -- ─────────────────────────────────────────────

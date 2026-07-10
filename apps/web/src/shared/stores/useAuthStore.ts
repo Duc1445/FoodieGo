@@ -3,9 +3,9 @@ import { persist } from 'zustand/middleware';
 
 export interface User {
   id: string;
-  name: string;
   role: 'customer' | 'merchant' | 'admin';
   email?: string;
+  name?: string;
   full_name?: string;
   restaurantId?: string; // For merchant
 }

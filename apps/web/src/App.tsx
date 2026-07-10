@@ -6,13 +6,13 @@ import { lazy, Suspense } from 'react';
 import { Skeleton } from '@foodiego/ui';
 import { ErrorBoundary } from './shared/components/ErrorBoundary';
 import { RoleGuard } from './shared/components/RoleGuard';
+import { ProtectedRoute } from './shared/components/ProtectedRoute';
 
-// Layouts
 const CustomerLayout = lazy(() => import('./customer/layouts/CustomerLayout').then(module => ({ default: module.CustomerLayout })));
 const AuthLayout = lazy(() => import('./customer/layouts/AuthLayout').then(module => ({ default: module.AuthLayout })));
 const MerchantLayout = lazy(() => import('./merchant/layouts/MerchantLayout').then(module => ({ default: module.MerchantLayout })));
+const AdminLayout = lazy(() => import('./admin/layouts/AdminLayout').then(module => ({ default: module.AdminLayout })));
 
-// Customer Pages
 const LandingPage = lazy(() => import('./customer/pages/LandingPage').then(module => ({ default: module.LandingPage })));
 const SearchPage = lazy(() => import('./customer/pages/SearchPage').then(module => ({ default: module.SearchPage })));
 const RestaurantDetailPage = lazy(() => import('./customer/pages/RestaurantDetailPage').then(module => ({ default: module.RestaurantDetailPage })));
@@ -25,13 +25,10 @@ const ProfilePage = lazy(() => import('./customer/pages/ProfilePage').then(modul
 const CustomerLogin = lazy(() => import('./customer/pages/auth/Login').then(module => ({ default: module.Login })));
 const CustomerRegister = lazy(() => import('./customer/pages/auth/Register').then(module => ({ default: module.Register })));
 
-// Merchant Pages
 const MerchantDashboardPage = lazy(() => import('./merchant/pages/MerchantDashboardPage').then(module => ({ default: module.MerchantDashboardPage })));
 const MerchantLogin = lazy(() => import('./merchant/pages/auth/Login').then(module => ({ default: module.Login })));
 const MerchantRegister = lazy(() => import('./merchant/pages/auth/Register').then(module => ({ default: module.Register })));
 
-// Admin Pages
-const AdminLayout = lazy(() => import('./admin/layouts/AdminLayout').then(module => ({ default: module.AdminLayout })));
 const AdminDashboardPage = lazy(() => import('./admin/pages/AdminDashboardPage').then(module => ({ default: module.AdminDashboardPage })));
 const AdminLogin = lazy(() => import('./admin/pages/auth/Login').then(module => ({ default: module.Login })));
 
@@ -46,8 +43,16 @@ const PageLoader = () => (
   </div>
 );
 
+const UnauthorizedPage = () => (
+  <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+    <h1 className="text-4xl font-bold text-red-500">403</h1>
+    <p className="text-lg text-muted-foreground">You are not authorized to access this page.</p>
+    <a href="/" className="text-primary underline">Go to Home</a>
+  </div>
+);
+
 const router = createBrowserRouter([
-  // Customer Portal
+  { path: '/unauthorized', element: <UnauthorizedPage /> },
   {
     path: '/',
     element: <Suspense fallback={<PageLoader />}><CustomerLayout /></Suspense>,
@@ -57,55 +62,49 @@ const router = createBrowserRouter([
       { path: 'search', element: <Suspense fallback={<PageLoader />}><SearchPage /></Suspense> },
       { path: 'restaurant/:id', element: <Suspense fallback={<PageLoader />}><RestaurantDetailPage /></Suspense> },
       { path: 'food/:id', element: <Suspense fallback={<PageLoader />}><FoodDetailPage /></Suspense> },
-      { path: 'cart', element: <RoleGuard role="customer"><Suspense fallback={<PageLoader />}><CartPage /></Suspense></RoleGuard> },
-      { path: 'checkout', element: <RoleGuard role="customer"><Suspense fallback={<PageLoader />}><CheckoutPage /></Suspense></RoleGuard> },
-      { path: 'order/:orderId', element: <RoleGuard role="customer"><Suspense fallback={<PageLoader />}><OrderSuccessPage /></Suspense></RoleGuard> },
-      { path: 'my-orders', element: <RoleGuard role="customer"><Suspense fallback={<PageLoader />}><MyOrdersPage /></Suspense></RoleGuard> },
-      { path: 'profile', element: <RoleGuard role="customer"><Suspense fallback={<PageLoader />}><ProfilePage /></Suspense></RoleGuard> },
+      { path: 'cart', element: <ProtectedRoute allowedRoles={['customer']}><Suspense fallback={<PageLoader />}><CartPage /></Suspense></ProtectedRoute> },
+      { path: 'checkout', element: <ProtectedRoute allowedRoles={['customer']}><Suspense fallback={<PageLoader />}><CheckoutPage /></Suspense></ProtectedRoute> },
+      { path: 'order/:orderId', element: <ProtectedRoute allowedRoles={['customer']}><Suspense fallback={<PageLoader />}><OrderSuccessPage /></Suspense></ProtectedRoute> },
+      { path: 'my-orders', element: <ProtectedRoute allowedRoles={['customer']}><Suspense fallback={<PageLoader />}><MyOrdersPage /></Suspense></ProtectedRoute> },
+      { path: 'profile', element: <ProtectedRoute allowedRoles={['customer']}><Suspense fallback={<PageLoader />}><ProfilePage /></Suspense></ProtectedRoute> },
     ],
   },
   {
-    path: '/',
+    path: '/login',
     element: <Suspense fallback={<PageLoader />}><AuthLayout /></Suspense>,
-    children: [
-      { path: 'login', element: <Suspense fallback={<PageLoader />}><CustomerLogin /></Suspense> },
-      { path: 'register', element: <Suspense fallback={<PageLoader />}><CustomerRegister /></Suspense> },
-    ],
+    children: [{ index: true, element: <Suspense fallback={<PageLoader />}><CustomerLogin /></Suspense> }],
   },
-  
-  // Merchant Portal
+  {
+    path: '/register',
+    element: <Suspense fallback={<PageLoader />}><AuthLayout /></Suspense>,
+    children: [{ index: true, element: <Suspense fallback={<PageLoader />}><CustomerRegister /></Suspense> }],
+  },
   {
     path: '/merchant',
     element: <RoleGuard role="merchant"><Suspense fallback={<PageLoader />}><MerchantLayout /></Suspense></RoleGuard>,
     errorElement: <ErrorBoundary />,
-    children: [
-      { index: true, element: <Suspense fallback={<PageLoader />}><MerchantDashboardPage /></Suspense> },
-    ],
+    children: [{ index: true, element: <Suspense fallback={<PageLoader />}><MerchantDashboardPage /></Suspense> }],
   },
   {
-    path: '/merchant',
+    path: '/merchant/login',
     element: <Suspense fallback={<PageLoader />}><AuthLayout /></Suspense>,
-    children: [
-      { path: 'login', element: <Suspense fallback={<PageLoader />}><MerchantLogin /></Suspense> },
-      { path: 'register', element: <Suspense fallback={<PageLoader />}><MerchantRegister /></Suspense> },
-    ],
+    children: [{ index: true, element: <Suspense fallback={<PageLoader />}><MerchantLogin /></Suspense> }],
   },
-
-  // Admin Portal (Skeleton)
+  {
+    path: '/merchant/register',
+    element: <Suspense fallback={<PageLoader />}><AuthLayout /></Suspense>,
+    children: [{ index: true, element: <Suspense fallback={<PageLoader />}><MerchantRegister /></Suspense> }],
+  },
   {
     path: '/admin',
     element: <RoleGuard role="admin"><Suspense fallback={<PageLoader />}><AdminLayout /></Suspense></RoleGuard>,
     errorElement: <ErrorBoundary />,
-    children: [
-      { index: true, element: <Suspense fallback={<PageLoader />}><AdminDashboardPage /></Suspense> },
-    ],
+    children: [{ index: true, element: <Suspense fallback={<PageLoader />}><AdminDashboardPage /></Suspense> }],
   },
   {
-    path: '/admin',
+    path: '/admin/login',
     element: <Suspense fallback={<PageLoader />}><AuthLayout /></Suspense>,
-    children: [
-      { path: 'login', element: <Suspense fallback={<PageLoader />}><AdminLogin /></Suspense> },
-    ],
+    children: [{ index: true, element: <Suspense fallback={<PageLoader />}><AdminLogin /></Suspense> }],
   },
 ]);
 

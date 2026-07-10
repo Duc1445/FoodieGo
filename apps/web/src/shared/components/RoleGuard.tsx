@@ -1,73 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAuthStore } from '../stores/useAuthStore';
-import { jwtDecode } from 'jwt-decode';
+import React from 'react';
+import { ProtectedRoute } from './ProtectedRoute';
+import { getLoginPath, type AuthRole } from '../auth/session';
 
-interface DecodedToken {
-  id: string;
-  role: string;
-  exp: number;
-}
-
-export function RoleGuard({ role, children }: { role: 'customer' | 'merchant' | 'admin'; children: React.ReactNode }) {
-  const { logout } = useAuthStore();
-  const location = useLocation();
-  const [isValidating, setIsValidating] = useState(true);
-  const [isAuthorized, setIsAuthorized] = useState(false);
-
-  useEffect(() => {
-    const validateToken = () => {
-      const token = localStorage.getItem('foodiego-auth-token');
-      
-      if (!token) {
-        setIsAuthorized(false);
-        setIsValidating(false);
-        return;
-      }
-
-      try {
-        const decoded = jwtDecode<DecodedToken>(token);
-        const currentTime = Date.now() / 1000;
-
-        // Check expiration
-        if (decoded.exp < currentTime) {
-          logout();
-          setIsAuthorized(false);
-          setIsValidating(false);
-          return;
-        }
-
-        // Check role match
-        if (decoded.role !== role) {
-          setIsAuthorized(false);
-          setIsValidating(false);
-          return;
-        }
-
-        setIsAuthorized(true);
-      } catch (_err) {
-        logout();
-        setIsAuthorized(false);
-      }
-      setIsValidating(false);
-    };
-
-    validateToken();
-  }, [role, logout]);
-
-  if (isValidating) {
-    return null; // Or a loading spinner
-  }
-
-  if (!isAuthorized) {
-    // If we have a token but wrong role, go to unauthorized. Otherwise to login.
-    const token = localStorage.getItem('foodiego-auth-token');
-    if (token) {
-      return <Navigate to="/unauthorized" replace />;
-    }
-    const loginPath = role === 'customer' ? '/login' : `/${role}/login`;
-    return <Navigate to={loginPath} state={{ from: location }} replace />;
-  }
-
-  return <>{children}</>;
+export function RoleGuard({ role, children }: { role: AuthRole; children: React.ReactNode }) {
+  return <ProtectedRoute allowedRoles={[role]} loginPath={getLoginPath(role)}>{children}</ProtectedRoute>;
 }

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { clearAuthStorage, getLoginPath } from '../auth/session';
 
 const baseURL = import.meta.env.VITE_GATEWAY_URL || 'http://localhost:3000/api/v1';
 
@@ -22,8 +23,20 @@ api.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('foodiego-auth-token');
-      window.location.href = '/auth/login';
+      // Only redirect if we're on an authenticated page (not a login/register page)
+      const currentPath = window.location.pathname;
+      const isAuthPage = currentPath.includes('/login') || currentPath.includes('/register');
+      if (!isAuthPage) {
+        clearAuthStorage();
+        // Redirect to appropriate login page based on current path
+        if (currentPath.startsWith('/admin')) {
+          window.location.href = getLoginPath('admin');
+        } else if (currentPath.startsWith('/merchant')) {
+          window.location.href = getLoginPath('merchant');
+        } else {
+          window.location.href = getLoginPath('customer');
+        }
+      }
     }
     return Promise.reject(error);
   }

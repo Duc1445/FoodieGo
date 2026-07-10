@@ -1,8 +1,9 @@
 import pg from 'pg';
 
 const { Pool } = pg;
-const pool = new Pool({ 
-  connectionString: process.env.DATABASE_URL || 'postgres://foodiego:foodiego123@localhost:5432/foodiego' 
+const pool = new Pool({
+  connectionString:
+    process.env.DATABASE_URL || 'postgres://foodiego:foodiego123@localhost:5432/foodiego',
 });
 
 async function seedUsers() {
@@ -11,8 +12,8 @@ async function seedUsers() {
     await pool.query(`
       INSERT INTO users (id, email, password, full_name, role) 
       VALUES 
-      ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'admin@foodiego.com', '$2b$10$rBV2JDeWW3.vKBBnpkVkpOUwG0Q2K6mOGpT0Gk5dRfBN/8kQR1.9a', 'Admin', 'admin'),
-      ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', 'customer@foodiego.com', '$2b$10$rBV2JDeWW3.vKBBnpkVkpOUwG0Q2K6mOGpT0Gk5dRfBN/8kQR1.9a', 'Test Customer', 'customer')
+      ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'admin@foodiego.com', '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS', 'Admin', 'admin'),
+      ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', 'customer@foodiego.com', '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS', 'Test Customer', 'customer')
       ON CONFLICT (email) DO NOTHING;
     `);
     console.log('[Seed] Users seeded successfully!');

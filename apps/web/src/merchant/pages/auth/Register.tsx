@@ -5,6 +5,7 @@ import { AuthAPI } from '../../../shared/services/auth.api';
 import { Button } from '@foodiego/ui';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { getDashboardPath } from '../../../shared/auth/session';
 
 export function Register() {
   const [email, setEmail] = useState('');
@@ -49,7 +50,7 @@ export function Register() {
       localStorage.setItem('foodiego-auth-token', data.token);
       login(data.user, data.token);
       toast.success('Registration successful! Welcome to the Merchant Portal.');
-      navigate('/merchant');
+      navigate(getDashboardPath('merchant'), { replace: true });
     } catch (err: any) {
       const msg = err.response?.data?.message || err.response?.data?.errors?.[0]?.msg || 'Registration failed. Please try again.';
       setError(msg);

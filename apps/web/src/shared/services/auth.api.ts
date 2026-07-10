@@ -1,4 +1,5 @@
 import { api } from '../api/api';
+import { clearAuthStorage } from '../auth/session';
 
 export interface LoginRequest {
   email: string;
@@ -20,8 +21,14 @@ export interface AuthResponse {
   user: {
     id: string;
     email: string;
-    name: string;
     role: 'customer' | 'merchant' | 'admin';
+    name?: string;
+    full_name?: string;
+    phone?: string | null;
+    address?: string | null;
+    is_active?: boolean;
+    created_at?: string;
+    updated_at?: string;
   };
 }
 
@@ -56,7 +63,6 @@ export const AuthAPI = {
   },
 
   logout: () => {
-    localStorage.removeItem('foodiego-auth-token');
-    localStorage.removeItem('foodiego-auth');
+    clearAuthStorage();
   }
 };

@@ -11,7 +11,7 @@ async function seed() {
 
     // Seed Admin User
     await pool.query(
-      "INSERT INTO users (id, email, password, full_name, role) VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'admin@foodiego.com', '$2b$10$rBV2JDeWW3.vKBBnpkVkpOUwG0Q2K6mOGpT0Gk5dRfBN/8kQR1.9a', 'Admin', 'admin') ON CONFLICT DO NOTHING;",
+      "INSERT INTO users (id, email, password, full_name, role) VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'admin@foodiego.com', '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS', 'Admin', 'admin') ON CONFLICT DO NOTHING;",
     );
 
     // Seed Restaurant

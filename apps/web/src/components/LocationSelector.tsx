@@ -35,13 +35,20 @@ export function LocationSelector() {
   const [position, setPosition] = useState<[number, number]>([lat, lng]);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [tempAddress, setTempAddress] = useState(address);
+  
+  // Extract detail from address if it contains ' - ' (our separator)
+  const [detail, region] = address.includes(' - ') ? address.split(' - ') : ['', address];
+  
+  const [tempAddress, setTempAddress] = useState(region);
+  const [detailedAddress, setDetailedAddress] = useState(detail);
   
   // Update local state when opened
   useEffect(() => {
     if (isOpen) {
       setPosition([lat, lng]);
-      setTempAddress(address);
+      const [currDetail, currRegion] = address.includes(' - ') ? address.split(' - ') : ['', address];
+      setTempAddress(currRegion);
+      setDetailedAddress(currDetail);
       setSearchQuery('');
       setSearchResults([]);
     }
@@ -78,7 +85,8 @@ export function LocationSelector() {
   };
 
   const handleConfirm = () => {
-    setLocation(position[0], position[1], tempAddress);
+    const finalAddress = detailedAddress ? `${detailedAddress} - ${tempAddress}` : tempAddress;
+    setLocation(position[0], position[1], finalAddress);
     setIsOpen(false);
   };
 
@@ -155,11 +163,20 @@ export function LocationSelector() {
             </MapContainer>
           </div>
           
-          <div className="flex justify-between items-center pt-2">
-            <div className="text-sm text-muted-foreground truncate max-w-[350px]" title={tempAddress}>
-              {tempAddress}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">House Number, Street Name, or Building Details</label>
+            <Input 
+              placeholder="e.g. 123 Tran Hung Dao, Apt 4B" 
+              value={detailedAddress}
+              onChange={(e) => setDetailedAddress(e.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-col gap-2 pt-2">
+            <div className="text-sm text-muted-foreground truncate" title={tempAddress}>
+              <span className="font-semibold text-foreground">Region:</span> {tempAddress}
             </div>
-            <Button onClick={handleConfirm}>Confirm Location</Button>
+            <Button onClick={handleConfirm} className="w-full">Confirm Location</Button>
           </div>
         </div>
       </DialogContent>

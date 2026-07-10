@@ -8,13 +8,13 @@ export interface LocationState {
   setLocation: (lat: number, lng: number, address: string) => void;
 }
 
-// Default to District 1, HCMC
+// Default to Hai Chau, Da Nang
 export const useLocationStore = create<LocationState>()(
   persist(
     (set) => ({
-      lat: 10.7769,
-      lng: 106.7009,
-      address: 'District 1, Ho Chi Minh City',
+      lat: 16.0544,
+      lng: 108.2022,
+      address: 'Hai Chau, Da Nang',
       setLocation: (lat, lng, address) => set({ lat, lng, address }),
     }),
     {

@@ -9,16 +9,14 @@ const mock = new MockAdapter(api, { delayResponse: 500, onNoMatch: 'passthrough'
 // ==========================================
 
 // Mock Search API (Missing Search Service)
-mock.onGet(/\/api\/v1\/search/).reply((_config) => {
+mock.onGet(/\/search/).reply((_config) => {
   // We'll return an empty array for now since frontend handles search logic manually in this sprint
   // but if the UI decides to call the search API, it won't crash.
   return [200, { success: true, data: { items: [], pagination: { page: 1, limit: 20, total: 0 } } }];
 });
 
-
-
 // Mock Portal Analytics (No Analytics Backend)
-mock.onGet('/api/v1/portal/analytics').reply(200, {
+mock.onGet('/portal/analytics').reply(200, {
   success: true,
   data: {
     overview: {
@@ -55,7 +53,7 @@ mock.onGet('/api/v1/portal/analytics').reply(200, {
 });
 
 // Mock Auth Login (Frontend State Only)
-mock.onPost('/api/v1/auth/login').reply((config) => {
+mock.onPost('/auth/login').reply((config) => {
   const { email, password } = JSON.parse(config.data);
   if (email && password) {
     return [200, { 

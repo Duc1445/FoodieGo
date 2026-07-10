@@ -20,7 +20,7 @@ interface AnalyticsData {
 }
 
 export function DashboardPage() {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['portal', 'analytics'],
     queryFn: async () => {
       const res = await api.get<{ success: boolean; data: AnalyticsData }>('/portal/analytics');
@@ -32,8 +32,8 @@ export function DashboardPage() {
     return <div className="p-8 text-center text-muted-foreground animate-pulse">Loading dashboard...</div>;
   }
 
-  if (!data) {
-    return <div className="p-8 text-center text-red-500">Failed to load analytics</div>;
+  if (isError || !data) {
+    return <div className="p-8 text-center text-red-500">Failed to load analytics. Please try again later.</div>;
   }
 
   return (

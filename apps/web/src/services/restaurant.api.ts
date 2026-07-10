@@ -16,6 +16,9 @@ export interface Restaurant {
   delivery_fee: number;
   minimum_order: number;
   total_reviews: number;
+  status: string;
+  opening_time: string;
+  closing_time: string;
 }
 
 export const RestaurantAPI = {

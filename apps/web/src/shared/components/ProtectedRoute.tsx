@@ -3,13 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/useAuthStore';
 import { jwtDecode } from 'jwt-decode';
 
-interface DecodedToken {
-  id: string;
-  role: string;
-  exp: number;
-}
-
-export function RoleGuard({ role, children }: { role: 'customer' | 'merchant' | 'admin'; children: React.ReactNode }) {
+export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { logout } = useAuthStore();
   const location = useLocation();
   const [isValidating, setIsValidating] = useState(true);
@@ -26,26 +20,18 @@ export function RoleGuard({ role, children }: { role: 'customer' | 'merchant' | 
       }
 
       try {
-        const decoded = jwtDecode<DecodedToken>(token);
+        const decoded = jwtDecode(token);
         const currentTime = Date.now() / 1000;
 
-        // Check expiration
-        if (decoded.exp < currentTime) {
+        if (decoded.exp && decoded.exp < currentTime) {
           logout();
           setIsAuthorized(false);
           setIsValidating(false);
           return;
         }
 
-        // Check role match
-        if (decoded.role !== role) {
-          setIsAuthorized(false);
-          setIsValidating(false);
-          return;
-        }
-
         setIsAuthorized(true);
-      } catch (_err) {
+      } catch (err) {
         logout();
         setIsAuthorized(false);
       }
@@ -53,20 +39,14 @@ export function RoleGuard({ role, children }: { role: 'customer' | 'merchant' | 
     };
 
     validateToken();
-  }, [role, logout]);
+  }, [logout]);
 
   if (isValidating) {
-    return null; // Or a loading spinner
+    return null;
   }
 
   if (!isAuthorized) {
-    // If we have a token but wrong role, go to unauthorized. Otherwise to login.
-    const token = localStorage.getItem('foodiego-auth-token');
-    if (token) {
-      return <Navigate to="/unauthorized" replace />;
-    }
-    const loginPath = role === 'customer' ? '/login' : `/${role}/login`;
-    return <Navigate to={loginPath} state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;

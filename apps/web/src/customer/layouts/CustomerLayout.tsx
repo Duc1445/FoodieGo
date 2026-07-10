@@ -1,8 +1,11 @@
 import { Outlet, Link } from 'react-router-dom';
 import { LocationSelector } from '../../shared/components/LocationSelector';
 import { CartDrawer } from '../../shared/components/CartDrawer';
+import { useAuthStore } from '../../shared/stores/useAuthStore';
+import { Button } from '@foodiego/ui';
 
 export function CustomerLayout() {
+  const { user, isAuthenticated, logout } = useAuthStore();
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
@@ -20,9 +23,22 @@ export function CustomerLayout() {
           </nav>
           <div className="ml-auto flex items-center space-x-4">
             <LocationSelector />
-            <Link to="/admin" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Restaurant Portal
-            </Link>
+            <LocationSelector />
+            <div className="border-l h-6 mx-2 border-border" />
+            {isAuthenticated() ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-sm font-medium">{user?.full_name}</span>
+                <Button variant="ghost" size="sm" onClick={() => {
+                  localStorage.removeItem('foodiego-auth-token');
+                  logout();
+                }}>Logout</Button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" size="sm" asChild><Link to="/login">Login</Link></Button>
+                <Button size="sm" asChild><Link to="/register">Sign Up</Link></Button>
+              </div>
+            )}
             <div className="border-l h-6 mx-2 border-border" />
             <CartDrawer />
           </div>

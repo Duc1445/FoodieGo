@@ -4,6 +4,7 @@ import { useAuthStore } from '../../../shared/stores/useAuthStore';
 import { AuthAPI } from '../../../shared/services/auth.api';
 import { Button } from '@foodiego/ui';
 import { AlertCircle, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export function Register() {
   const [email, setEmail] = useState('');
@@ -47,9 +48,12 @@ export function Register() {
       });
       localStorage.setItem('foodiego-auth-token', data.token);
       login(data.user, data.token);
+      toast.success('Registration successful! Welcome to the Merchant Portal.');
       navigate('/merchant');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      const msg = err.response?.data?.message || err.response?.data?.errors?.[0]?.msg || 'Registration failed. Please try again.';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }

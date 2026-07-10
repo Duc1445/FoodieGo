@@ -6,6 +6,7 @@ export interface User {
   name: string;
   role: 'customer' | 'merchant' | 'admin';
   email?: string;
+  full_name?: string;
   restaurantId?: string; // For merchant
 }
 

@@ -13,7 +13,7 @@ router.post(
     body('email').isEmail().normalizeEmail().withMessage('Valid email required'),
     body('password').isLength({ min: 6 }).withMessage('Password min 6 chars'),
     body('full_name').trim().notEmpty().withMessage('Full name required'),
-    body('role').optional().isIn(['customer', 'shipper']).withMessage('Invalid role'),
+    body('role').optional().isIn(['customer', 'shipper', 'merchant']).withMessage('Invalid role'),
   ],
   validate,
   authController.register,

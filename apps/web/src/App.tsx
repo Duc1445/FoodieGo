@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import { ThemeProvider } from './shared/providers/ThemeProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { lazy, Suspense } from 'react';
@@ -30,6 +31,8 @@ const MerchantLogin = lazy(() => import('./merchant/pages/auth/Login').then(modu
 const MerchantRegister = lazy(() => import('./merchant/pages/auth/Register').then(module => ({ default: module.Register })));
 
 // Admin Pages
+const AdminLayout = lazy(() => import('./admin/layouts/AdminLayout').then(module => ({ default: module.AdminLayout })));
+const AdminDashboardPage = lazy(() => import('./admin/pages/AdminDashboardPage').then(module => ({ default: module.AdminDashboardPage })));
 const AdminLogin = lazy(() => import('./admin/pages/auth/Login').then(module => ({ default: module.Login })));
 
 const queryClient = new QueryClient();
@@ -91,7 +94,11 @@ const router = createBrowserRouter([
   // Admin Portal (Skeleton)
   {
     path: '/admin',
-    element: <RoleGuard role="admin"><Suspense fallback={<PageLoader />}><div className="min-h-screen flex items-center justify-center">Admin Portal Content</div></Suspense></RoleGuard>,
+    element: <RoleGuard role="admin"><Suspense fallback={<PageLoader />}><AdminLayout /></Suspense></RoleGuard>,
+    errorElement: <ErrorBoundary />,
+    children: [
+      { index: true, element: <Suspense fallback={<PageLoader />}><AdminDashboardPage /></Suspense> },
+    ],
   },
   {
     path: '/admin',
@@ -107,6 +114,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <RouterProvider router={router} />
+        <Toaster position="top-right" richColors />
       </ThemeProvider>
     </QueryClientProvider>
   );

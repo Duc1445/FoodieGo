@@ -4,6 +4,7 @@ import { useAuthStore } from '../../../shared/stores/useAuthStore';
 import { AuthAPI } from '../../../shared/services/auth.api';
 import { Button } from '@foodiego/ui';
 import { AlertCircle, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export function Register() {
   const [email, setEmail] = useState('');
@@ -35,9 +36,12 @@ export function Register() {
       const data = await AuthAPI.register({ email, password, full_name: fullName || 'Customer', role: 'customer' });
       localStorage.setItem('foodiego-auth-token', data.token);
       login(data.user, data.token);
+      toast.success('Registration successful!');
       navigate('/');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      const msg = err.response?.data?.message || err.response?.data?.errors?.[0]?.msg || 'Registration failed. Please try again.';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }

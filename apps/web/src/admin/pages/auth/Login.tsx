@@ -4,6 +4,7 @@ import { useAuthStore } from '../../../shared/stores/useAuthStore';
 import { AuthAPI } from '../../../shared/services/auth.api';
 import { Button } from '@foodiego/ui';
 import { AlertCircle, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export function Login() {
   const [email, setEmail] = useState('');
@@ -22,9 +23,12 @@ export function Login() {
       const data = await AuthAPI.login({ email, password, role: 'admin' });
       localStorage.setItem('foodiego-auth-token', data.token);
       login(data.user, data.token);
+      toast.success('Admin access granted.');
       navigate('/admin');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      const msg = err.response?.data?.message || 'Login failed. Please check your credentials.';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }

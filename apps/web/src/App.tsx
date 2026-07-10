@@ -26,6 +26,8 @@ const PageLoader = () => (
 
 import { ErrorBoundary } from './components/ErrorBoundary';
 
+const DashboardPage = lazy(() => import('./pages/DashboardPage').then(module => ({ default: module.DashboardPage })));
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -42,7 +44,7 @@ const router = createBrowserRouter([
     path: '/admin',
     element: <AdminLayout />,
     children: [
-      { index: true, element: <div>Admin Dashboard (To be implemented)</div> },
+      { index: true, element: <Suspense fallback={<PageLoader />}><DashboardPage /></Suspense> },
     ],
   },
   {

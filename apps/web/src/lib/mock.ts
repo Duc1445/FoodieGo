@@ -15,6 +15,8 @@ mock.onGet(/\/api\/v1\/search/).reply((_config) => {
   return [200, { success: true, data: { items: [], pagination: { page: 1, limit: 20, total: 0 } } }];
 });
 
+
+
 // Mock Portal Analytics (No Analytics Backend)
 mock.onGet('/api/v1/portal/analytics').reply(200, {
   success: true,

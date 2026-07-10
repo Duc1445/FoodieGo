@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 export interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   fallback?: string;
@@ -8,6 +8,8 @@ export interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
 
 export const Image: React.FC<ImageProps> = ({
   src,
+  srcSet,
+  sizes,
   alt = '',
   fallback = '/images/restaurant-placeholder.jpg',
   placeholder,
@@ -16,15 +18,37 @@ export const Image: React.FC<ImageProps> = ({
   style,
   ...props
 }) => {
-  const [imgSrc, setImgSrc] = useState<string | undefined>(src || fallback);
+  const [imgSrc, setImgSrc] = useState<string | undefined>(undefined);
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setImgSrc(src || fallback);
-    setIsError(false);
-    setIsLoading(true);
-  }, [src, fallback]);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '50px' }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (isVisible) {
+      setImgSrc(src || fallback);
+      setIsError(false);
+      setIsLoading(true);
+    }
+  }, [src, fallback, isVisible]);
 
   const handleError = () => {
     if (!isError) {
@@ -46,6 +70,7 @@ export const Image: React.FC<ImageProps> = ({
 
   return (
     <div
+      ref={containerRef}
       className={`relative overflow-hidden bg-gray-200 ${className}`}
       style={{ aspectRatio, width: props.width || '100%', height: props.height || '100%' }}
     >
@@ -57,16 +82,19 @@ export const Image: React.FC<ImageProps> = ({
           aria-hidden="true"
         />
       ) : null}
-      <img
-        src={imgSrc}
-        alt={alt}
-        loading="lazy"
-        onError={handleError}
-        onLoad={handleLoad}
-        className={`w-full h-full transition-opacity duration-300 ${isLoading && placeholder ? 'opacity-0' : 'opacity-100'}`}
-        style={combinedStyle}
-        {...props}
-      />
+      {isVisible && (
+        <img
+          src={imgSrc}
+          srcSet={isError ? undefined : srcSet}
+          sizes={isError ? undefined : sizes}
+          alt={alt}
+          onError={handleError}
+          onLoad={handleLoad}
+          className={`w-full h-full transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+          style={combinedStyle}
+          {...props}
+        />
+      )}
     </div>
   );
 };

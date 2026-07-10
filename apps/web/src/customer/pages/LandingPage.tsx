@@ -1,32 +1,76 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useMemo, useState, useEffect } from 'react';
 import { useLocationStore } from '../../shared/stores/useLocationStore';
 import { calculateDistance } from '../../shared/utils/utils';
 import { RestaurantAPI } from '../../shared/services/restaurant.api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, RestaurantCardSkeleton, Button } from '@foodiego/ui';
-import { AlertCircle, RefreshCw, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { AlertCircle, RefreshCw, Search, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Image } from '../../shared/components/Image';
 
 export function LandingPage() {
   const { lat, lng } = useLocationStore();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [page, setPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  const querySearch = searchParams.get('search') || '';
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  
+  const [searchTerm, setSearchTerm] = useState(querySearch);
   const limit = 6;
 
   // Debounce search
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedSearch(searchTerm);
-      setPage(1); // Reset page on new search
+      if (searchTerm !== querySearch) {
+        setSearchParams(params => {
+          if (searchTerm) {
+            params.set('search', searchTerm);
+          } else {
+            params.delete('search');
+          }
+          params.set('page', '1');
+          return params;
+        });
+      }
     }, 400);
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+  }, [searchTerm, querySearch, setSearchParams]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      if (searchTerm !== querySearch) {
+        setSearchParams(params => {
+          if (searchTerm) {
+            params.set('search', searchTerm);
+          } else {
+            params.delete('search');
+          }
+          params.set('page', '1');
+          return params;
+        });
+      }
+    }
+  };
+
+  const handleClear = () => {
+    setSearchTerm('');
+    setSearchParams(params => {
+      params.delete('search');
+      params.set('page', '1');
+      return params;
+    });
+  };
+
+  const updatePage = (newPage: number) => {
+    setSearchParams(params => {
+      params.set('page', newPage.toString());
+      return params;
+    });
+  };
 
   const { data, isLoading, isPlaceholderData, error, refetch } = useQuery({
-    queryKey: ['restaurants', page, limit, debouncedSearch],
-    queryFn: () => RestaurantAPI.getRestaurants({ page, limit, search: debouncedSearch }),
+    queryKey: ['restaurants', page, limit, querySearch],
+    queryFn: () => RestaurantAPI.getRestaurants({ page, limit, search: querySearch }),
     placeholderData: keepPreviousData,
     retry: 2,
   });
@@ -45,12 +89,12 @@ export function LandingPage() {
 
   const handleNextPage = () => {
     if (pagination && page * limit < pagination.total) {
-      setPage(old => old + 1);
+      updatePage(page + 1);
     }
   };
 
   const handlePrevPage = () => {
-    setPage(old => Math.max(old - 1, 1));
+    updatePage(Math.max(page - 1, 1));
   };
 
   return (
@@ -67,8 +111,18 @@ export function LandingPage() {
               placeholder="Search restaurants..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent shadow-sm text-lg"
+              onKeyDown={handleKeyDown}
+              className="w-full pl-12 pr-12 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent shadow-sm text-lg"
             />
+            {searchTerm && (
+              <button
+                onClick={handleClear}
+                className="absolute right-4 p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+                aria-label="Clear search"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
           </div>
         </div>
       </section>
@@ -76,7 +130,7 @@ export function LandingPage() {
       <section>
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold tracking-tight">
-            {debouncedSearch ? `Search Results for "${debouncedSearch}"` : "Restaurants"}
+            {querySearch ? `Search Results for "${querySearch}"` : "Restaurants"}
           </h2>
         </div>
 

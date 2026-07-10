@@ -12,8 +12,8 @@ import { Image } from '../../shared/components/Image';
 export function FoodDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const addItem = useCartStore(state => state.addItem);
-  const clearCart = useCartStore(state => state.clearCart);
+  const addItem = useCartStore(state => state.actions.addItem);
+  const clearCart = useCartStore(state => state.actions.clearCart);
   
   const [quantity, setQuantity] = useState(1);
   const [isConflictDialogOpen, setIsConflictDialogOpen] = useState(false);

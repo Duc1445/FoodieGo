@@ -2,15 +2,17 @@ import { useState, useEffect } from 'react';
 import { useCartStore } from '../stores/useCartStore';
 import { Button, Badge } from '@foodiego/ui';
 import { ShoppingCart, X, Minus, Plus, Trash2 } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export function CartDrawer() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   
-  const { items, restaurantName, removeItem, updateQuantity, clearCart, getTotalItems, getTotalPrice } = useCartStore();
-  const totalItems = getTotalItems();
-  const totalPrice = getTotalPrice();
+  const { items, restaurant, summary, actions } = useCartStore();
+  const { name: restaurantName } = restaurant;
+  const { totalItems, totalPrice } = summary;
+  const { removeItem, updateQuantity, clearCart } = actions;
 
   // Close drawer on route change
   useEffect(() => {
@@ -126,7 +128,7 @@ export function CartDrawer() {
             <Button 
               className="w-full h-12 text-base font-bold shadow-lg hover:shadow-xl transition-shadow"
               onClick={() => {
-                alert("Checkout functionality will be available in Phase 3.");
+                navigate('/checkout');
                 setIsOpen(false);
               }}
             >

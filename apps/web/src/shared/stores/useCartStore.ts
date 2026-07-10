@@ -7,87 +7,128 @@ export interface CartItem extends Food {
 }
 
 export interface CartState {
-  restaurantId: string | null;
-  restaurantName: string | null;
   items: CartItem[];
-  cartVersion: number;
-  addItem: (food: Food, quantity: number, restaurant: { id: string; name: string }) => boolean;
-  removeItem: (foodId: string) => void;
-  updateQuantity: (foodId: string, quantity: number) => void;
-  clearCart: () => void;
-  getTotalItems: () => number;
-  getTotalPrice: () => number;
+  restaurant: {
+    id: string | null;
+    name: string | null;
+  };
+  summary: {
+    totalItems: number;
+    totalPrice: number;
+  };
+  version: number | null;
+  actions: {
+    addItem: (food: Food, quantity: number, restaurant: { id: string; name: string }) => boolean;
+    removeItem: (foodId: string) => void;
+    updateQuantity: (foodId: string, quantity: number) => void;
+    clearCart: () => void;
+  };
 }
+
+const calculateSummary = (items: CartItem[]) => ({
+  totalItems: items.reduce((total, item) => total + item.quantity, 0),
+  totalPrice: items.reduce((total, item) => total + item.price * item.quantity, 0),
+});
 
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
-      restaurantId: null,
-      restaurantName: null,
       items: [],
-      cartVersion: 1,
-      
-      addItem: (food, quantity, restaurant) => {
-        if (food.is_available === false) {
-          return false;
-        }
+      restaurant: {
+        id: null,
+        name: null,
+      },
+      summary: {
+        totalItems: 0,
+        totalPrice: 0,
+      },
+      version: null,
+      actions: {
+        addItem: (food, quantity, restaurant) => {
+          if (food.is_available === false) {
+            return false;
+          }
 
-        const { restaurantId, items } = get();
-        
-        // Check if adding from a different restaurant
-        if (restaurantId && restaurantId !== restaurant.id) {
-          return false;
-        }
+          const state = get();
+          const { id: currentRestaurantId } = state.restaurant;
+          const { items } = state;
+          
+          if (currentRestaurantId && currentRestaurantId !== restaurant.id) {
+            return false;
+          }
 
-        const existingItem = items.find((item) => item.id === food.id);
-        if (existingItem) {
-          set({
-            items: items.map((item) =>
+          const existingItem = items.find((item) => item.id === food.id);
+          let newItems: CartItem[];
+          
+          if (existingItem) {
+            newItems = items.map((item) =>
               item.id === food.id
                 ? { ...item, quantity: item.quantity + quantity }
                 : item
-            ),
-          });
-        } else {
+            );
+          } else {
+            newItems = [...items, { ...food, quantity }];
+          }
+
           set({
-            restaurantId: restaurant.id,
-            restaurantName: restaurant.name,
-            items: [...items, { ...food, quantity }],
+            items: newItems,
+            restaurant: {
+              id: restaurant.id,
+              name: restaurant.name,
+            },
+            summary: calculateSummary(newItems),
           });
-        }
-        return true;
-      },
+          
+          return true;
+        },
 
-      removeItem: (foodId) => {
-        const { items } = get();
-        const newItems = items.filter((item) => item.id !== foodId);
-        if (newItems.length === 0) {
-          set({ restaurantId: null, restaurantName: null, items: [] });
-        } else {
-          set({ items: newItems });
-        }
-      },
+        removeItem: (foodId) => {
+          const { items } = get();
+          const newItems = items.filter((item) => item.id !== foodId);
+          if (newItems.length === 0) {
+            set({ 
+              items: [],
+              restaurant: { id: null, name: null },
+              summary: { totalItems: 0, totalPrice: 0 }
+            });
+          } else {
+            set({ 
+              items: newItems,
+              summary: calculateSummary(newItems)
+            });
+          }
+        },
 
-      updateQuantity: (foodId, quantity) => {
-        if (quantity <= 0) {
-          get().removeItem(foodId);
-          return;
-        }
-        set({
-          items: get().items.map((item) =>
+        updateQuantity: (foodId, quantity) => {
+          if (quantity <= 0) {
+            get().actions.removeItem(foodId);
+            return;
+          }
+          const newItems = get().items.map((item) =>
             item.id === foodId ? { ...item, quantity } : item
-          ),
-        });
-      },
+          );
+          set({
+            items: newItems,
+            summary: calculateSummary(newItems)
+          });
+        },
 
-      clearCart: () => set({ restaurantId: null, restaurantName: null, items: [], cartVersion: 1 }),
-      
-      getTotalItems: () => get().items.reduce((total, item) => total + item.quantity, 0),
-      
-      getTotalPrice: () => get().items.reduce((total, item) => total + item.price * item.quantity, 0),
+        clearCart: () => set({ 
+          items: [],
+          restaurant: { id: null, name: null },
+          summary: { totalItems: 0, totalPrice: 0 },
+          version: null
+        }),
+      }
     }),
     {
       name: 'foodiego-cart-storage',
+      partialize: (state) => ({
+        items: state.items,
+        restaurant: state.restaurant,
+        summary: state.summary,
+        version: state.version,
+      }),
     }
   )
 );

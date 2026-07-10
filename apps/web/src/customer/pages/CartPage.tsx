@@ -2,10 +2,16 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Card } from '@foodiego/ui';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { useCartStore } from '../../shared/stores/useCartStore';
+import { calculateDeliveryFee, calculateTotal } from '../../shared/constants/pricing';
 
 export function CartPage() {
   const navigate = useNavigate();
-  const { items, removeItem, updateQuantity, restaurantName, getTotalPrice } = useCartStore();
+  const { items, restaurant, summary, actions } = useCartStore();
+  const { removeItem, updateQuantity } = actions;
+  const { name: restaurantName } = restaurant;
+  const { totalPrice: subtotal } = summary;
+  const deliveryFee = calculateDeliveryFee(subtotal);
+  const total = calculateTotal(subtotal, deliveryFee);
 
   if (items.length === 0) {
     return (
@@ -81,20 +87,16 @@ export function CartPage() {
             <div className="space-y-3 border-b pb-4 mb-4">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span>₫{getTotalPrice().toLocaleString()}</span>
+                <span>₫{subtotal.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Delivery Fee</span>
-                <span>₫25,000</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Tax</span>
-                <span>₫{Math.round(getTotalPrice() * 0.1).toLocaleString()}</span>
+                <span>₫{deliveryFee.toLocaleString()}</span>
               </div>
             </div>
             <div className="flex justify-between font-bold text-lg mb-6">
               <span>Total</span>
-              <span>₫{(getTotalPrice() + 25000 + Math.round(getTotalPrice() * 0.1)).toLocaleString()}</span>
+              <span>₫{total.toLocaleString()}</span>
             </div>
             <Button 
               className="w-full mb-2" 

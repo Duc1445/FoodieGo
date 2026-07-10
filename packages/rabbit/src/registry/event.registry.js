@@ -19,12 +19,15 @@ export const EventTypes = {
 
   // Restaurant/Menu Domain
   RESTAURANT_UPDATED: 'RestaurantUpdated',
+  RESTAURANT_ACCEPTED: 'RestaurantAccepted',
+  RESTAURANT_REJECTED: 'RestaurantRejected',
   MENU_UPDATED: 'MenuUpdated',
 
   // Inventory Domain
   INVENTORY_RESERVED: 'InventoryReserved',
   INVENTORY_RESERVATION_FAILED: 'InventoryReservationFailed',
   INVENTORY_RELEASED: 'InventoryReleased',
+  INVENTORY_EXPIRED: 'InventoryExpired',
 
   // Payment Domain
   PAYMENT_REQUESTED: 'PaymentRequested',

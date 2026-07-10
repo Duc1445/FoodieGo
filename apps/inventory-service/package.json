@@ -17,10 +17,19 @@
   },
   "dependencies": {
     "@foodiego/core": "workspace:*",
+    "@foodiego/logging": "workspace:*",
+    "@foodiego/metrics": "workspace:*",
     "@foodiego/platform-sdk": "workspace:*",
+    "@foodiego/rabbit": "workspace:*",
+    "@foodiego/tracing": "workspace:*",
+    "cors": "^2.8.6",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "pg": "^8.11.5"
+    "express-validator": "^7.3.2",
+    "helmet": "^7.2.0",
+    "morgan": "^1.11.0",
+    "pg": "^8.11.5",
+    "@opentelemetry/api": "^1.9.1"
   },
   "devDependencies": {
     "jest": "^29.7.0",

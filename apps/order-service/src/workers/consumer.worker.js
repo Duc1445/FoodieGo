@@ -1,4 +1,4 @@
-import { EventConsumer, RabbitMQAdapter } from '@foodiego/events';
+import { EventConsumer, RabbitMQAdapter } from '@foodiego/rabbit';
 import { CheckoutRepository } from '../modules/checkout/repositories/checkout.repository.js';
 import { OrderStatus } from '../modules/checkout/state/order.state.js';
 import { logger } from '../context.js';

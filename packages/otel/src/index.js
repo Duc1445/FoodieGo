@@ -10,20 +10,23 @@
  *   initTracing();
  */
 
-import { NodeSDK } from '@opentelemetry/sdk-node';
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
-import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
-import { Resource } from '@opentelemetry/resources';
+import pkgSdkNode from '@opentelemetry/sdk-node';
+const { NodeSDK } = pkgSdkNode;
+import pkgExporter from '@opentelemetry/exporter-trace-otlp-grpc';
+const { OTLPTraceExporter } = pkgExporter;
+import pkgAutoInst from '@opentelemetry/auto-instrumentations-node';
+const { getNodeAutoInstrumentations } = pkgAutoInst;
+import pkgResources from '@opentelemetry/resources';
+const { resourceFromAttributes } = pkgResources;
 const ATTR_SERVICE_NAME = 'service.name';
 const ATTR_SERVICE_VERSION = 'service.version';
 const ATTR_DEPLOYMENT_ENVIRONMENT_NAME = 'deployment.environment';
-import { W3CTraceContextPropagator } from '@opentelemetry/core';
-import {
-  ParentBasedSampler,
-  TraceIdRatioBasedSampler,
-  AlwaysOnSampler,
-} from '@opentelemetry/sdk-trace-node';
-import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
+import pkgCore from '@opentelemetry/core';
+const { W3CTraceContextPropagator } = pkgCore;
+import pkgSdkTrace from '@opentelemetry/sdk-trace-node';
+const { ParentBasedSampler, TraceIdRatioBasedSampler, AlwaysOnSampler } = pkgSdkTrace;
+import pkgApi from '@opentelemetry/api';
+const { diag, DiagConsoleLogger, DiagLogLevel } = pkgApi;
 
 /**
  * Sampling strategy per CTO guardrails:
@@ -69,7 +72,7 @@ export function initTracing() {
     diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
   }
 
-  const resource = new Resource({
+  const resource = resourceFromAttributes({
     [ATTR_SERVICE_NAME]: serviceName,
     [ATTR_SERVICE_VERSION]: serviceVersion,
     [ATTR_DEPLOYMENT_ENVIRONMENT_NAME]: deploymentEnv,

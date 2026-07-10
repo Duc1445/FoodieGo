@@ -23,7 +23,14 @@
     "helmet": "^7.1.0",
     "cors": "^2.8.5",
     "morgan": "^1.10.0",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "@foodiego/core": "workspace:*",
+    "@foodiego/tracing": "workspace:*",
+    "@foodiego/logging": "workspace:*",
+    "@foodiego/metrics": "workspace:*",
+    "@foodiego/rabbit": "workspace:*",
+    "@foodiego/platform-sdk": "workspace:*",
+    "@opentelemetry/api": "^1.9.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.2",
@@ -35,9 +42,17 @@
     "testEnvironment": "node",
     "transform": {},
     "coverageDirectory": "coverage",
-    "collectCoverageFrom": ["src/**/*.js", "!src/index.js"],
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/index.js"
+    ],
     "coverageThreshold": {
-      "global": { "lines": 0, "functions": 0, "branches": 0, "statements": 0 }
+      "global": {
+        "lines": 0,
+        "functions": 0,
+        "branches": 0,
+        "statements": 0
+      }
     }
   }
 }

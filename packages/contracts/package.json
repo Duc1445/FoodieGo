@@ -1,0 +1,8 @@
+{
+  "name": "@foodiego/contracts",
+  "version": "1.0.0",
+  "description": "Contracts and Event Schemas for FoodieGo",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {}
+}

@@ -1,5 +1,5 @@
 {
-  "name": "@foodiego/otel",
+  "name": "@foodiego/tracing",
   "version": "1.0.0",
   "description": "W3C compliant distributed tracing for FoodieGo",
   "main": "src/index.js",
@@ -7,7 +7,10 @@
   "dependencies": {
     "@opentelemetry/api": "^1.6.0",
     "@opentelemetry/auto-instrumentations-node": "^0.78.0",
+    "@opentelemetry/core": "^2.9.0",
     "@opentelemetry/exporter-trace-otlp-grpc": "^0.220.0",
-    "@opentelemetry/sdk-node": "^0.220.0"
+    "@opentelemetry/resources": "^2.9.0",
+    "@opentelemetry/sdk-node": "^0.220.0",
+    "@opentelemetry/sdk-trace-node": "^2.9.0"
   }
 }

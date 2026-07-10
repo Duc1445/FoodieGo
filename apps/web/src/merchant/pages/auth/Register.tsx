@@ -10,6 +10,7 @@ export function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [restaurantName, setRestaurantName] = useState('');
+  const [fullName, setFullName] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const login = useAuthStore(state => state.login);
@@ -40,6 +41,7 @@ export function Register() {
       const data = await AuthAPI.register({ 
         email, 
         password, 
+        full_name: fullName || 'Merchant',
         role: 'merchant',
         restaurant_name: restaurantName 
       });
@@ -67,12 +69,23 @@ export function Register() {
 
         <form onSubmit={handleRegister} className="space-y-4">
           <div>
+            <label className="block text-sm font-medium">Full Name</label>
+            <input 
+              type="text" 
+              value={fullName} 
+              onChange={e => setFullName(e.target.value)} 
+              className="w-full p-2 mt-1 border rounded text-black bg-white" 
+              required 
+              disabled={isLoading}
+            />
+          </div>
+          <div>
             <label className="block text-sm font-medium">Restaurant Name</label>
             <input 
               type="text" 
               value={restaurantName} 
               onChange={e => setRestaurantName(e.target.value)} 
-              className="w-full p-2 mt-1 border rounded" 
+              className="w-full p-2 mt-1 border rounded text-black bg-white" 
               required 
               disabled={isLoading}
             />
@@ -83,7 +96,7 @@ export function Register() {
               type="email" 
               value={email} 
               onChange={e => setEmail(e.target.value)} 
-              className="w-full p-2 mt-1 border rounded" 
+              className="w-full p-2 mt-1 border rounded text-black bg-white" 
               required 
               disabled={isLoading}
             />
@@ -94,7 +107,7 @@ export function Register() {
               type="password" 
               value={password} 
               onChange={e => setPassword(e.target.value)} 
-              className="w-full p-2 mt-1 border rounded" 
+              className="w-full p-2 mt-1 border rounded text-black bg-white" 
               required 
               disabled={isLoading}
               placeholder="At least 8 characters"
@@ -106,7 +119,7 @@ export function Register() {
               type="password" 
               value={confirmPassword} 
               onChange={e => setConfirmPassword(e.target.value)} 
-              className="w-full p-2 mt-1 border rounded" 
+              className="w-full p-2 mt-1 border rounded text-black bg-white" 
               required 
               disabled={isLoading}
             />
@@ -119,7 +132,7 @@ export function Register() {
 
         <div className="text-center text-sm text-muted-foreground">
           Already a merchant?{' '}
-          <Link to="/merchant/auth/login" className="text-primary hover:underline font-medium">
+          <Link to="/merchant/login" className="text-primary hover:underline font-medium">
             Login here
           </Link>
         </div>

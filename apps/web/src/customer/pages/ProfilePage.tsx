@@ -52,7 +52,7 @@ export function ProfilePage() {
   const handleLogout = () => {
     AuthAPI.logout();
     logout();
-    navigate('/auth/login');
+    navigate('/login');
   };
 
   if (isLoading) {

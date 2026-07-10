@@ -8,12 +8,10 @@
     "test": "echo \"no test specified\" && exit 0"
   },
   "dependencies": {
-    "@foodiego/logger": "workspace:*",
+    "@foodiego/logging": "workspace:*",
     "@foodiego/metrics": "workspace:*",
-    "@foodiego/otel": "workspace:*",
+    "@foodiego/tracing": "workspace:*",
     "@foodiego/rabbit": "workspace:*",
-    "@foodiego/problem": "workspace:*",
-    "@foodiego/retry": "workspace:*",
-    "@foodiego/testing": "workspace:*"
+    "@foodiego/core": "workspace:*"
   }
 }

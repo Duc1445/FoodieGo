@@ -49,7 +49,7 @@ export function Login() {
               type="email" 
               value={email} 
               onChange={e => setEmail(e.target.value)} 
-              className="w-full p-2 mt-1 border rounded" 
+              className="w-full p-2 mt-1 border rounded text-black bg-white" 
               required 
               disabled={isLoading}
             />
@@ -60,7 +60,7 @@ export function Login() {
               type="password" 
               value={password} 
               onChange={e => setPassword(e.target.value)} 
-              className="w-full p-2 mt-1 border rounded" 
+              className="w-full p-2 mt-1 border rounded text-black bg-white" 
               required 
               disabled={isLoading}
             />

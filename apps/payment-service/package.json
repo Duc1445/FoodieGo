@@ -10,7 +10,7 @@
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --passWithNoTests --forceExit"
   },
   "dependencies": {
-    "@foodiego/core": "file:../../packages/core",
+    "@foodiego/core": "workspace:*",
     "@foodiego/platform-sdk": "workspace:*",
     "@opentelemetry/api": "^1.9.1",
     "@opentelemetry/auto-instrumentations-node": "^0.78.0",
@@ -31,7 +31,12 @@
     "morgan": "^1.10.0",
     "pg": "^8.11.3",
     "prom-client": "^15.1.0",
-    "uuid": "^14.0.1"
+    "uuid": "^14.0.1",
+    "@foodiego/tracing": "workspace:*",
+    "@foodiego/logging": "workspace:*",
+    "@foodiego/metrics": "workspace:*",
+    "@foodiego/rabbit": "workspace:*",
+    "@foodiego/contracts": "workspace:*"
   },
   "devDependencies": {
     "jest": "^29.7.0",

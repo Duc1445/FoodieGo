@@ -1,7 +1,6 @@
-export * as logger from '@foodiego/logger';
+export * as logging from '@foodiego/logging';
+export * as logger from '@foodiego/logging';
 export * as metrics from '@foodiego/metrics';
-export * as otel from '@foodiego/otel';
+export * as tracing from '@foodiego/tracing';
 export * as rabbit from '@foodiego/rabbit';
-export * as problem from '@foodiego/problem';
-export * as retry from '@foodiego/retry';
-export * as testing from '@foodiego/testing';
+export * as core from '@foodiego/core';

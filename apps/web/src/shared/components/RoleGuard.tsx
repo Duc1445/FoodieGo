@@ -7,7 +7,7 @@ export function RoleGuard({ role, children }: { role: 'customer' | 'merchant' | 
 
   if (!isAuthenticated() || !user) {
     // Redirect to the respective login page based on the required role
-    const loginPath = role === 'customer' ? '/auth/login' : `/${role}/auth/login`;
+    const loginPath = role === 'customer' ? '/login' : `/${role}/login`;
     return <Navigate to={loginPath} state={{ from: location }} replace />;
   }
 

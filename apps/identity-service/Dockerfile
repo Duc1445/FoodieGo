@@ -1,9 +1,10 @@
 FROM node:20-alpine
 RUN apk add --no-cache wget
+RUN npm install -g pnpm
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages ./packages
 COPY apps ./apps
-RUN npm ci
+RUN pnpm install --frozen-lockfile
 WORKDIR /app/apps/identity-service
-CMD ["npm", "start"]
+CMD ["pnpm", "start"]

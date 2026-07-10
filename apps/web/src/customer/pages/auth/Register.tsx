@@ -9,6 +9,7 @@ export function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const login = useAuthStore(state => state.login);
@@ -31,7 +32,7 @@ export function Register() {
     setIsLoading(true);
 
     try {
-      const data = await AuthAPI.register({ email, password, role: 'customer' });
+      const data = await AuthAPI.register({ email, password, full_name: fullName || 'Customer', role: 'customer' });
       localStorage.setItem('foodiego-auth-token', data.token);
       login(data.user, data.token);
       navigate('/');
@@ -56,12 +57,23 @@ export function Register() {
 
         <form onSubmit={handleRegister} className="space-y-4">
           <div>
+            <label className="block text-sm font-medium">Full Name</label>
+            <input 
+              type="text" 
+              value={fullName} 
+              onChange={e => setFullName(e.target.value)} 
+              className="w-full p-2 mt-1 border rounded text-black bg-white" 
+              required 
+              disabled={isLoading}
+            />
+          </div>
+          <div>
             <label className="block text-sm font-medium">Email</label>
             <input 
               type="email" 
               value={email} 
               onChange={e => setEmail(e.target.value)} 
-              className="w-full p-2 mt-1 border rounded" 
+              className="w-full p-2 mt-1 border rounded text-black bg-white" 
               required 
               disabled={isLoading}
             />
@@ -72,7 +84,7 @@ export function Register() {
               type="password" 
               value={password} 
               onChange={e => setPassword(e.target.value)} 
-              className="w-full p-2 mt-1 border rounded" 
+              className="w-full p-2 mt-1 border rounded text-black bg-white" 
               required 
               disabled={isLoading}
               placeholder="At least 8 characters"
@@ -84,7 +96,7 @@ export function Register() {
               type="password" 
               value={confirmPassword} 
               onChange={e => setConfirmPassword(e.target.value)} 
-              className="w-full p-2 mt-1 border rounded" 
+              className="w-full p-2 mt-1 border rounded text-black bg-white" 
               required 
               disabled={isLoading}
             />
@@ -97,7 +109,7 @@ export function Register() {
 
         <div className="text-center text-sm text-muted-foreground">
           Already have an account?{' '}
-          <Link to="/auth/login" className="text-primary hover:underline font-medium">
+          <Link to="/login" className="text-primary hover:underline font-medium">
             Login
           </Link>
         </div>

@@ -1,4 +1,4 @@
-import { EventPublisher } from '@foodiego/events';
+import { EventPublisher } from '@foodiego/rabbit';
 
 export class DomainEventPublisher {
   constructor(client) {
@@ -7,7 +7,7 @@ export class DomainEventPublisher {
 
   /**
    * Publishes an event to the underlying messaging system (e.g., RabbitMQ via Outbox).
-   * Note: This method is used for direct publishing if outbox is bypassed, 
+   * Note: This method is used for direct publishing if outbox is bypassed,
    * but typically the repository will save to Outbox table instead.
    */
   async publish(eventType, aggregateType, aggregateId, payload, traceId) {
@@ -15,7 +15,7 @@ export class DomainEventPublisher {
       aggregateType,
       aggregateId,
       payload,
-      traceId
+      traceId,
     });
   }
 }

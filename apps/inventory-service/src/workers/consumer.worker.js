@@ -1,4 +1,4 @@
-import { EventConsumer, RabbitMQAdapter } from '@foodiego/events';
+import { EventConsumer, RabbitMQAdapter } from '@foodiego/rabbit';
 import pool from '../config/database.js';
 import { InventoryService } from '../application/InventoryService.js';
 import { logger } from '../context.js';
@@ -21,11 +21,13 @@ class OrderPendingReservationConsumer extends EventConsumer {
 
 export async function startConsumers() {
   const inventoryService = new InventoryService();
-  
-  const rabbitMQ = new RabbitMQAdapter(process.env.RABBITMQ_URL || 'amqp://guest:guest@localhost:5672');
-  
+
+  const rabbitMQ = new RabbitMQAdapter(
+    process.env.RABBITMQ_URL || 'amqp://guest:guest@localhost:5672',
+  );
+
   const consumer = new OrderPendingReservationConsumer(inventoryService);
-  
+
   await rabbitMQ.registerConsumer(consumer, pool);
 
   logger.info('Event Consumers started successfully');

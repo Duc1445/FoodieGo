@@ -18,7 +18,11 @@
     "helmet": "^7.1.0",
     "pg": "^8.11.5",
     "pgvector": "^0.1.7",
-    "uuid": "^14.0.1"
+    "uuid": "^14.0.1",
+    "@foodiego/core": "workspace:*",
+    "@foodiego/tracing": "workspace:*",
+    "@foodiego/logging": "workspace:*",
+    "@foodiego/metrics": "workspace:*"
   },
   "devDependencies": {
     "jest": "^29.7.0",

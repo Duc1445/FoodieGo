@@ -1,4 +1,4 @@
-import { EventConsumer, RabbitMQAdapter } from '@foodiego/events';
+import { EventConsumer, RabbitMQAdapter } from '@foodiego/rabbit';
 import { PaymentRepository } from '../infrastructure/payment.repository.js';
 import { PaymentDomainService } from '../domain/payment.service.js';
 import { gatewayRegistry } from '../infrastructure/gateways/gateway.registry.js';
@@ -54,7 +54,7 @@ class OrderCancelledConsumer extends EventConsumer {
 
 export async function startConsumers() {
   const paymentRepo = new PaymentRepository();
-  
+
   // Re-register for standalone worker script if needed, though they run in same process
   const webhookSecret = process.env.WEBHOOK_SECRET || 'mock-secret';
   gatewayRegistry.register('mock', new MockGateway(webhookSecret, paymentRepo));

@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "type": "module",
   "dependencies": {
-    "amqplib": "^0.10.3"
+    "amqplib": "^0.10.3",
+    "@opentelemetry/api": "^1.9.1"
   }
 }

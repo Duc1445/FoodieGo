@@ -4,21 +4,13 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Enable pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
 
-# Copy workspace configs
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY packages/ui/package.json packages/ui/
-COPY packages/api-sdk/package.json packages/api-sdk/
-COPY apps/web/package.json apps/web/
+# Copy everything
+COPY . .
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
-
-# Copy source
-COPY packages/ui packages/ui/
-COPY packages/api-sdk packages/api-sdk/
-COPY apps/web apps/web/
 
 # Build
 WORKDIR /app/apps/web

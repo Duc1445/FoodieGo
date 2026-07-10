@@ -32,12 +32,18 @@ app.use(express.json());
 app.use(morgan('combined'));
 
 // ─── Metrics Middleware ────────────────────────────────────────────────────
-app.use((req, _res, next) => { req._startTime = Date.now(); next(); });
+app.use((req, _res, next) => {
+  req._startTime = Date.now();
+  next();
+});
 app.use((req, res, next) => {
   res.on('finish', () => {
     const duration = (Date.now() - req._startTime) / 1000;
     httpRequestCounter.inc({ method: req.method, route: req.path, status: res.statusCode });
-    httpRequestDuration.observe({ method: req.method, route: req.path, status: res.statusCode }, duration);
+    httpRequestDuration.observe(
+      { method: req.method, route: req.path, status: res.statusCode },
+      duration,
+    );
   });
   next();
 });
@@ -49,9 +55,9 @@ app.get('/metrics', async (_req, res) => {
   res.end(await register.metrics());
 });
 
-app.use('/api/auth', authRoutes);
+app.use('/api/v1/auth', authRoutes);
 import employeeRoutes from './routes/employee.routes.js';
-app.use('/api/employees', employeeRoutes);
+app.use('/api/v1/employees', employeeRoutes);
 
 // ─── Error Handler ─────────────────────────────────────────────────────────
 app.use((err, _req, res, _next) => {

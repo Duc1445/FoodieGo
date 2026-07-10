@@ -62,7 +62,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: '/auth',
+    path: '/',
     element: <Suspense fallback={<PageLoader />}><AuthLayout /></Suspense>,
     children: [
       { path: 'login', element: <Suspense fallback={<PageLoader />}><CustomerLogin /></Suspense> },
@@ -80,7 +80,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: '/merchant/auth',
+    path: '/merchant',
     element: <Suspense fallback={<PageLoader />}><AuthLayout /></Suspense>,
     children: [
       { path: 'login', element: <Suspense fallback={<PageLoader />}><MerchantLogin /></Suspense> },
@@ -94,7 +94,7 @@ const router = createBrowserRouter([
     element: <RoleGuard role="admin"><Suspense fallback={<PageLoader />}><div className="min-h-screen flex items-center justify-center">Admin Portal Content</div></Suspense></RoleGuard>,
   },
   {
-    path: '/admin/auth',
+    path: '/admin',
     element: <Suspense fallback={<PageLoader />}><AuthLayout /></Suspense>,
     children: [
       { path: 'login', element: <Suspense fallback={<PageLoader />}><AdminLogin /></Suspense> },

@@ -3,7 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { RestaurantAPI } from '../../shared/services/restaurant.api';
 import { Food } from '../../shared/services/food.api';
 import { Card, Badge, Skeleton, Button } from '@foodiego/ui';
-import { Star, MapPin, Clock, ArrowLeft, AlertCircle, RefreshCw } from 'lucide-react';
+import { Star, MapPin, Clock, ArrowLeft, AlertCircle, RefreshCw, Info } from 'lucide-react';
+import { Image } from '../../shared/components/Image';
+import { PRICING } from '../../shared/constants/pricing';
 
 export function RestaurantDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -63,6 +65,8 @@ export function RestaurantDetailPage() {
     );
   }
 
+  const deliveryFee = restaurant.delivery_fee ?? PRICING.DELIVERY_FEE;
+
   // Success state
   return (
     <div className="container mx-auto p-8">
@@ -70,25 +74,36 @@ export function RestaurantDetailPage() {
         <ArrowLeft className="w-4 h-4 mr-2" /> Back
       </Button>
       
-      <div 
-        className="h-64 md:h-80 w-full rounded-3xl bg-cover bg-center mb-8 relative shadow-lg" 
-        style={{ backgroundImage: `url(${restaurant.cover_image || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80'})` }} 
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-3xl" />
+      <div className="h-64 md:h-80 w-full rounded-3xl mb-8 relative shadow-lg overflow-hidden bg-gray-900">
+        <Image
+          src={restaurant.cover_image}
+          alt={restaurant.name}
+          fallback="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80"
+          className="absolute inset-0 w-full h-full object-cover opacity-60"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
         <div className="absolute bottom-0 left-0 p-8 text-white w-full flex flex-row items-end">
-          <div 
-            className="w-24 h-24 rounded-full border-4 border-white bg-white mr-6 bg-cover bg-center"
-            style={{ backgroundImage: `url(${restaurant.logo})` }}
-          />
-          <div>
-            <Badge className="mb-3 bg-primary/90 hover:bg-primary">
+          <div className="w-24 h-24 rounded-full border-4 border-white bg-white mr-6 overflow-hidden flex-shrink-0 shadow-md">
+            <Image
+              src={restaurant.logo}
+              alt={`${restaurant.name} logo`}
+              fallback="https://ui-avatars.com/api/?name=Restaurant&background=random"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="flex-1">
+            <Badge className="mb-3 bg-primary/90 hover:bg-primary border-none">
               {restaurant.status === 'open' ? 'Open Now' : 'Closed'}
             </Badge>
             <h1 className="text-4xl font-bold mb-2">{restaurant.name}</h1>
-            <div className="flex items-center gap-4 text-sm opacity-90">
-              <span className="flex items-center"><Star className="w-4 h-4 mr-1 text-yellow-400 fill-current" /> {restaurant.rating || 4.5}</span>
+            <div className="flex flex-wrap items-center gap-4 text-sm opacity-90 mt-2">
+              <span className="flex items-center bg-black/30 px-2 py-1 rounded-md backdrop-blur-sm">
+                <Star className="w-4 h-4 mr-1 text-yellow-400 fill-current" /> 
+                {restaurant.rating ? restaurant.rating.toFixed(1) : "New"}
+              </span>
               <span className="flex items-center"><MapPin className="w-4 h-4 mr-1" /> {restaurant.address || "District 1, HCMC"}</span>
               <span className="flex items-center"><Clock className="w-4 h-4 mr-1" /> {restaurant.opening_time} - {restaurant.closing_time}</span>
+              <span className="flex items-center"><Info className="w-4 h-4 mr-1" /> Fee: ₫{deliveryFee.toLocaleString()} • ETA: 15-30 mins</span>
             </div>
           </div>
         </div>
@@ -115,25 +130,49 @@ export function RestaurantDetailPage() {
               <h3 className="text-xl font-bold mb-6 border-b pb-2">{category.name}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {category.items && category.items.length > 0 ? (
-                  category.items.sort((a: any, b: any) => a.display_order - b.display_order).map((food: Food) => (
-                    <Link key={food.id} to={`/food/${food.id}`} state={{ restaurantName: restaurant.name, restaurantId: restaurant.id }} className="block focus:outline-none focus:ring-2 focus:ring-primary rounded-xl">
-                      <Card 
-                        className="flex flex-row overflow-hidden hover:shadow-md transition-shadow h-32 w-full"
-                      >
-                        <div 
-                          className="w-1/3 bg-cover bg-center" 
-                          style={{ backgroundImage: `url(${food.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80'})` }} 
-                        />
+                  category.items.sort((a: any, b: any) => a.display_order - b.display_order).map((food: Food) => {
+                    const isAvailable = food.is_available !== false;
+                    
+                    const cardContent = (
+                      <Card className={`flex flex-row overflow-hidden hover:shadow-md transition-shadow h-32 w-full ${!isAvailable ? 'opacity-60 grayscale' : ''}`}>
+                        <div className="w-1/3 relative h-full">
+                          <Image
+                            src={food.image_url}
+                            alt={food.name}
+                            fallback="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80"
+                            className="absolute inset-0 w-full h-full object-cover"
+                          />
+                        </div>
                         <div className="w-2/3 p-4 flex flex-col justify-between">
                           <div>
-                            <h4 className="font-semibold text-base line-clamp-1">{food.name}</h4>
+                            <div className="flex justify-between items-start">
+                              <h4 className="font-semibold text-base line-clamp-1 pr-2">{food.name}</h4>
+                              {!isAvailable && (
+                                <Badge variant="secondary" className="text-[10px] py-0 px-1 shrink-0">Unavailable</Badge>
+                              )}
+                            </div>
                             <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{food.description}</p>
                           </div>
                           <div className="font-bold text-primary">₫{Number(food.price).toLocaleString()}</div>
                         </div>
                       </Card>
-                    </Link>
-                  ))
+                    );
+
+                    if (!isAvailable) {
+                      return <div key={food.id} className="cursor-not-allowed">{cardContent}</div>;
+                    }
+
+                    return (
+                      <Link 
+                        key={food.id} 
+                        to={`/food/${food.id}`} 
+                        state={{ restaurantName: restaurant.name, restaurantId: restaurant.id }} 
+                        className="block focus:outline-none focus:ring-2 focus:ring-primary rounded-xl"
+                      >
+                        {cardContent}
+                      </Link>
+                    );
+                  })
                 ) : (
                   <div className="text-muted-foreground">No items in this category.</div>
                 )}

@@ -3,17 +3,20 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { FoodAPI } from '../../shared/services/food.api';
 import { RestaurantAPI } from '../../shared/services/restaurant.api';
-import { Button, Badge, Skeleton } from '@foodiego/ui';
-import { ArrowLeft, ShoppingCart, Plus, Minus, AlertCircle, RefreshCw } from 'lucide-react';
+import { Button, Badge, Skeleton, Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@foodiego/ui';
+import { ArrowLeft, ShoppingCart, Plus, Minus, AlertCircle, RefreshCw, TriangleAlert } from 'lucide-react';
 import { useCartStore } from '../../shared/stores/useCartStore';
 import { toast } from 'sonner';
+import { Image } from '../../shared/components/Image';
 
 export function FoodDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const addItem = useCartStore(state => state.addItem);
+  const clearCart = useCartStore(state => state.clearCart);
   
   const [quantity, setQuantity] = useState(1);
+  const [isConflictDialogOpen, setIsConflictDialogOpen] = useState(false);
 
   const { data: food, isLoading: isFoodLoading, error: foodError, refetch: refetchFood } = useQuery({
     queryKey: ['food', id],
@@ -89,8 +92,17 @@ export function FoodDetailPage() {
       toast.success(`Added ${quantity}x ${food.name} to cart!`);
       navigate(-1);
     } else {
-      toast.error('You can only order from one restaurant at a time. Please clear your cart first.');
+      setIsConflictDialogOpen(true);
     }
+  };
+
+  const handleReplaceCart = () => {
+    if (!restaurant) return;
+    clearCart();
+    addItem(food, quantity, { id: restaurant.id, name: restaurant.name });
+    toast.success(`Started new order with ${quantity}x ${food.name}!`);
+    setIsConflictDialogOpen(false);
+    navigate(-1);
   };
 
   // Success state
@@ -101,13 +113,17 @@ export function FoodDetailPage() {
       </Button>
       
       <div className="bg-card border rounded-3xl overflow-hidden shadow-sm flex flex-col md:flex-row">
-        <div 
-          className="w-full md:w-1/2 h-80 md:h-auto bg-cover bg-center" 
-          style={{ backgroundImage: `url(${food.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1200&q=80'})` }} 
-        />
+        <div className="w-full md:w-1/2 h-80 md:h-auto relative bg-gray-100">
+          <Image
+            src={food.image_url}
+            alt={food.name}
+            fallback="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1200&q=80"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        </div>
         
         <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
-          {food.is_available ? (
+          {food.is_available !== false ? (
             <Badge className="w-fit mb-4 bg-green-500/10 text-green-600 hover:bg-green-500/20 border-none">Available</Badge>
           ) : (
             <Badge variant="destructive" className="w-fit mb-4">Out of Stock</Badge>
@@ -126,14 +142,15 @@ export function FoodDetailPage() {
               <button 
                 className="px-4 py-3 hover:bg-accent text-muted-foreground transition-colors disabled:opacity-50"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                disabled={quantity <= 1}
+                disabled={quantity <= 1 || food.is_available === false}
               >
                 <Minus className="w-4 h-4" />
               </button>
               <span className="w-12 text-center font-semibold text-lg">{quantity}</span>
               <button 
-                className="px-4 py-3 hover:bg-accent text-muted-foreground transition-colors"
+                className="px-4 py-3 hover:bg-accent text-muted-foreground transition-colors disabled:opacity-50"
                 onClick={() => setQuantity(quantity + 1)}
+                disabled={food.is_available === false}
               >
                 <Plus className="w-4 h-4" />
               </button>
@@ -148,13 +165,35 @@ export function FoodDetailPage() {
             size="lg" 
             className="w-full text-lg h-14 rounded-xl shadow-lg"
             onClick={handleAddToCart}
-            disabled={!food.is_available}
+            disabled={food.is_available === false}
           >
             <ShoppingCart className="w-5 h-5 mr-2" />
             Add to Cart
           </Button>
         </div>
       </div>
+
+      <Dialog open={isConflictDialogOpen} onOpenChange={setIsConflictDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <TriangleAlert className="w-5 h-5 text-amber-500" />
+              Start New Order?
+            </DialogTitle>
+            <DialogDescription className="text-base pt-2">
+              Your cart contains items from a different restaurant. Do you want to clear your cart and start a new order with this restaurant?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-6">
+            <Button variant="outline" onClick={() => setIsConflictDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="default" onClick={handleReplaceCart}>
+              Start New Order
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

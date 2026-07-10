@@ -10,6 +10,7 @@ export interface CartState {
   restaurantId: string | null;
   restaurantName: string | null;
   items: CartItem[];
+  cartVersion: number;
   addItem: (food: Food, quantity: number, restaurant: { id: string; name: string }) => boolean;
   removeItem: (foodId: string) => void;
   updateQuantity: (foodId: string, quantity: number) => void;
@@ -24,14 +25,17 @@ export const useCartStore = create<CartState>()(
       restaurantId: null,
       restaurantName: null,
       items: [],
+      cartVersion: 1,
       
       addItem: (food, quantity, restaurant) => {
+        if (food.is_available === false) {
+          return false;
+        }
+
         const { restaurantId, items } = get();
         
         // Check if adding from a different restaurant
         if (restaurantId && restaurantId !== restaurant.id) {
-          // In a real app, we might prompt the user here. For this demo, we'll return false to indicate failure.
-          // The UI will handle showing the warning.
           return false;
         }
 
@@ -76,7 +80,7 @@ export const useCartStore = create<CartState>()(
         });
       },
 
-      clearCart: () => set({ restaurantId: null, restaurantName: null, items: [] }),
+      clearCart: () => set({ restaurantId: null, restaurantName: null, items: [], cartVersion: 1 }),
       
       getTotalItems: () => get().items.reduce((total, item) => total + item.quantity, 0),
       

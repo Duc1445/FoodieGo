@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { Button, Card, Input } from '@foodiego/ui';
 import { ArrowLeft, AlertCircle, Loader2, MapPin, Phone } from 'lucide-react';
 import { useCartStore } from '../../shared/stores/useCartStore';
-import { api } from '../../shared/api/api';
+import { OrderAPI } from '../../shared/services/order.api';
+import { toast } from 'sonner';
 
 interface CheckoutFormData {
   deliveryAddress: string;
@@ -15,7 +16,7 @@ interface CheckoutFormData {
 
 export function CheckoutPage() {
   const navigate = useNavigate();
-  const { items, getTotalPrice, clearCart, restaurantId } = useCartStore();
+  const { items, getTotalPrice, clearCart, restaurantId, cartVersion } = useCartStore();
   const [formData, setFormData] = useState<CheckoutFormData>({
     deliveryAddress: '',
     phone: '',
@@ -23,11 +24,24 @@ export function CheckoutPage() {
     paymentMethod: 'cash',
   });
   const [error, setError] = useState('');
+  
+  // Keep idempotency key in state so we can retry with same key if needed
+  const [idempotencyKey, setIdempotencyKey] = useState<string>('');
+  
+  useEffect(() => {
+    if (!idempotencyKey) {
+      setIdempotencyKey(crypto.randomUUID());
+    }
+  }, [idempotencyKey]);
 
   const createOrderMutation = useMutation({
     mutationFn: async () => {
       const totalAmount = getTotalPrice() + 25000 + Math.round(getTotalPrice() * 0.1);
       const payload = {
+        cartVersion,
+        idempotencyKey,
+        addressId: 'addr-1', // Mock addressId since backend requires it but frontend only has free text
+        paymentMethod: formData.paymentMethod,
         items: items.map(item => ({
           foodId: item.id,
           quantity: item.quantity,
@@ -37,19 +51,27 @@ export function CheckoutPage() {
         deliveryAddress: formData.deliveryAddress,
         phone: formData.phone,
         notes: formData.notes,
-        paymentMethod: formData.paymentMethod,
         totalAmount,
       };
 
-      const res = await api.post('/orders', payload);
-      return res.data;
+      return await OrderAPI.checkout(payload);
     },
     onSuccess: (data) => {
       clearCart();
-      navigate(`/order/${data.orderId}`, { state: { success: true } });
+      // Clear idempotency key on success so next order gets a new one
+      setIdempotencyKey('');
+      navigate(`/order/${data.data?.orderId || 'unknown'}`, { state: { success: true } });
     },
     onError: (err: any) => {
-      setError(err.response?.data?.message || 'Failed to create order');
+      const msg = err.response?.data?.message || err.response?.data?.error?.message || 'Failed to create order. Please try again.';
+      setError(msg);
+      toast.error(msg);
+      
+      // Since backend requires the cart to be synced first (which Sprint 2A skips),
+      // we gracefully handle the expected "Cart is empty" error.
+      if (msg.includes('Cart is empty')) {
+         setError('Failed to checkout: Backend cart sync is required but not yet implemented (Sprint 2B). Order creation is temporarily disabled.');
+      }
     },
   });
 
@@ -94,8 +116,8 @@ export function CheckoutPage() {
 
       <h1 className="text-3xl font-bold mb-8">Checkout</h1>
 
-      <div className="grid grid-cols-3 gap-8">
-        <div className="col-span-2 space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="md:col-span-2 space-y-6">
           {error && (
             <div className="flex gap-3 p-4 rounded-lg bg-red-50 border border-red-200">
               <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
@@ -160,7 +182,7 @@ export function CheckoutPage() {
                         checked={formData.paymentMethod === method}
                         onChange={() => setFormData({ ...formData, paymentMethod: method })}
                         disabled={createOrderMutation.isPending}
-                        className="w-4 h-4"
+                        className="w-4 h-4 text-primary focus:ring-primary"
                       />
                       <span className="text-sm capitalize">{method === 'cash' ? 'Cash on Delivery' : method === 'card' ? 'Credit/Debit Card' : 'Digital Wallet'}</span>
                     </label>
@@ -170,44 +192,44 @@ export function CheckoutPage() {
 
               <Button 
                 type="submit" 
-                className="w-full mt-6"
+                className="w-full mt-6 h-12 text-lg"
                 disabled={createOrderMutation.isPending}
               >
                 {createOrderMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                {createOrderMutation.isPending ? 'Creating Order...' : `Place Order - ₫${totalAmount.toLocaleString()}`}
+                {createOrderMutation.isPending ? 'Processing...' : `Place Order - ₫${totalAmount.toLocaleString()}`}
               </Button>
             </form>
           </Card>
         </div>
 
-        <div className="col-span-1">
+        <div className="md:col-span-1">
           <Card className="p-6 sticky top-4">
             <h3 className="font-bold text-lg mb-6">Order Summary</h3>
             <div className="space-y-3 border-b pb-4 mb-4 max-h-[300px] overflow-y-auto">
               {items.map(item => (
                 <div key={item.id} className="flex justify-between text-sm">
-                  <span>{item.quantity}x {item.name}</span>
-                  <span>₫{(Number(item.price) * item.quantity).toLocaleString()}</span>
+                  <span className="line-clamp-1 pr-2">{item.quantity}x {item.name}</span>
+                  <span className="flex-shrink-0">₫{(Number(item.price) * item.quantity).toLocaleString()}</span>
                 </div>
               ))}
             </div>
             <div className="space-y-3 border-b pb-4 mb-4">
-              <div className="flex justify-between">
+              <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
                 <span>₫{getTotalPrice().toLocaleString()}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Delivery</span>
                 <span>₫25,000</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Tax</span>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Tax (10%)</span>
                 <span>₫{Math.round(getTotalPrice() * 0.1).toLocaleString()}</span>
               </div>
             </div>
             <div className="flex justify-between font-bold text-lg">
               <span>Total</span>
-              <span>₫{totalAmount.toLocaleString()}</span>
+              <span className="text-primary">₫{totalAmount.toLocaleString()}</span>
             </div>
           </Card>
         </div>

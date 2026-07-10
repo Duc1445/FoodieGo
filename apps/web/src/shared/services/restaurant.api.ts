@@ -21,10 +21,29 @@ export interface Restaurant {
   closing_time: string;
 }
 
+export interface PaginationData {
+  page: number;
+  limit: number;
+  total: number;
+}
+
+export type RestaurantList = Restaurant[] & { pagination?: PaginationData };
+
 export const RestaurantAPI = {
-  getRestaurants: async () => {
-    const res = await api.get<{ success: boolean; data: Restaurant[] }>('/restaurants');
-    return res.data.data;
+  getRestaurants: async (params?: { page?: number; limit?: number; search?: string }): Promise<RestaurantList> => {
+    const query = new URLSearchParams();
+    if (params?.page) query.append('page', params.page.toString());
+    if (params?.limit) query.append('limit', params.limit.toString());
+    if (params?.search) query.append('search', params.search);
+    
+    const url = `/restaurants${query.toString() ? `?${query.toString()}` : ''}`;
+    const res = await api.get<{ success: boolean; data: Restaurant[]; pagination?: PaginationData }>(url);
+    
+    const result = res.data.data as RestaurantList;
+    if (res.data.pagination) {
+      result.pagination = res.data.pagination;
+    }
+    return result;
   },
   
   getRestaurantById: async (id: string) => {

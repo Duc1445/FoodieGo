@@ -4,19 +4,11 @@ import { api } from '../api/api';
 const mock = new MockAdapter(api, { delayResponse: 500, onNoMatch: 'passthrough' });
 
 // ==========================================
-// MOCK DATA FOR MISSING ENDPOINTS ONLY
-// (Do NOT mock /restaurants or /menus as they exist in backend)
+// MOCK DATA FOR TRULY MISSING FEATURES ONLY
 // ==========================================
 
-// Mock Search API (Missing Search Service)
-mock.onGet(/\/search/).reply((_config) => {
-  // We'll return an empty array for now since frontend handles search logic manually in this sprint
-  // but if the UI decides to call the search API, it won't crash.
-  return [200, { success: true, data: { items: [], pagination: { page: 1, limit: 20, total: 0 } } }];
-});
-
-// Mock Portal Analytics (No Analytics Backend)
-mock.onGet('/portal/analytics').reply(200, {
+// Mock Portal Analytics (No Analytics Service Backend)
+mock.onGet(/\/portal\/analytics/).reply(200, {
   success: true,
   data: {
     overview: {
@@ -50,23 +42,6 @@ mock.onGet('/portal/analytics').reply(200, {
       { id: 'ORD-003', customer: 'Mike R.', status: 'PENDING', total: 18.75, time: '2 mins ago' }
     ]
   }
-});
-
-// Mock Auth Login (Frontend State Only)
-mock.onPost('/auth/login').reply((config) => {
-  const { email, password, role } = JSON.parse(config.data);
-  if (email && password) {
-    const userRole = role || 'customer';
-    const name = userRole === 'merchant' ? 'Demo Merchant' : userRole === 'admin' ? 'Demo Admin' : 'Demo Customer';
-    return [200, { 
-      success: true, 
-      data: { 
-        token: `mock-jwt-token-${userRole}`,
-        user: { id: `u-${userRole}`, email, name, role: userRole }
-      } 
-    }];
-  }
-  return [401, { success: false, message: 'Invalid credentials' }];
 });
 
 export {};

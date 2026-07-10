@@ -1,6 +1,6 @@
 import axios from 'axios';
+import type { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 
-// The gateway runs on port 3000 locally
 const baseURL = import.meta.env.VITE_GATEWAY_URL || 'http://localhost:3000/api/v1';
 
 export const api = axios.create({
@@ -9,8 +9,6 @@ export const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
-
-import type { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const token = localStorage.getItem('foodiego-auth-token');
@@ -23,7 +21,10 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError) => {
-    // Global error handling, e.g., redirect to login on 401
+    if (error.response?.status === 401) {
+      localStorage.removeItem('foodiego-auth-token');
+      window.location.href = '/auth/login';
+    }
     return Promise.reject(error);
   }
 );

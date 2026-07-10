@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { FoodAPI } from '../../shared/services/food.api';
 import { RestaurantAPI } from '../../shared/services/restaurant.api';
 import { Button, Badge, Skeleton } from '@foodiego/ui';
-import { ArrowLeft, ShoppingCart, Plus, Minus } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Plus, Minus, AlertCircle, RefreshCw } from 'lucide-react';
 import { useCartStore } from '../../shared/stores/useCartStore';
 import { toast } from 'sonner';
 
@@ -15,25 +15,30 @@ export function FoodDetailPage() {
   
   const [quantity, setQuantity] = useState(1);
 
-  const { data: food, isLoading: isFoodLoading } = useQuery({
+  const { data: food, isLoading: isFoodLoading, error: foodError, refetch: refetchFood } = useQuery({
     queryKey: ['food', id],
     queryFn: () => FoodAPI.getFoodById(id!),
-    enabled: !!id
+    enabled: !!id,
+    retry: 2,
   });
 
   const restaurantId = (food as any)?.restaurant_id;
 
-  const { data: restaurant, isLoading: isRestaurantLoading } = useQuery({
+  const { data: restaurant, isLoading: isRestaurantLoading, error: restaurantError } = useQuery({
     queryKey: ['restaurant', restaurantId],
     queryFn: () => RestaurantAPI.getRestaurantById(restaurantId),
-    enabled: !!restaurantId
+    enabled: !!restaurantId,
+    retry: 2,
   });
 
   const isLoading = isFoodLoading || (!!restaurantId && isRestaurantLoading);
+  const error = foodError || restaurantError;
 
+  // Loading state
   if (isLoading) {
     return (
       <div className="container mx-auto p-8 max-w-4xl">
+        <Skeleton className="h-12 w-20 mb-4" />
         <div className="flex flex-col md:flex-row gap-12">
           <Skeleton className="w-full md:w-1/2 h-96 rounded-3xl" />
           <div className="w-full md:w-1/2 flex flex-col justify-center">
@@ -47,8 +52,31 @@ export function FoodDetailPage() {
     );
   }
 
-  if (!food) {
-    return <div className="text-center p-12">Food not found.</div>;
+  // Error state
+  if (error || !food) {
+    return (
+      <div className="container mx-auto p-8 max-w-4xl">
+        <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6">
+          <ArrowLeft className="w-4 h-4 mr-2" /> Back
+        </Button>
+        <div className="py-12 text-center">
+          <div className="max-w-md mx-auto p-8 border rounded-lg bg-red-50 border-red-200">
+            <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-600" />
+            <h3 className="text-lg font-semibold text-red-900 mb-2">Food Not Found</h3>
+            <p className="text-red-700 mb-6">We couldn't load this item. It may have been removed or is temporarily unavailable.</p>
+            <div className="flex gap-2 justify-center">
+              <Button onClick={() => refetchFood()} variant="outline" className="gap-2">
+                <RefreshCw className="w-4 h-4" />
+                Retry
+              </Button>
+              <Button onClick={() => navigate('/')} variant="outline">
+                Back to Home
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const handleAddToCart = () => {
@@ -65,6 +93,7 @@ export function FoodDetailPage() {
     }
   };
 
+  // Success state
   return (
     <div className="container mx-auto p-8 max-w-5xl">
       <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6">

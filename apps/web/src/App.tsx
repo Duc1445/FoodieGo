@@ -16,6 +16,11 @@ const LandingPage = lazy(() => import('./customer/pages/LandingPage').then(modul
 const SearchPage = lazy(() => import('./customer/pages/SearchPage').then(module => ({ default: module.SearchPage })));
 const RestaurantDetailPage = lazy(() => import('./customer/pages/RestaurantDetailPage').then(module => ({ default: module.RestaurantDetailPage })));
 const FoodDetailPage = lazy(() => import('./customer/pages/FoodDetailPage').then(module => ({ default: module.FoodDetailPage })));
+const CartPage = lazy(() => import('./customer/pages/CartPage').then(module => ({ default: module.CartPage })));
+const CheckoutPage = lazy(() => import('./customer/pages/CheckoutPage').then(module => ({ default: module.CheckoutPage })));
+const OrderSuccessPage = lazy(() => import('./customer/pages/OrderSuccessPage').then(module => ({ default: module.OrderSuccessPage })));
+const MyOrdersPage = lazy(() => import('./customer/pages/MyOrdersPage').then(module => ({ default: module.MyOrdersPage })));
+const ProfilePage = lazy(() => import('./customer/pages/ProfilePage').then(module => ({ default: module.ProfilePage })));
 const CustomerLogin = lazy(() => import('./customer/pages/auth/Login').then(module => ({ default: module.Login })));
 const CustomerRegister = lazy(() => import('./customer/pages/auth/Register').then(module => ({ default: module.Register })));
 
@@ -49,6 +54,11 @@ const router = createBrowserRouter([
       { path: 'search', element: <Suspense fallback={<PageLoader />}><SearchPage /></Suspense> },
       { path: 'restaurant/:id', element: <Suspense fallback={<PageLoader />}><RestaurantDetailPage /></Suspense> },
       { path: 'food/:id', element: <Suspense fallback={<PageLoader />}><FoodDetailPage /></Suspense> },
+      { path: 'cart', element: <RoleGuard role="customer"><Suspense fallback={<PageLoader />}><CartPage /></Suspense></RoleGuard> },
+      { path: 'checkout', element: <RoleGuard role="customer"><Suspense fallback={<PageLoader />}><CheckoutPage /></Suspense></RoleGuard> },
+      { path: 'order/:orderId', element: <RoleGuard role="customer"><Suspense fallback={<PageLoader />}><OrderSuccessPage /></Suspense></RoleGuard> },
+      { path: 'my-orders', element: <RoleGuard role="customer"><Suspense fallback={<PageLoader />}><MyOrdersPage /></Suspense></RoleGuard> },
+      { path: 'profile', element: <RoleGuard role="customer"><Suspense fallback={<PageLoader />}><ProfilePage /></Suspense></RoleGuard> },
     ],
   },
   {

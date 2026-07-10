@@ -6,3 +6,4 @@ export * from './badge';
 export * from './skeleton';
 export * from './restaurant-skeleton';
 export * from './food-skeleton';
+export * from './dialog';

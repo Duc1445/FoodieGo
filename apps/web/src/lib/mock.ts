@@ -9,7 +9,7 @@ const mock = new MockAdapter(api, { delayResponse: 500, onNoMatch: 'passthrough'
 // ==========================================
 
 // Mock Search API (Missing Search Service)
-mock.onGet(/\/api\/v1\/search/).reply((config) => {
+mock.onGet(/\/api\/v1\/search/).reply((_config) => {
   // We'll return an empty array for now since frontend handles search logic manually in this sprint
   // but if the UI decides to call the search API, it won't crash.
   return [200, { success: true, data: { items: [], pagination: { page: 1, limit: 20, total: 0 } } }];

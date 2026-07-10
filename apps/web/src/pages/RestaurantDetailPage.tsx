@@ -1,7 +1,7 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { RestaurantAPI } from '../services/restaurant.api';
-import { FoodAPI, Food } from '../services/food.api';
+import { Food } from '../services/food.api';
 import { Card, Badge, Skeleton, Button } from '@foodiego/ui';
 import { Star, MapPin, Clock, ArrowLeft } from 'lucide-react';
 
@@ -83,7 +83,7 @@ export function RestaurantDetailPage() {
             <h3 className="text-xl font-bold mb-6 border-b pb-2">{category.name}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {category.items.sort((a: any, b: any) => a.display_order - b.display_order).map((food: Food) => (
-                <Link key={food.id} to={`/food/${food.id}`} className="block focus:outline-none focus:ring-2 focus:ring-primary rounded-xl">
+                <Link key={food.id} to={`/food/${food.id}`} state={{ restaurantName: restaurant.name, restaurantId: restaurant.id }} className="block focus:outline-none focus:ring-2 focus:ring-primary rounded-xl">
                   <Card 
                     className="flex flex-row overflow-hidden hover:shadow-md transition-shadow h-32 w-full"
                   >

@@ -1,5 +1,6 @@
 import { Outlet, Link } from 'react-router-dom';
 import { LocationSelector } from '../components/LocationSelector';
+import { CartDrawer } from '../components/CartDrawer';
 
 export function MainLayout() {
   return (
@@ -22,6 +23,8 @@ export function MainLayout() {
             <Link to="/admin" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               Restaurant Portal
             </Link>
+            <div className="border-l h-6 mx-2 border-border" />
+            <CartDrawer />
           </div>
         </div>
       </header>

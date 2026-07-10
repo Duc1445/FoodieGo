@@ -2,20 +2,34 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { FoodAPI } from '../services/food.api';
+import { RestaurantAPI } from '../services/restaurant.api';
 import { Button, Badge, Skeleton } from '@foodiego/ui';
 import { ArrowLeft, ShoppingCart, Plus, Minus } from 'lucide-react';
+import { useCartStore } from '../stores/useCartStore';
+import { toast } from 'sonner';
 
 export function FoodDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const addItem = useCartStore(state => state.addItem);
   
   const [quantity, setQuantity] = useState(1);
 
-  const { data: food, isLoading } = useQuery({
+  const { data: food, isLoading: isFoodLoading } = useQuery({
     queryKey: ['food', id],
     queryFn: () => FoodAPI.getFoodById(id!),
     enabled: !!id
   });
+
+  const restaurantId = (food as any)?.restaurant_id;
+
+  const { data: restaurant, isLoading: isRestaurantLoading } = useQuery({
+    queryKey: ['restaurant', restaurantId],
+    queryFn: () => RestaurantAPI.getRestaurantById(restaurantId),
+    enabled: !!restaurantId
+  });
+
+  const isLoading = isFoodLoading || (!!restaurantId && isRestaurantLoading);
 
   if (isLoading) {
     return (
@@ -38,9 +52,17 @@ export function FoodDetailPage() {
   }
 
   const handleAddToCart = () => {
-    // In Phase 3, this will integrate with Zustand useCartStore
-    alert(`Added ${quantity}x ${food.name} to cart!`);
-    navigate(-1);
+    if (!restaurant) {
+      toast.error('Cannot add to cart. Restaurant info missing.');
+      return;
+    }
+    const success = addItem(food, quantity, { id: restaurant.id, name: restaurant.name });
+    if (success) {
+      toast.success(`Added ${quantity}x ${food.name} to cart!`);
+      navigate(-1);
+    } else {
+      toast.error('You can only order from one restaurant at a time. Please clear your cart first.');
+    }
   };
 
   return (

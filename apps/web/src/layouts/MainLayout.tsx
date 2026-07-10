@@ -1,4 +1,5 @@
 import { Outlet, Link } from 'react-router-dom';
+import { LocationSelector } from '../components/LocationSelector';
 
 export function MainLayout() {
   return (
@@ -17,6 +18,7 @@ export function MainLayout() {
             </Link>
           </nav>
           <div className="ml-auto flex items-center space-x-4">
+            <LocationSelector />
             <Link to="/admin" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               Restaurant Portal
             </Link>

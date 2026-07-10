@@ -63,7 +63,7 @@ export function FoodDetailPage() {
           )}
           
           <h1 className="text-4xl font-extrabold tracking-tight mb-2">{food.name}</h1>
-          <p className="text-3xl font-bold text-primary mb-6">${Number(food.price).toFixed(2)}</p>
+          <p className="text-3xl font-bold text-primary mb-6">₫{Number(food.price).toLocaleString()}</p>
           
           <div className="mb-8">
             <h3 className="text-lg font-semibold mb-2">Description</h3>
@@ -89,7 +89,7 @@ export function FoodDetailPage() {
             </div>
             
             <div className="text-xl font-bold">
-              Total: ${(Number(food.price) * quantity).toFixed(2)}
+              Total: ₫{(Number(food.price) * quantity).toLocaleString()}
             </div>
           </div>
 

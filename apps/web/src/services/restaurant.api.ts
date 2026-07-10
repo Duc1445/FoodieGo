@@ -6,9 +6,16 @@ export interface Restaurant {
   description: string;
   address: string;
   phone: string;
-  image_url: string;
+  image_url?: string;
+  cover_image: string;
+  logo: string;
   is_active: boolean;
   rating: number;
+  latitude: number;
+  longitude: number;
+  delivery_fee: number;
+  minimum_order: number;
+  total_reviews: number;
 }
 
 export const RestaurantAPI = {
@@ -19,6 +26,11 @@ export const RestaurantAPI = {
   
   getRestaurantById: async (id: string) => {
     const res = await api.get<{ success: boolean; data: Restaurant }>(`/restaurants/${id}`);
+    return res.data.data;
+  },
+
+  getMenuByRestaurantId: async (id: string) => {
+    const res = await api.get<{ success: boolean; data: any[] }>(`/restaurants/${id}/menu`);
     return res.data.data;
   }
 };

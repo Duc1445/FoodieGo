@@ -15,13 +15,13 @@ export function RestaurantDetailPage() {
     enabled: !!id
   });
 
-  const { data: foods = [], isLoading: isFoodsLoading } = useQuery({
-    queryKey: ['foods', 'restaurant', id],
-    queryFn: () => FoodAPI.getFoods(), // Replace with getFoodsByRestaurant when API supports it
+  const { data: menuCategories = [], isLoading: isMenuLoading } = useQuery({
+    queryKey: ['menu', 'restaurant', id],
+    queryFn: () => RestaurantAPI.getMenuByRestaurantId(id!),
     enabled: !!id
   });
 
-  const isLoading = isRestaurantLoading || isFoodsLoading;
+  const isLoading = isRestaurantLoading || isMenuLoading;
 
   if (isLoading) {
     return (
@@ -49,16 +49,24 @@ export function RestaurantDetailPage() {
       
       <div 
         className="h-64 md:h-80 w-full rounded-3xl bg-cover bg-center mb-8 relative shadow-lg" 
-        style={{ backgroundImage: `url(${restaurant.image_url || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80'})` }} 
+        style={{ backgroundImage: `url(${restaurant.cover_image || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80'})` }} 
       >
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-3xl" />
-        <div className="absolute bottom-0 left-0 p-8 text-white">
-          <Badge className="mb-3 bg-primary/90 hover:bg-primary">Open Now</Badge>
-          <h1 className="text-4xl font-bold mb-2">{restaurant.name}</h1>
-          <div className="flex items-center gap-4 text-sm opacity-90">
-            <span className="flex items-center"><Star className="w-4 h-4 mr-1 text-yellow-400 fill-current" /> {restaurant.rating || 4.5}</span>
-            <span className="flex items-center"><MapPin className="w-4 h-4 mr-1" /> {restaurant.address}</span>
-            <span className="flex items-center"><Clock className="w-4 h-4 mr-1" /> 20-30 min</span>
+        <div className="absolute bottom-0 left-0 p-8 text-white w-full flex flex-row items-end">
+          <div 
+            className="w-24 h-24 rounded-full border-4 border-white bg-white mr-6 bg-cover bg-center"
+            style={{ backgroundImage: `url(${restaurant.logo})` }}
+          />
+          <div>
+            <Badge className="mb-3 bg-primary/90 hover:bg-primary">
+              {restaurant.status === 'open' ? 'Open Now' : 'Closed'}
+            </Badge>
+            <h1 className="text-4xl font-bold mb-2">{restaurant.name}</h1>
+            <div className="flex items-center gap-4 text-sm opacity-90">
+              <span className="flex items-center"><Star className="w-4 h-4 mr-1 text-yellow-400 fill-current" /> {restaurant.rating || 4.5}</span>
+              <span className="flex items-center"><MapPin className="w-4 h-4 mr-1" /> {restaurant.address || "District 1, HCMC"}</span>
+              <span className="flex items-center"><Clock className="w-4 h-4 mr-1" /> {restaurant.opening_time} - {restaurant.closing_time}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -69,28 +77,36 @@ export function RestaurantDetailPage() {
       </div>
 
       <div>
-        <h2 className="text-2xl font-bold mb-6">Menu</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {foods.map((food: Food) => (
-            <Link key={food.id} to={`/food/${food.id}`} className="block focus:outline-none focus:ring-2 focus:ring-primary rounded-xl">
-              <Card 
-                className="flex flex-row overflow-hidden hover:shadow-md transition-shadow h-32 w-full"
-              >
-                <div 
-                  className="w-1/3 bg-cover bg-center" 
-                  style={{ backgroundImage: `url(${food.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80'})` }} 
-                />
-                <div className="w-2/3 p-4 flex flex-col justify-between">
-                  <div>
-                    <h3 className="font-semibold text-base line-clamp-1">{food.name}</h3>
-                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{food.description}</p>
-                  </div>
-                  <div className="font-bold text-primary">${Number(food.price).toFixed(2)}</div>
-                </div>
-              </Card>
-            </Link>
-          ))}
-        </div>
+        <h2 className="text-3xl font-bold mb-8">Menu</h2>
+        {menuCategories.sort((a: any, b: any) => a.display_order - b.display_order).map((category: any) => (
+          <div key={category.id} className="mb-12">
+            <h3 className="text-xl font-bold mb-6 border-b pb-2">{category.name}</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {category.items.sort((a: any, b: any) => a.display_order - b.display_order).map((food: Food) => (
+                <Link key={food.id} to={`/food/${food.id}`} className="block focus:outline-none focus:ring-2 focus:ring-primary rounded-xl">
+                  <Card 
+                    className="flex flex-row overflow-hidden hover:shadow-md transition-shadow h-32 w-full"
+                  >
+                    <div 
+                      className="w-1/3 bg-cover bg-center" 
+                      style={{ backgroundImage: `url(${food.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80'})` }} 
+                    />
+                    <div className="w-2/3 p-4 flex flex-col justify-between">
+                      <div>
+                        <h4 className="font-semibold text-base line-clamp-1">{food.name}</h4>
+                        <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{food.description}</p>
+                      </div>
+                      <div className="font-bold text-primary">₫{Number(food.price).toLocaleString()}</div>
+                    </div>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        ))}
+        {menuCategories.length === 0 && (
+          <div className="text-muted-foreground">No menu available for this restaurant.</div>
+        )}
       </div>
     </div>
   );

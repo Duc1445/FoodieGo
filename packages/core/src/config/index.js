@@ -11,6 +11,7 @@ export const config = {
   },
   redis: {
     url: process.env.REDIS_URL,
+    ttl: parseInt(process.env.REDIS_TTL, 10) || 3600,
   },
   jwt: {
     secret: process.env.JWT_SECRET || 'fallback_secret_do_not_use_in_prod',
@@ -20,5 +21,5 @@ export const config = {
     identity: process.env.IDENTITY_SERVICE_URL,
     restaurant: process.env.RESTAURANT_SERVICE_URL,
     order: process.env.ORDER_SERVICE_URL,
-  }
+  },
 };

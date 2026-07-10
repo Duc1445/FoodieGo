@@ -1,6 +1,7 @@
 import pool from '../config/database.js';
 
 import { Reservation, ReservationStatus } from '../domain/Reservation.js';
+import { InventoryRepository } from '../infrastructure/InventoryRepository.js';
 
 export class InventoryService {
   constructor() {
@@ -13,13 +14,13 @@ export class InventoryService {
   async handleOrderPendingReservation(payload, traceId) {
     const { orderId, items } = payload;
     const client = await pool.connect();
-    
+
     try {
       await client.query('BEGIN');
-      
+
       const reservation = new Reservation({
         orderId,
-        items
+        items,
       });
 
       const failedSkus = [];
@@ -39,7 +40,7 @@ export class InventoryService {
         }
 
         stock.reserve(item.quantity);
-        
+
         try {
           await this.repo.updateStock(stock, client);
         } catch (error) {
@@ -52,16 +53,19 @@ export class InventoryService {
         // Validation failed, rollback any stock updates and publish failure
         await client.query('ROLLBACK');
         await client.query('BEGIN'); // Start new transaction for outbox event
-        
-        await this.repo.saveOutboxEvent({
-          eventType: 'InventoryReservationFailed',
-          eventVersion: 1,
-          aggregateType: 'Order',
-          aggregateId: orderId,
-          payload: { orderId, reason: 'Insufficient stock or locking conflict', failedSkus },
-          metadata: { traceId }
-        }, client);
-        
+
+        await this.repo.saveOutboxEvent(
+          {
+            eventType: 'InventoryReservationFailed',
+            eventVersion: 1,
+            aggregateType: 'Order',
+            aggregateId: orderId,
+            payload: { orderId, reason: 'Insufficient stock or locking conflict', failedSkus },
+            metadata: { traceId },
+          },
+          client,
+        );
+
         await client.query('COMMIT');
         return false;
       }
@@ -70,19 +74,22 @@ export class InventoryService {
       reservation.markAsReserved(ttl);
       await this.repo.createReservation(reservation, client);
 
-      await this.repo.saveOutboxEvent({
-        eventType: 'InventoryReserved',
-        eventVersion: 1,
-        aggregateType: 'Order',
-        aggregateId: orderId,
-        payload: { 
-          orderId, 
-          reservationId: reservation.reservationId, 
-          status: reservation.status, 
-          expiresAt: reservation.expiresAt 
+      await this.repo.saveOutboxEvent(
+        {
+          eventType: 'InventoryReserved',
+          eventVersion: 1,
+          aggregateType: 'Order',
+          aggregateId: orderId,
+          payload: {
+            orderId,
+            reservationId: reservation.reservationId,
+            status: reservation.status,
+            expiresAt: reservation.expiresAt,
+          },
+          metadata: { traceId },
         },
-        metadata: { traceId }
-      }, client);
+        client,
+      );
 
       await client.query('COMMIT');
       return true;

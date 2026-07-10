@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { useMemo } from 'react';
-import { useLocationStore } from '../stores/useLocationStore';
-import { calculateDistance } from '../lib/utils';
-import { RestaurantAPI } from '../services/restaurant.api';
+import { useLocationStore } from '../../shared/stores/useLocationStore';
+import { calculateDistance } from '../../shared/utils/utils';
+import { RestaurantAPI } from '../../shared/services/restaurant.api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, RestaurantCardSkeleton } from '@foodiego/ui';
 
 export function LandingPage() {

@@ -1,4 +1,4 @@
-import { api } from '../lib/api';
+import { api } from '../api/api';
 
 export interface Restaurant {
   id: string;

@@ -1,5 +1,5 @@
 import MockAdapter from 'axios-mock-adapter';
-import { api } from './api';
+import { api } from '../api/api';
 
 const mock = new MockAdapter(api, { delayResponse: 500, onNoMatch: 'passthrough' });
 
@@ -54,13 +54,15 @@ mock.onGet('/portal/analytics').reply(200, {
 
 // Mock Auth Login (Frontend State Only)
 mock.onPost('/auth/login').reply((config) => {
-  const { email, password } = JSON.parse(config.data);
+  const { email, password, role } = JSON.parse(config.data);
   if (email && password) {
+    const userRole = role || 'customer';
+    const name = userRole === 'merchant' ? 'Demo Merchant' : userRole === 'admin' ? 'Demo Admin' : 'Demo Customer';
     return [200, { 
       success: true, 
       data: { 
-        token: 'mock-jwt-token-12345',
-        user: { id: 'u1', email, name: 'Demo User', role: 'customer' }
+        token: `mock-jwt-token-${userRole}`,
+        user: { id: `u-${userRole}`, email, name, role: userRole }
       } 
     }];
   }

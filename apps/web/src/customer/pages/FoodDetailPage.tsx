@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { FoodAPI } from '../services/food.api';
-import { RestaurantAPI } from '../services/restaurant.api';
+import { FoodAPI } from '../../shared/services/food.api';
+import { RestaurantAPI } from '../../shared/services/restaurant.api';
 import { Button, Badge, Skeleton } from '@foodiego/ui';
 import { ArrowLeft, ShoppingCart, Plus, Minus } from 'lucide-react';
-import { useCartStore } from '../stores/useCartStore';
+import { useCartStore } from '../../shared/stores/useCartStore';
 import { toast } from 'sonner';
 
 export function FoodDetailPage() {

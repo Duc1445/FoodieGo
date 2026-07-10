@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardHeader, CardTitle, CardContent } from '@foodiego/ui';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { api } from '../lib/api';
+import { api } from '../../shared/api/api';
 
 interface AnalyticsData {
   overview: {
@@ -19,7 +19,7 @@ interface AnalyticsData {
   recentOrders: { id: string; customer: string; status: string; total: number; time: string }[];
 }
 
-export function DashboardPage() {
+export function MerchantDashboardPage() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['portal', 'analytics'],
     queryFn: async () => {

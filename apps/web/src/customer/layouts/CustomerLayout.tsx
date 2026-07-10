@@ -1,8 +1,8 @@
 import { Outlet, Link } from 'react-router-dom';
-import { LocationSelector } from '../components/LocationSelector';
-import { CartDrawer } from '../components/CartDrawer';
+import { LocationSelector } from '../../shared/components/LocationSelector';
+import { CartDrawer } from '../../shared/components/CartDrawer';
 
-export function MainLayout() {
+export function CustomerLayout() {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">

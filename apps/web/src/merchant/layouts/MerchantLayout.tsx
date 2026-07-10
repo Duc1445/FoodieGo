@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 
-export function AdminLayout() {
+export function MerchantLayout() {
   return (
     <div className="flex min-h-screen">
       <aside className="w-64 border-r bg-muted/40 hidden md:block">

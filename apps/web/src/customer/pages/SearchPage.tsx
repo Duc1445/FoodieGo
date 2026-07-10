@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { FoodAPI, Food } from '../services/food.api';
+import { FoodAPI, Food } from '../../shared/services/food.api';
 import { Card, CardHeader, CardTitle, CardDescription, Input, Button, FoodCardSkeleton } from '@foodiego/ui';
 import { Search as SearchIcon } from 'lucide-react';
 

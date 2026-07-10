@@ -1,7 +1,7 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { RestaurantAPI } from '../services/restaurant.api';
-import { Food } from '../services/food.api';
+import { RestaurantAPI } from '../../shared/services/restaurant.api';
+import { Food } from '../../shared/services/food.api';
 import { Card, Badge, Skeleton, Button } from '@foodiego/ui';
 import { Star, MapPin, Clock, ArrowLeft } from 'lucide-react';
 

@@ -26,3 +26,18 @@ Before implementing any feature:
 6. Execute
 7. Update documentation
 8. Commit and push
+
+
+## AI Agent Workflows
+
+**Before frontend work:**
+1. Read docs/frontend/frontend-quality-guidelines.md
+2. Read docs/frontend/component-guidelines.md
+3. Read related CONTEXT.md
+4. Create UI implementation plan
+
+**Before backend work:**
+1. Read docs/backend/backend-architecture.md
+2. Read ADRs
+3. Read service CONTEXT.md
+4. Create API implementation plan

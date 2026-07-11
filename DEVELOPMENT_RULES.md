@@ -37,3 +37,38 @@ Before implementing any feature:
 6. Execute
 7. Update documentation
 8. Commit and push
+
+
+## Backend Engineering Standards
+- **Controller/API layer responsibilities**: Handle HTTP, extract params, validate input, call Service layer. NO business logic.
+- **Service layer responsibilities**: Pure business logic.
+- **Repository/data access rules**: Isolate DB access. Services shouldn't know about SQL.
+- **Dependency injection rules**: Pass dependencies explicitly.
+- **Error handling conventions**: Use Global Error Handlers.
+- **Logging conventions**: Log contextual information, mask PII.
+- **Configuration rules**: Config via Environment variables.
+- **Validation rules**: Strict boundary validation.
+- **Security practices**: Never trust user input, validate JWTs.
+
+
+## Frontend Engineering Standards
+- **Component responsibility**: UI strictly separated from business logic.
+- **State management rules**: Zustand for local, API responses for Source of Truth.
+- **Styling conventions**: TailwindCSS utility classes, Radix UI for primitives.
+- **Accessibility requirements**: Full keyboard navigation, ARIA labels.
+- **UX consistency requirements**: Standardized spacing, micro-interactions, skeleton loaders.
+
+
+## AI Agent Workflows
+
+**Before frontend work:**
+1. Read docs/frontend/frontend-quality-guidelines.md
+2. Read docs/frontend/component-guidelines.md
+3. Read related CONTEXT.md
+4. Create UI implementation plan
+
+**Before backend work:**
+1. Read docs/backend/backend-architecture.md
+2. Read ADRs
+3. Read service CONTEXT.md
+4. Create API implementation plan

@@ -70,3 +70,7 @@ CI: GREEN
 ### Sprint 2C Phase 5 - Development Status Simulator
 * **Tool Purpose**: A development-only script (`update-order-status.js`) and UI button to manually simulate merchant/admin order status updates. This exists to allow developers and QA to test the complete order lifecycle (timeline UI, state updates) without needing to build out full production merchant features right now.
 * **Security Limitation**: It is NOT exposed as an HTTP endpoint. It connects to the database via `OrderService` which rigorously enforces `OrderStateMachine` rules. The frontend helper button is protected behind `import.meta.env.DEV` to guarantee it is stripped from production builds.
+
+### Sprint 2C Phase 6 - Final Validation & Release
+* **Integration Test Stabilization**: Legacy integration tests in `restaurant-service` pointing to obsolete paths (e.g. `/api/categories`, `/api/foods`) were updated to correctly point to `/api/v1/categories`, and dead tests were removed. This achieved a completely green integration test run across the entire monorepo using `pnpm test:integration`.
+* **CI Quality Checklist**: The full `pnpm install --frozen-lockfile -> lint -> typecheck -> test:unit -> test:integration -> build` pipeline passes flawlessly. The `v0.2.0-order-tracking` release tag marks the completion of the Sprint 2C MVP order features.

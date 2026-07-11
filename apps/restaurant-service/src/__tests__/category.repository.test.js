@@ -1,12 +1,13 @@
 import { jest } from '@jest/globals';
-import pool from '../config/database.js';
-import { CategoryRepository } from '../modules/category/repositories/category.repository.js';
-
 jest.unstable_mockModule('../config/database.js', () => ({
   default: {
     query: jest.fn(),
   },
 }));
+
+const pool = (await import('../config/database.js')).default;
+const { CategoryRepository } =
+  await import('../modules/category/repositories/category.repository.js');
 
 const repo = new CategoryRepository();
 

@@ -12,6 +12,7 @@
     "build": "pnpm -r run build",
     "test": "pnpm -r run test",
     "test:unit": "pnpm -r run test",
+    "test:integration": "pnpm -r run --if-present test:integration",
     "test:contracts": "node scripts/test-contracts.js",
     "lint": "pnpm -r run lint",
     "typecheck": "pnpm -r exec tsc -b",

@@ -13,6 +13,19 @@ jest.unstable_mockModule('../config/database.js', () => {
   };
 });
 
+// Mock Redis to prevent real connection attempts from hanging the test process
+jest.unstable_mockModule('../config/redis.js', () => {
+  const mockRedis = {
+    get: jest.fn().mockResolvedValue(null),
+    set: jest.fn().mockResolvedValue('OK'),
+    del: jest.fn().mockResolvedValue(1),
+    quit: jest.fn().mockResolvedValue('OK'),
+    disconnect: jest.fn(),
+    on: jest.fn(),
+  };
+  return { default: mockRedis };
+});
+
 const db = (await import('../config/database.js')).default;
 const mockClient = await db.connect();
 const app = (await import('../app.js')).default;

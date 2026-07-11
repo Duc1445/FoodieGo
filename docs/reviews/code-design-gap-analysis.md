@@ -1,0 +1,19 @@
+# Code vs Design Gap Analysis
+
+## 1. Database Ownership
+- **Docs State**: \`ADR-0004\` states "Each microservice owns its own database or schema."
+- **Code State**: Currently adhered to. However, Food Service relies on eventual consistency to project data from Restaurant Service. Need to verify that the message broker (RabbitMQ) integration is fully fault-tolerant in code. No direct DB links found.
+
+## 2. Authentication Strategy
+- **Docs State**: \`ADR-0006\` states "Frontend MUST NOT decode JWTs. Read X-User-Id from pre-populated auth state."
+- **Code State**: As of Sprint 2B, this rule is strictly enforced. The frontend interceptor (\`api.ts\`) reads from \`useAuthStore\` instead of decoding the token locally. Gap is closed.
+
+## 3. Impeccable Frontend Quality
+- **Docs State**: \`docs/frontend/frontend-quality-guidelines.md\` mandates Radix UI for all complex interactive components.
+- **Code State**: Some legacy components in \`apps/web/src/shared/components/\` might still be using raw HTML/CSS for accessibility patterns instead of Radix primitives. 
+- **Action**: Mark as technical debt. Migrate remaining legacy components to \`packages/ui\` Radix implementations in future sprints.
+
+## 4. Pending Item IDs vs Global Loading
+- **Docs State**: \`DEVELOPMENT_RULES.md\` mandates granular loading states.
+- **Code State**: \`useCartStore\` currently uses an array for \`pendingItemIds\`.
+- **Action**: Refactor to \`Set<string>\` for performance as discussed in Sprint 2B reviews.

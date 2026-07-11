@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --forceExit --testPathPattern=\"(auth.middleware|delivery.model)\"",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --forceExit --testPathPattern=\"(auth.middleware|delivery.model|order.routes)\"",
     "test:integration": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --forceExit --testPathPattern=\"routes\"",
     "lint": "eslint src/**/*.js",
     "lint:fix": "eslint src/**/*.js --fix"
@@ -30,6 +30,7 @@
     "@foodiego/metrics": "workspace:*",
     "@foodiego/rabbit": "workspace:*",
     "@foodiego/platform-sdk": "workspace:*",
+    "@foodiego/shared-auth": "workspace:*",
     "@opentelemetry/api": "^1.9.1"
   },
   "devDependencies": {

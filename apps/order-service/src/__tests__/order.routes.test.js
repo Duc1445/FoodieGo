@@ -1,105 +1,110 @@
 import { jest } from '@jest/globals';
 
 jest.unstable_mockModule('../config/database.js', () => {
+  const mockClient = {
+    query: jest.fn(),
+    release: jest.fn(),
+  };
   return {
     default: {
       query: jest.fn(),
-      on: jest.fn(),
-      connect: jest.fn(),
+      connect: jest.fn().mockResolvedValue(mockClient),
     },
   };
 });
 
-const pool = (await import('../config/database.js')).default;
+const db = (await import('../config/database.js')).default;
+const mockClient = await db.connect();
 const app = (await import('../app.js')).default;
 const { default: request } = await import('supertest');
-import jwt from 'jsonwebtoken';
+const jwt = await import('jsonwebtoken');
 
-describe('Order Routes', () => {
-  const token = jwt.sign(
-    { id: '123e4567-e89b-12d3-a456-426614174001', role: 'customer' },
-    'fallback_secret',
-  );
-  const adminToken = jwt.sign(
-    { id: '123e4567-e89b-12d3-a456-426614174009', role: 'admin' },
-    'fallback_secret',
-  );
-  const orderId = '123e4567-e89b-12d3-a456-426614174004';
-  const foodId = '123e4567-e89b-12d3-a456-426614174002';
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret';
+const customerId = '11111111-1111-1111-1111-111111111111';
+const otherCustomerId = '22222222-2222-2222-2222-222222222222';
+const customerToken = jwt.default.sign({ id: customerId, role: 'customer' }, JWT_SECRET);
+const merchantToken = jwt.default.sign({ id: 'merchant-id', role: 'merchant' }, JWT_SECRET);
 
+describe('Order Routes & Logic', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('GET /api/orders - should return user orders', async () => {
-    pool.query.mockResolvedValueOnce({ rows: [{ id: orderId, total_price: 100 }] });
-    const res = await request(app).get('/api/orders').set('Authorization', `Bearer ${token}`);
-    expect(res.status).toBe(200);
+  it('GET /orders without token -> 401', async () => {
+    const res = await request(app).get('/api/v1/orders');
+    expect(res.status).toBe(401);
   });
 
-  it('GET /api/orders/:id - should return order details', async () => {
-    // 1st query: order details
-    pool.query.mockResolvedValueOnce({
-      rows: [{ id: orderId, total_price: 100, user_id: '123e4567-e89b-12d3-a456-426614174001' }],
+  it('GET /orders with invalid token -> 401', async () => {
+    const res = await request(app)
+      .get('/api/v1/orders')
+      .set('Authorization', 'Bearer invalid_token');
+    expect(res.status).toBe(401);
+  });
+
+  it('User can get own order history', async () => {
+    mockClient.query.mockResolvedValueOnce({ rows: [{ id: 'order-1', user_id: customerId }] });
+
+    const res = await request(app)
+      .get('/api/v1/orders')
+      .set('Authorization', `Bearer ${customerToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toHaveLength(1);
+    expect(mockClient.query).toHaveBeenCalledWith(expect.any(String), [customerId]);
+  });
+
+  it("User cannot access another user's order", async () => {
+    mockClient.query.mockResolvedValueOnce({
+      rows: [{ id: 'order-1', user_id: otherCustomerId, status: 'CREATED' }],
     });
-    // 2nd query: order items
-    pool.query.mockResolvedValueOnce({ rows: [{ food_id: foodId, quantity: 2 }] });
+
     const res = await request(app)
-      .get(`/api/orders/${orderId}`)
-      .set('Authorization', `Bearer ${token}`);
+      .get('/api/v1/orders/order-1')
+      .set('Authorization', `Bearer ${customerToken}`);
+
+    expect(res.status).toBe(403);
+    expect(res.body.message).toContain('Access denied');
+  });
+
+  it('Invalid status transition rejected', async () => {
+    mockClient.query.mockResolvedValueOnce({
+      rows: [{ id: 'order-1', user_id: customerId, status: 'COMPLETED' }],
+    });
+
+    const res = await request(app)
+      .patch('/api/v1/orders/order-1/status')
+      .set('Authorization', `Bearer ${merchantToken}`)
+      .send({ status: 'PREPARING' });
+
+    expect(res.status).toBe(422);
+  });
+
+  it('Merchant role can update status', async () => {
+    mockClient.query.mockResolvedValueOnce({
+      rows: [{ id: 'order-1', user_id: customerId, status: 'CONFIRMED' }],
+    });
+    mockClient.query.mockResolvedValueOnce({
+      rows: [{ id: 'order-1', status: 'PREPARING' }],
+    });
+
+    const res = await request(app)
+      .patch('/api/v1/orders/order-1/status')
+      .set('Authorization', `Bearer ${merchantToken}`)
+      .send({ status: 'PREPARING' });
+
     expect(res.status).toBe(200);
+    expect(res.body.data.status).toBe('PREPARING');
   });
 
-  it('GET /api/orders/:id - should return 404 if not found', async () => {
-    pool.query.mockResolvedValueOnce({ rows: [] });
+  it('Customer role cannot update status', async () => {
     const res = await request(app)
-      .get(`/api/orders/${orderId}`)
-      .set('Authorization', `Bearer ${token}`);
-    expect(res.status).toBe(404);
-  });
+      .patch('/api/v1/orders/order-1/status')
+      .set('Authorization', `Bearer ${customerToken}`)
+      .send({ status: 'PREPARING' });
 
-  it('PATCH /api/orders/:id/status - should update status (admin)', async () => {
-    pool.query.mockResolvedValueOnce({ rows: [{ id: orderId, status: 'confirmed' }] });
-    const res = await request(app)
-      .patch(`/api/orders/${orderId}/status`)
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({ status: 'confirmed' });
-    expect(res.status).toBe(200);
-  });
-
-  it('PATCH /api/orders/:id/status - should return 404 if not found', async () => {
-    pool.query.mockResolvedValueOnce({ rows: [] });
-    const res = await request(app)
-      .patch(`/api/orders/${orderId}/status`)
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({ status: 'confirmed' });
-    expect(res.status).toBe(404);
-  });
-
-  it('POST /api/orders - should create order (checkout)', async () => {
-    const mockClient = { query: jest.fn(), release: jest.fn() };
-    pool.connect.mockResolvedValueOnce(mockClient);
-
-    // cart items query (getCart) uses pool.query
-    pool.query.mockResolvedValueOnce({ rows: [{ food_id: foodId, quantity: 2, price: 50 }] });
-
-    // OrderModel.create transaction uses mockClient.query
-    mockClient.query.mockResolvedValueOnce({ rows: [] }); // BEGIN
-    mockClient.query.mockResolvedValueOnce({ rows: [{ id: orderId }] }); // INSERT order
-    mockClient.query.mockResolvedValueOnce({ rows: [] }); // INSERT items
-    mockClient.query.mockResolvedValueOnce({ rows: [] }); // COMMIT
-
-    // DeliveryModel.create uses pool.query
-    pool.query.mockResolvedValueOnce({ rows: [{ id: 'del-1' }] });
-
-    // CartModel.clearCart uses pool.query
-    pool.query.mockResolvedValueOnce({ rows: [] });
-
-    const res = await request(app)
-      .post('/api/orders')
-      .set('Authorization', `Bearer ${token}`)
-      .send({ address: '123 Main St', note: 'Leave at door' });
-
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(403);
+    expect(res.body.message).toContain('Forbidden');
   });
 });

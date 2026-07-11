@@ -34,6 +34,11 @@
 - **Root Cause & Previous Failure**: The GitHub Actions runner was using `npm install -g pnpm`, which globally installed pnpm `v11`. Because `v11` completely drops support for the `"pnpm"` field in `package.json` and changes the syntax for whitelisting build scripts to `allowBuilds`, our previous attempt to whitelist packages using `"pnpm": {"onlyBuiltDependencies": [...]}` in `package.json` was ignored by `v11`, causing pipeline failures.
 - **Action**: We enforced deterministic pnpm versioning across all GitHub Actions workflows by adding `"packageManager": "pnpm@10.34.5"` to `package.json` and enabling it via `corepack enable && corepack prepare pnpm@10.34.5 --activate`. We then moved the `onlyBuiltDependencies` array into the official v10 root configuration location: `pnpm-workspace.yaml`. The CI pipeline successfully passes verification without disabling security globally.
 
+## 8. Shared Authentication Package
+- **Code State**: `auth.middleware.js` was previously duplicated across `identity-service`, `order-service`, and `restaurant-service`.
+- **Action**: Created `@foodiego/shared-auth` internal package to centralize authentication logic and RBAC user extraction. `order-service` has been migrated to use this shared package.
+- **Migration Note**: Other services (`identity-service`, `restaurant-service`) should be migrated to `@foodiego/shared-auth` in upcoming sprints to ensure strict token verification consistency across the monorepo.
+
 ## CI Foundation Milestone
 
 ### Completed Infrastructure Improvements

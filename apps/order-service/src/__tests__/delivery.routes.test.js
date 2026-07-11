@@ -31,43 +31,43 @@ describe('Delivery Routes', () => {
     jest.clearAllMocks();
   });
 
-  it('GET /api/delivery/order/:orderId - should return delivery info', async () => {
+  it('GET /api/v1/delivery/order/:orderId - should return delivery info', async () => {
     pool.query.mockResolvedValueOnce({ rows: [{ id: deliveryId, status: 'waiting' }] });
     const res = await request(app)
-      .get(`/api/delivery/order/${orderId}`)
+      .get(`/api/v1/delivery/order/${orderId}`)
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
   });
 
-  it('PATCH /api/delivery/:id/accept - should accept delivery', async () => {
+  it('PATCH /api/v1/delivery/:id/accept - should accept delivery', async () => {
     pool.query.mockResolvedValueOnce({ rows: [{ id: deliveryId, status: 'accepted' }] });
     const res = await request(app)
-      .patch(`/api/delivery/${deliveryId}/accept`)
+      .patch(`/api/v1/delivery/${deliveryId}/accept`)
       .set('Authorization', `Bearer ${shipperToken}`);
     expect(res.status).toBe(200);
   });
 
-  it('PATCH /api/delivery/:id/accept - should return 404 if not found', async () => {
+  it('PATCH /api/v1/delivery/:id/accept - should return 404 if not found', async () => {
     pool.query.mockResolvedValueOnce({ rows: [] });
     const res = await request(app)
-      .patch(`/api/delivery/${deliveryId}/accept`)
+      .patch(`/api/v1/delivery/${deliveryId}/accept`)
       .set('Authorization', `Bearer ${shipperToken}`);
     expect(res.status).toBe(404);
   });
 
-  it('PATCH /api/delivery/:id/status - should update status', async () => {
+  it('PATCH /api/v1/delivery/:id/status - should update status', async () => {
     pool.query.mockResolvedValueOnce({ rows: [{ id: deliveryId, status: 'delivering' }] });
     const res = await request(app)
-      .patch(`/api/delivery/${deliveryId}/status`)
+      .patch(`/api/v1/delivery/${deliveryId}/status`)
       .set('Authorization', `Bearer ${shipperToken}`)
       .send({ status: 'delivering' });
     expect(res.status).toBe(200);
   });
 
-  it('PATCH /api/delivery/:id/status - should return 404 if not found', async () => {
+  it('PATCH /api/v1/delivery/:id/status - should return 404 if not found', async () => {
     pool.query.mockResolvedValueOnce({ rows: [] });
     const res = await request(app)
-      .patch(`/api/delivery/${deliveryId}/status`)
+      .patch(`/api/v1/delivery/${deliveryId}/status`)
       .set('Authorization', `Bearer ${shipperToken}`)
       .send({ status: 'delivering' });
     expect(res.status).toBe(404);

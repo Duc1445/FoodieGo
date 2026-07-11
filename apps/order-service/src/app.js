@@ -9,6 +9,7 @@ import { createLogger, requestLogger } from '@foodiego/logging';
 // Routes
 import cartRoutes from './modules/cart/routes/cart.routes.js';
 import checkoutRoutes from './modules/checkout/routes/checkout.routes.js';
+import orderRoutes from './modules/order/routes/order.routes.js';
 import deliveryRoutes from './modules/delivery/routes/delivery.routes.js';
 import promotionRoutes from './routes/promotion.routes.js';
 
@@ -34,9 +35,13 @@ app.get('/metrics', async (_req, res) => {
   res.end(await metrics.getMetrics());
 });
 
+const ordersRouter = express.Router();
+ordersRouter.use('/', checkoutRoutes);
+ordersRouter.use('/', orderRoutes);
+
 app.use('/api/v1/cart', cartRoutes);
-app.use('/api/v1/orders', checkoutRoutes);
-// app.use('/api/v1/delivery', deliveryRoutes);
+app.use('/api/v1/orders', ordersRouter);
+app.use('/api/v1/delivery', deliveryRoutes);
 app.use('/api/v1/promotions', promotionRoutes);
 
 // ─── Error Handler ─────────────────────────────────────────────────────────

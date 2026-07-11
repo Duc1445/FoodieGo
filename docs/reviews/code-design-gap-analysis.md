@@ -31,4 +31,4 @@
 ## 7. pnpm v10 build script approval
 - **Docs State**: CI pipelines implicitly assume dependencies install smoothly.
 - **Code State**: pnpm v10 explicitly blocks execution of lifecycle scripts for dependencies (like `@scarf/scarf` and `protobufjs`) by default to prevent supply-chain attacks. In the CI pipeline, this default behavior blocked installation.
-- **Action**: Explicitly allowed required packages via `onlyBuiltDependencies` in `pnpm-workspace.yaml`. We did not globally disable script ignoring (`ignore-scripts false`), as this weakens the supply chain protection; only specifically verified packages are whitelisted.
+- **Action**: Explicitly allowed required packages via `onlyBuiltDependencies` in `package.json` under the `"pnpm"` field, which is the officially supported location for pnpm v10 environments. We removed the incorrect configuration from `pnpm-workspace.yaml`. We did not globally disable script ignoring (`ignore-scripts false`), as this weakens the supply chain protection.

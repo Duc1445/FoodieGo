@@ -1,12 +1,58 @@
 import { MenuItemService } from '../services/menu-item.service.js';
-import { successResponse, NotFoundError } from '@foodiego/core';
+import { successResponse, NotFoundError, AuthorizationError, DomainError } from '@foodiego/core';
+import pool from '../../../config/database.js';
 
 const service = new MenuItemService();
 
 export class MenuItemController {
+  // Helper to get authorized restaurant ID
+  async _getAuthorizedRestaurantId(req, providedRestaurantId) {
+    if (req.user.role === 'admin') {
+      if (!providedRestaurantId) throw new DomainError('restaurant_id is required for admins');
+
+      // Validate restaurant exists
+      const { rows } = await pool.query('SELECT id FROM restaurants WHERE id = $1', [
+        providedRestaurantId,
+      ]);
+      if (rows.length === 0) throw new NotFoundError('Restaurant not found');
+
+      return providedRestaurantId;
+    }
+
+    if (req.user.role === 'merchant') {
+      const { rows } = await pool.query(
+        'SELECT restaurant_id FROM user_restaurants WHERE user_id = $1',
+        [req.user.id],
+      );
+      if (rows.length === 0) throw new AuthorizationError('Merchant has no associated restaurant');
+      return rows[0].restaurant_id;
+    }
+
+    throw new AuthorizationError('Unauthorized role');
+  }
+
+  // Validate category belongs to restaurant
+  async _validateCategory(categoryId, restaurantId) {
+    const { rows } = await pool.query(
+      'SELECT id FROM categories WHERE id = $1 AND restaurant_id = $2',
+      [categoryId, restaurantId],
+    );
+    if (rows.length === 0) throw new DomainError('Invalid category_id for this restaurant');
+  }
+
   async getByRestaurantId(req, res, next) {
     try {
       const menu = await service.getMenuByRestaurantId(req.params.id);
+      return successResponse(res, menu);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getMerchantItems(req, res, next) {
+    try {
+      const restaurantId = await this._getAuthorizedRestaurantId(req, null);
+      const menu = await service.getMenuByRestaurantId(restaurantId);
       return successResponse(res, menu);
     } catch (err) {
       next(err);
@@ -40,6 +86,67 @@ export class MenuItemController {
         });
       }
       return successResponse(res, menuItem);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async create(req, res, next) {
+    try {
+      const restaurantId = await this._getAuthorizedRestaurantId(req, req.body.restaurant_id);
+      await this._validateCategory(req.body.category_id, restaurantId);
+
+      const newItem = await service.createMenuItem({ ...req.body, restaurant_id: restaurantId });
+      res.status(201);
+      return successResponse(res, newItem);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async update(req, res, next) {
+    try {
+      const { id } = req.params;
+
+      // Verify item exists and get its category to check ownership
+      const existingItem = await service.getMenuItemById(id);
+      if (!existingItem) throw new NotFoundError('Menu item not found');
+
+      const restaurantId = await this._getAuthorizedRestaurantId(
+        req,
+        req.body.restaurant_id || existingItem.restaurant_id,
+      );
+
+      if (existingItem.restaurant_id !== restaurantId) {
+        throw new AuthorizationError('Not authorized to modify this menu item');
+      }
+
+      if (req.body.category_id) {
+        await this._validateCategory(req.body.category_id, restaurantId);
+      }
+
+      const updatedItem = await service.updateMenuItem(id, req.body, restaurantId);
+      return successResponse(res, updatedItem);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async softDelete(req, res, next) {
+    try {
+      const { id } = req.params;
+
+      const existingItem = await service.getMenuItemById(id);
+      if (!existingItem) throw new NotFoundError('Menu item not found');
+
+      const restaurantId = await this._getAuthorizedRestaurantId(req, existingItem.restaurant_id);
+
+      if (existingItem.restaurant_id !== restaurantId) {
+        throw new AuthorizationError('Not authorized to delete this menu item');
+      }
+
+      await service.deleteMenuItem(id, restaurantId);
+      return successResponse(res, { message: 'Menu item deleted' });
     } catch (err) {
       next(err);
     }

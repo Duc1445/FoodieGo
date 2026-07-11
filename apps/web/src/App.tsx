@@ -27,6 +27,7 @@ const CustomerLogin = lazy(() => import('./customer/pages/auth/Login').then(modu
 const CustomerRegister = lazy(() => import('./customer/pages/auth/Register').then(module => ({ default: module.Register })));
 
 const MerchantDashboardPage = lazy(() => import('./merchant/pages/MerchantDashboardPage').then(module => ({ default: module.MerchantDashboardPage })));
+const MerchantMenuPage = lazy(() => import('./merchant/pages/MerchantMenuPage').then(module => ({ default: module.MerchantMenuPage })));
 const MerchantLogin = lazy(() => import('./merchant/pages/auth/Login').then(module => ({ default: module.Login })));
 const MerchantRegister = lazy(() => import('./merchant/pages/auth/Register').then(module => ({ default: module.Register })));
 
@@ -85,7 +86,10 @@ const router = createBrowserRouter([
     path: '/merchant',
     element: <RoleGuard role="merchant"><Suspense fallback={<PageLoader />}><MerchantLayout /></Suspense></RoleGuard>,
     errorElement: <ErrorBoundary />,
-    children: [{ index: true, element: <Suspense fallback={<PageLoader />}><MerchantDashboardPage /></Suspense> }],
+    children: [
+      { index: true, element: <Suspense fallback={<PageLoader />}><MerchantDashboardPage /></Suspense> },
+      { path: 'menu', element: <Suspense fallback={<PageLoader />}><MerchantMenuPage /></Suspense> },
+    ],
   },
   {
     path: '/merchant/login',

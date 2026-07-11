@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, Input } from '@foodiego/ui';
-import { ArrowLeft, MapPin, Phone } from 'lucide-react';
+import { Button, Card } from '@foodiego/ui';
+import { ArrowLeft } from 'lucide-react';
 import { useCartStore } from '../../shared/stores/useCartStore';
 import { CheckoutAPI } from '../../shared/services/checkout.api';
 import { calculateDeliveryFee, calculateTotal } from '../../shared/constants/pricing';

@@ -9,14 +9,18 @@ export class OrderService {
     return await orderRepository.findOrdersByUserId(userId);
   }
 
+  async getMerchantOrders(restaurantId) {
+    return await orderRepository.findOrdersByRestaurantId(restaurantId);
+  }
+
   async getOrderDetail(orderId, userId) {
     const order = await orderRepository.findOrderDetailById(orderId);
     if (!order) {
       throw new NotFoundError('Order not found');
     }
 
-    // Customer data isolation
-    if (order.userId !== userId) {
+    // Customer data isolation (skip if userId is null, for internal access)
+    if (userId !== null && order.userId !== userId) {
       throw new AuthorizationError('Access denied to this order');
     }
 

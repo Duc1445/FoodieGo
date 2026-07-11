@@ -8,6 +8,11 @@ const controller = new OrderController();
 router.use(authenticate);
 
 router.get('/', controller.getUserOrders.bind(controller));
+router.get(
+  '/merchant',
+  authorize('merchant', 'admin'),
+  controller.getMerchantOrders.bind(controller),
+);
 router.get('/:id', controller.getOrderDetail.bind(controller));
 router.patch(
   '/:id/status',

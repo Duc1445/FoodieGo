@@ -68,9 +68,43 @@ describe('Order Routes & Logic', () => {
     expect(res.body.message).toContain('Access denied');
   });
 
+  it('Merchant can get own orders', async () => {
+    // Mock user_restaurants mapping
+    db.query.mockResolvedValueOnce({ rows: [{ restaurant_id: 'rest-1' }] });
+    // Mock getMerchantOrders
+    mockClient.query.mockResolvedValueOnce({ rows: [{ id: 'order-1', restaurantId: 'rest-1' }] });
+
+    const res = await request(app)
+      .get('/api/v1/orders/merchant')
+      .set('Authorization', `Bearer ${merchantToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toHaveLength(1);
+  });
+
+  it('Merchant without restaurant mapping gets 403', async () => {
+    // Mock user_restaurants mapping empty
+    db.query.mockResolvedValueOnce({ rows: [] });
+
+    const res = await request(app)
+      .get('/api/v1/orders/merchant')
+      .set('Authorization', `Bearer ${merchantToken}`);
+
+    expect(res.status).toBe(403);
+    expect(res.body.message).toContain('Merchant has no associated restaurant');
+  });
+
   it('Invalid status transition rejected', async () => {
+    // Mock user_restaurants
+    db.query.mockResolvedValueOnce({ rows: [{ restaurant_id: 'rest-1' }] });
+    // Mock getOrderDetail in controller
     mockClient.query.mockResolvedValueOnce({
-      rows: [{ id: 'order-1', user_id: customerId, status: 'COMPLETED' }],
+      rows: [{ id: 'order-1', user_id: customerId, restaurant_id: 'rest-1', status: 'COMPLETED' }],
+    });
+    // Mock getOrderDetail in service
+    mockClient.query.mockResolvedValueOnce({
+      rows: [{ id: 'order-1', user_id: customerId, restaurant_id: 'rest-1', status: 'COMPLETED' }],
     });
 
     const res = await request(app)
@@ -81,10 +115,18 @@ describe('Order Routes & Logic', () => {
     expect(res.status).toBe(422);
   });
 
-  it('Merchant role can update status', async () => {
+  it('Merchant role can update status if owns restaurant', async () => {
+    // Mock user_restaurants mapping
+    db.query.mockResolvedValueOnce({ rows: [{ restaurant_id: 'rest-1' }] });
+    // Mock order detail in controller
     mockClient.query.mockResolvedValueOnce({
-      rows: [{ id: 'order-1', user_id: customerId, status: 'CONFIRMED' }],
+      rows: [{ id: 'order-1', user_id: customerId, restaurant_id: 'rest-1', status: 'CONFIRMED' }],
     });
+    // Mock order detail in service
+    mockClient.query.mockResolvedValueOnce({
+      rows: [{ id: 'order-1', user_id: customerId, restaurant_id: 'rest-1', status: 'CONFIRMED' }],
+    });
+    // Mock update query
     mockClient.query.mockResolvedValueOnce({
       rows: [{ id: 'order-1', status: 'PREPARING' }],
     });
@@ -98,6 +140,23 @@ describe('Order Routes & Logic', () => {
     expect(res.body.data.status).toBe('PREPARING');
   });
 
+  it('Merchant role cannot update status of another restaurant order', async () => {
+    // Mock user_restaurants mapping
+    db.query.mockResolvedValueOnce({ rows: [{ restaurant_id: 'rest-1' }] });
+    // Mock order detail
+    mockClient.query.mockResolvedValueOnce({
+      rows: [{ id: 'order-1', user_id: customerId, restaurant_id: 'rest-2', status: 'CONFIRMED' }],
+    });
+
+    const res = await request(app)
+      .patch('/api/v1/orders/order-1/status')
+      .set('Authorization', `Bearer ${merchantToken}`)
+      .send({ status: 'PREPARING' });
+
+    expect(res.status).toBe(403);
+    expect(res.body.message).toContain('Not authorized to update this order');
+  });
+
   it('Customer role cannot update status', async () => {
     const res = await request(app)
       .patch('/api/v1/orders/order-1/status')
@@ -106,5 +165,43 @@ describe('Order Routes & Logic', () => {
 
     expect(res.status).toBe(403);
     expect(res.body.message).toContain('Forbidden');
+  });
+
+  const adminToken = jwt.default.sign({ id: 'admin-id', role: 'admin' }, JWT_SECRET);
+
+  it('Admin can get orders if restaurant_id provided', async () => {
+    // Mock restaurant exists
+    db.query.mockResolvedValueOnce({ rows: [{ id: 'rest-1' }] });
+    // Mock getMerchantOrders
+    mockClient.query.mockResolvedValueOnce({ rows: [{ id: 'order-1', restaurantId: 'rest-1' }] });
+
+    const res = await request(app)
+      .get('/api/v1/orders/merchant?restaurant_id=rest-1')
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toHaveLength(1);
+  });
+
+  it('Admin missing restaurant_id gets 400', async () => {
+    const res = await request(app)
+      .get('/api/v1/orders/merchant')
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    expect(res.status).toBe(400);
+    expect(res.body.message).toContain('Admin must specify a restaurant_id');
+  });
+
+  it('Admin invalid restaurant_id gets 404', async () => {
+    // Mock restaurant doesn't exist
+    db.query.mockResolvedValueOnce({ rows: [] });
+
+    const res = await request(app)
+      .get('/api/v1/orders/merchant?restaurant_id=invalid')
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    expect(res.status).toBe(404);
+    expect(res.body.message).toContain('Restaurant not found');
   });
 });

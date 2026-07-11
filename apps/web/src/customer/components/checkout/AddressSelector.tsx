@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '../../../shared/stores/useAuthStore';
-import { AuthAPI, Address } from '../../../shared/services/auth.api';
+import { AuthAPI } from '../../../shared/services/auth.api';
 import { AddressForm } from './AddressForm';
 
 interface AddressSelectorProps {

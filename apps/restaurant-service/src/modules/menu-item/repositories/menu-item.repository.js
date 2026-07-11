@@ -50,7 +50,7 @@ export class MenuItemRepository {
   }
 
   async findAll({ q = '', limit = 50, offset = 0 } = {}) {
-    let query = 'SELECT * FROM menu_items WHERE is_available = true';
+    let query = 'SELECT * FROM menu_items WHERE is_available = true AND is_active = true';
     const params = [];
 
     if (q) {
@@ -70,10 +70,78 @@ export class MenuItemRepository {
       SELECT m.*, c.restaurant_id, c.name as category_name
       FROM menu_items m
       JOIN categories c ON m.category_id = c.id
-      WHERE m.id = $1
+      WHERE m.id = $1 AND m.is_active = true
     `;
     const { rows } = await pool.query(query, [id]);
     if (rows.length === 0) return null;
     return { ...new MenuItemEntity(rows[0]), restaurant_id: rows[0].restaurant_id };
+  }
+
+  async create(data) {
+    const query = `
+      INSERT INTO menu_items (category_id, name, description, price, image_url, is_available, display_order, is_active)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, true)
+      RETURNING *
+    `;
+    const params = [
+      data.category_id,
+      data.name,
+      data.description || null,
+      data.price,
+      data.image_url || null,
+      data.is_available !== undefined ? data.is_available : true,
+      data.display_order || 0,
+    ];
+    const { rows } = await pool.query(query, params);
+    return new MenuItemEntity(rows[0]);
+  }
+
+  async update(id, data) {
+    const fields = [];
+    const params = [];
+    let idx = 1;
+
+    for (const [key, value] of Object.entries(data)) {
+      if (
+        [
+          'name',
+          'description',
+          'price',
+          'image_url',
+          'is_available',
+          'display_order',
+          'category_id',
+        ].includes(key)
+      ) {
+        fields.push(`${key} = $${idx++}`);
+        params.push(value);
+      }
+    }
+
+    if (fields.length === 0) return await this.findById(id);
+
+    params.push(id);
+    const query = `
+      UPDATE menu_items 
+      SET ${fields.join(', ')} 
+      WHERE id = $${idx} AND is_active = true
+      RETURNING *
+    `;
+
+    const { rows } = await pool.query(query, params);
+    if (rows.length === 0) return null;
+    return new MenuItemEntity(rows[0]);
+  }
+
+  async softDelete(id) {
+    const query = `
+      UPDATE menu_items 
+      SET is_active = false 
+      WHERE id = $1 
+      RETURNING *
+    `;
+    const { rows } = await pool.query(query, [id]);
+    if (rows.length === 0) return null;
+    return new MenuItemEntity(rows[0]);
   }
 }

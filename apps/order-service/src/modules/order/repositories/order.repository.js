@@ -17,6 +17,22 @@ export class OrderRepository {
     }
   }
 
+  async findOrdersByRestaurantId(restaurantId) {
+    const client = await pool.connect();
+    try {
+      const query = `
+        SELECT id, user_id as "userId", status, total, created_at as "createdAt"
+        FROM orders
+        WHERE restaurant_id = $1
+        ORDER BY created_at DESC
+      `;
+      const result = await client.query(query, [restaurantId]);
+      return result.rows;
+    } finally {
+      client.release();
+    }
+  }
+
   async findOrderDetailById(orderId) {
     const client = await pool.connect();
     try {

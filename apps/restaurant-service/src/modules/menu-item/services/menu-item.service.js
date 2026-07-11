@@ -34,4 +34,34 @@ export class MenuItemService {
     }
     return menuItem;
   }
+
+  async createMenuItem(data) {
+    const menuItem = await repository.create(data);
+    await this.clearRestaurantMenuCache(data.restaurant_id); // Needs restaurant_id to clear cache properly
+    return menuItem;
+  }
+
+  async updateMenuItem(id, data, restaurantId) {
+    const menuItem = await repository.update(id, data);
+    if (menuItem) {
+      await redis.del(`menu_item:${id}`);
+      if (restaurantId) await this.clearRestaurantMenuCache(restaurantId);
+    }
+    return menuItem;
+  }
+
+  async deleteMenuItem(id, restaurantId) {
+    const menuItem = await repository.softDelete(id);
+    if (menuItem) {
+      await redis.del(`menu_item:${id}`);
+      if (restaurantId) await this.clearRestaurantMenuCache(restaurantId);
+    }
+    return menuItem;
+  }
+
+  async clearRestaurantMenuCache(restaurantId) {
+    if (restaurantId) {
+      await redis.del(`restaurant:${restaurantId}:menu`);
+    }
+  }
 }

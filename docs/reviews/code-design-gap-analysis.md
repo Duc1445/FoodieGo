@@ -27,3 +27,8 @@
 - **oxlint replaced**: `oxlint` was replaced with standard `eslint` across `apps/web` due to native binary CI incompatibility on Linux runners.
 - **Git submodule corruption fixed**: The `.agents` directory was mistakenly tracked as an embedded repository and has been converted into standard tracked files.
 - **GitHub Actions upgraded**: Action runners updated from `v3` to `v4` and Node.js version standardized to `22` to prevent deprecation warnings.
+
+## 7. pnpm v10 build script approval
+- **Docs State**: CI pipelines implicitly assume dependencies install smoothly.
+- **Code State**: pnpm v10 explicitly blocks execution of lifecycle scripts for dependencies (like `@scarf/scarf` and `protobufjs`) by default to prevent supply-chain attacks. In the CI pipeline, this default behavior blocked installation.
+- **Action**: Explicitly allowed required packages via `onlyBuiltDependencies` in `pnpm-workspace.yaml`. We did not globally disable script ignoring (`ignore-scripts false`), as this weakens the supply chain protection; only specifically verified packages are whitelisted.

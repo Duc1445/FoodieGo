@@ -14,10 +14,16 @@
 - **Action**: Mark as technical debt. Migrate remaining legacy components to \`packages/ui\` Radix implementations in future sprints.
 
 ## 4. Pending Item IDs vs Global Loading
-- **Docs State**: \`DEVELOPMENT_RULES.md\` mandates granular loading states.
-- **Code State**: \`useCartStore\` currently uses an array for \`pendingItemIds\`.
-- **Action**: Refactor to \`Set<string>\` for performance as discussed in Sprint 2B reviews.
+- **Docs State**: `DEVELOPMENT_RULES.md` mandates granular loading states.
+- **Code State**: `useCartStore` currently uses an array for `pendingItemIds`.
+- **Action**: Refactor to `Set<string>` for performance as discussed in Sprint 2B reviews.
 
 ## 5. Sprint Zero Runtime Validation
 - **Docs State**: CI pipelines and architectural dependencies assume the code can build cleanly across all boundaries.
-- **Code State**: Validated on Sprint Zero. The monorepo builds perfectly. No code-design gaps found in the build tooling or dependency chain. The \`docker-compose.yml\` matches the architecture accurately.
+- **Code State**: Validated on Sprint Zero. The monorepo builds perfectly. No code-design gaps found in the build tooling or dependency chain. The `docker-compose.yml` matches the architecture accurately.
+
+## 6. CI Pipeline Stability Fix
+- **Identity route prefix mismatch resolved**: `identity-service` routes were updated from `/api/v1/auth` to `/api/auth` to match API Gateway expectations and automated tests.
+- **oxlint replaced**: `oxlint` was replaced with standard `eslint` across `apps/web` due to native binary CI incompatibility on Linux runners.
+- **Git submodule corruption fixed**: The `.agents` directory was mistakenly tracked as an embedded repository and has been converted into standard tracked files.
+- **GitHub Actions upgraded**: Action runners updated from `v3` to `v4` and Node.js version standardized to `22` to prevent deprecation warnings.

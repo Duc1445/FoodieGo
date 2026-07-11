@@ -1,14 +1,16 @@
-﻿{
+{
   "compilerOptions": {
     "target": "ES2022",
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "allowJs": true,
     "checkJs": false,
-    "noEmit": true,
+    "noEmit": false,
+    "declaration": true,
+    "outDir": "./dist",
     "strict": false,
     "skipLibCheck": true
   },
-  "include": ["**/*.js"],
-  "exclude": ["node_modules"]
+  "include": ["index.js", "src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }

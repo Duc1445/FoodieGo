@@ -4,3 +4,4 @@ export * as metrics from '@foodiego/metrics';
 export * as tracing from '@foodiego/tracing';
 export * as rabbit from '@foodiego/rabbit';
 export * as core from '@foodiego/core';
+export * from './src/order-status.js';

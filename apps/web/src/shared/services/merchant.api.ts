@@ -1,6 +1,7 @@
 import { api } from '../api/api';
 import { OrderDetail as Order } from './order.api';
 import { Food as MenuItem } from './food.api';
+import { OrderStatus } from '@foodiego/platform-sdk/src/order-status';
 
 // --- Types ---
 
@@ -27,7 +28,7 @@ export interface UpdateMenuItemDto {
 }
 
 export interface UpdateOrderStatusDto {
-  status: 'CONFIRMED' | 'PREPARING' | 'READY' | 'DELIVERING' | 'COMPLETED' | 'CANCELLED';
+  status: OrderStatus;
 }
 
 // --- Menu Management ---

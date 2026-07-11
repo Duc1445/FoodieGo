@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MerchantDashboardPage } from './MerchantDashboardPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { getMerchantOrders } from '../../shared/services/merchant.api';
+import { OrderStatus } from '@foodiego/platform-sdk/src/order-status';
 
 // Mock dependencies
 vi.mock('../../shared/services/merchant.api', () => ({
@@ -74,9 +75,7 @@ describe('MerchantDashboardPage', () => {
   });
 
   it('renders correct badge for READY and DELIVERING status', async () => {
-    // Import dynamically or just declare it to match the backend exactly without Vite out-of-root issues
     // The CTO specifically requested checking against the exact enum values.
-    const { OrderStatus } = await import('../../../../order-service/src/modules/checkout/state/order.state.js');
     
     const mockOrders = [
       {

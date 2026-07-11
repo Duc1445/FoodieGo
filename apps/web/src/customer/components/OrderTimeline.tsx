@@ -1,25 +1,18 @@
 import { CheckCircle2, Circle, XCircle } from 'lucide-react';
 
-export type OrderStatus = 
-  | 'pending' // Usually 'created' maps to 'pending' in the backend based on our repository
-  | 'accepted' // 'confirmed' -> 'accepted'
-  | 'preparing'
-  | 'ready'
-  | 'delivering'
-  | 'completed' // 'delivered' -> 'completed'
-  | 'cancelled';
+import { OrderStatus } from '@foodiego/platform-sdk/src/order-status';
 
 const TIMELINE_STEPS = [
-  { status: 'pending', label: 'Order Placed' },
-  { status: 'accepted', label: 'Confirmed' },
-  { status: 'preparing', label: 'Preparing' },
-  { status: 'ready', label: 'Ready' },
-  { status: 'delivering', label: 'Delivering' },
-  { status: 'completed', label: 'Delivered' },
+  { status: OrderStatus.CREATED, label: 'Order Placed' },
+  { status: OrderStatus.CONFIRMED, label: 'Confirmed' },
+  { status: OrderStatus.PREPARING, label: 'Preparing' },
+  { status: OrderStatus.READY, label: 'Ready' },
+  { status: OrderStatus.DELIVERING, label: 'Delivering' },
+  { status: OrderStatus.COMPLETED, label: 'Delivered' },
 ];
 
 export function OrderTimeline({ currentStatus }: { currentStatus: string }) {
-  if (currentStatus === 'cancelled') {
+  if (currentStatus === OrderStatus.CANCELLED) {
     return (
       <div className="flex items-center space-x-3 text-red-500 p-4 bg-red-50 rounded-lg border border-red-100">
         <XCircle className="w-6 h-6" />
@@ -28,8 +21,7 @@ export function OrderTimeline({ currentStatus }: { currentStatus: string }) {
     );
   }
 
-  const normalizedStatus = currentStatus.toLowerCase();
-  const currentIndex = TIMELINE_STEPS.findIndex(step => step.status === normalizedStatus);
+  const currentIndex = TIMELINE_STEPS.findIndex(step => step.status === currentStatus);
   const activeIndex = currentIndex >= 0 ? currentIndex : 0; // Fallback to 0 if unknown
 
   return (

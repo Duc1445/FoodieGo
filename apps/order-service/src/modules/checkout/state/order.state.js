@@ -1,16 +1,6 @@
-export const OrderStatus = {
-  CREATED: 'CREATED',
-  PENDING_RESERVATION: 'PENDING_RESERVATION',
-  READY_FOR_PAYMENT: 'READY_FOR_PAYMENT',
-  PAID: 'PAID',
-  CONFIRMED: 'CONFIRMED',
-  PREPARING: 'PREPARING',
-  READY: 'READY',
-  DELIVERING: 'DELIVERING',
-  COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED',
-  REFUNDED: 'REFUNDED'
-};
+import { OrderStatus } from '@foodiego/platform-sdk';
+
+export { OrderStatus };
 
 export class OrderStateMachine {
   constructor(initialState = OrderStatus.CREATED) {
@@ -26,7 +16,7 @@ export class OrderStateMachine {
       [OrderStatus.DELIVERING]: [OrderStatus.COMPLETED],
       [OrderStatus.COMPLETED]: [],
       [OrderStatus.CANCELLED]: [],
-      [OrderStatus.REFUNDED]: []
+      [OrderStatus.REFUNDED]: [],
     };
   }
 

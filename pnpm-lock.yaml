@@ -483,6 +483,9 @@ importers:
       '@foodiego/api-sdk':
         specifier: workspace:*
         version: link:../../packages/api-sdk
+      '@foodiego/platform-sdk':
+        specifier: workspace:*
+        version: link:../../packages/platform-sdk
       '@foodiego/ui':
         specifier: workspace:*
         version: link:../../packages/ui

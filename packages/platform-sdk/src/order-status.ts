@@ -1,0 +1,15 @@
+export const OrderStatus = {
+  CREATED: 'CREATED',
+  PENDING_RESERVATION: 'PENDING_RESERVATION',
+  READY_FOR_PAYMENT: 'READY_FOR_PAYMENT',
+  PAID: 'PAID',
+  CONFIRMED: 'CONFIRMED',
+  PREPARING: 'PREPARING',
+  READY: 'READY',
+  DELIVERING: 'DELIVERING',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+  REFUNDED: 'REFUNDED',
+} as const;
+
+export type OrderStatus = typeof OrderStatus[keyof typeof OrderStatus];

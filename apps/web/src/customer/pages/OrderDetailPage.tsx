@@ -114,6 +114,28 @@ export function OrderDetailPage() {
           <Badge className={`${getStatusColor(order.status)} text-white capitalize`}>
             {order.status}
           </Badge>
+          {import.meta.env.DEV && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                const statuses = ['pending', 'accepted', 'preparing', 'ready', 'delivering', 'completed'];
+                const currentIdx = statuses.indexOf(order.status.toLowerCase());
+                if (currentIdx >= 0 && currentIdx < statuses.length - 1) {
+                  const nextStatus = statuses[currentIdx + 1];
+                  try {
+                    await OrderAPI.updateOrderStatus(order.id, nextStatus.toUpperCase());
+                    refetch();
+                  } catch (e) {
+                    console.error('Failed to advance status', e);
+                  }
+                }
+              }}
+              className="ml-2 border-dashed border-red-400 text-red-500 hover:bg-red-50 hover:text-red-600"
+            >
+              Advance Status (DEV)
+            </Button>
+          )}
         </div>
         <Button variant="secondary" size="sm" onClick={() => refetch()} disabled={isRefetching}>
           <RefreshCw className={`w-4 h-4 mr-2 ${isRefetching ? 'animate-spin' : ''}`} />

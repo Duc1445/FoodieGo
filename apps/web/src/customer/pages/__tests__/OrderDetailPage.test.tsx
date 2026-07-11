@@ -9,6 +9,7 @@ import { RestaurantAPI } from '../../../shared/services/restaurant.api';
 vi.mock('../../../shared/services/order.api', () => ({
   OrderAPI: {
     getOrderDetail: vi.fn(),
+    updateOrderStatus: vi.fn(),
   },
 }));
 
@@ -167,5 +168,48 @@ describe('OrderDetailPage', () => {
     // Check if "Ready" is future (text-gray-400)
     const readyEl = screen.getByText('Ready');
     expect(readyEl).toHaveClass('text-gray-400');
+  });
+
+  it('Advance Status (DEV) button works and refreshes data', async () => {
+    // Mock DEV environment
+    // @ts-ignore
+    vi.stubEnv('DEV', true);
+
+    const mockOrder = {
+      id: '12345678-bbbb-cccc-dddd-eeeeeeeeeeee',
+      userId: 'u1',
+      restaurantId: 'r1',
+      status: 'pending', // Current status
+      subtotal: 2000,
+      deliveryFee: 500,
+      tax: 250,
+      discount: 0,
+      total: 2750,
+      createdAt: new Date().toISOString(),
+      items: []
+    };
+    
+    vi.mocked(OrderAPI.getOrderDetail).mockResolvedValueOnce(mockOrder);
+    vi.mocked(RestaurantAPI.getRestaurantById).mockResolvedValueOnce({
+      id: 'r1',
+      name: 'Pizza House',
+    } as any);
+    vi.mocked(OrderAPI.updateOrderStatus).mockResolvedValueOnce({} as any);
+
+    renderWithProviders(<OrderDetailPage />);
+    
+    await screen.findByText('Order #12345678');
+    
+    // Find advance status button
+    const advanceBtn = screen.getByText('Advance Status (DEV)');
+    expect(advanceBtn).toBeInTheDocument();
+
+    // Click it
+    advanceBtn.click();
+
+    // Should call API to update status to next status: 'ACCEPTED'
+    expect(OrderAPI.updateOrderStatus).toHaveBeenCalledWith('12345678-bbbb-cccc-dddd-eeeeeeeeeeee', 'ACCEPTED');
+    
+    vi.unstubAllEnvs();
   });
 });

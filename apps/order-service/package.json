@@ -9,6 +9,7 @@
     "dev": "nodemon src/index.js",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --forceExit --testPathPattern=\"(auth.middleware|delivery.model|order.routes)\"",
     "test:integration": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --forceExit --testPathPattern=\"routes\"",
+    "order:update-status": "node scripts/update-order-status.js",
     "lint": "eslint src/**/*.js",
     "lint:fix": "eslint src/**/*.js --fix"
   },

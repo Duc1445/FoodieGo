@@ -66,3 +66,7 @@ CI: GREEN
 * **Phase 1 & 2**: Implemented Backend Order APIs and centralized authentication/authorization inside `packages/shared-auth`.
 * **Phase 3**: Completed Frontend Order History (`MyOrdersPage`) with `@tanstack/react-query` integration, dynamic states, and comprehensive tests.
 * **Phase 4**: Implemented Frontend Order Detail & Timeline UI (`OrderDetailPage`). Decided on a reusable `<OrderTimeline />` component. As part of MVP constraints, we are currently limiting the system to HTTP polling rather than WebSockets/SSE for status updates. The page includes structured breakdown of items, cost, and visually appealing timeline representations.
+
+### Sprint 2C Phase 5 - Development Status Simulator
+* **Tool Purpose**: A development-only script (`update-order-status.js`) and UI button to manually simulate merchant/admin order status updates. This exists to allow developers and QA to test the complete order lifecycle (timeline UI, state updates) without needing to build out full production merchant features right now.
+* **Security Limitation**: It is NOT exposed as an HTTP endpoint. It connects to the database via `OrderService` which rigorously enforces `OrderStateMachine` rules. The frontend helper button is protected behind `import.meta.env.DEV` to guarantee it is stripped from production builds.

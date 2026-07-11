@@ -39,5 +39,10 @@ export const OrderAPI = {
   getOrderDetail: async (orderId: string): Promise<OrderDetail> => {
     const res = await api.get<{ success: boolean; data: OrderDetail }>(`/orders/${orderId}`);
     return res.data.data;
+  },
+
+  updateOrderStatus: async (orderId: string, status: string): Promise<OrderDetail> => {
+    const res = await api.patch<{ success: boolean; data: OrderDetail }>(`/orders/${orderId}/status`, { status });
+    return res.data.data;
   }
 };

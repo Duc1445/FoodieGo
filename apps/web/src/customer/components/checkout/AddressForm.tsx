@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Input } from '@foodiego/ui';
 import { MapPin, Phone } from 'lucide-react';
 
@@ -10,10 +10,8 @@ export function AddressForm({ onChange }: AddressFormProps) {
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
 
-  // Report changes to parent whenever they update
-  useEffect(() => {
-    onChange(address, phone);
-  }, [address, phone, onChange]);
+  const addressRef = useRef('');
+  const phoneRef = useRef('');
 
   return (
     <div className="space-y-4">
@@ -25,7 +23,12 @@ export function AddressForm({ onChange }: AddressFormProps) {
             type="text"
             placeholder="Enter your delivery address"
             value={address}
-            onChange={(e) => setAddress(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setAddress(val);
+              addressRef.current = val;
+              onChange(val, phoneRef.current);
+            }}
             className="pl-10"
           />
         </div>
@@ -39,7 +42,12 @@ export function AddressForm({ onChange }: AddressFormProps) {
             type="tel"
             placeholder="Enter your phone number"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setPhone(val);
+              phoneRef.current = val;
+              onChange(addressRef.current, val);
+            }}
             className="pl-10"
           />
         </div>

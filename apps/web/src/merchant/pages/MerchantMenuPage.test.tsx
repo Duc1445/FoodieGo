@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MerchantMenuPage } from './MerchantMenuPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { getMerchantMenu, createMenuItem, updateMenuItem, deleteMenuItem } from '../../shared/services/merchant.api';
@@ -21,6 +21,11 @@ describe('MerchantMenuPage', () => {
       defaultOptions: { queries: { retry: false } },
     });
     vi.resetAllMocks();
+  });
+
+  afterEach(() => {
+    queryClient.cancelQueries();
+    queryClient.clear();
   });
 
   const mockItems: any[] = [

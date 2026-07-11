@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '../../../shared/stores/useAuthStore';
 import { AuthAPI } from '../../../shared/services/auth.api';
@@ -19,6 +19,15 @@ export function AddressSelector({ selectedId, onSelect, onAddressData }: Address
     queryFn: () => AuthAPI.getAddresses(user!.id),
     enabled: !!user?.id,
   });
+
+  // Auto-select the default or first address if none is selected
+  useEffect(() => {
+    if (addresses.length > 0 && !selectedId && !isAdding) {
+      const defaultAddr = addresses.find(a => a.isDefault) || addresses[0];
+      onSelect(defaultAddr.id);
+      onAddressData(defaultAddr.address, defaultAddr.phone);
+    }
+  }, [addresses, selectedId, isAdding, onSelect, onAddressData]);
 
   if (isLoading) return <div>Loading addresses...</div>;
 

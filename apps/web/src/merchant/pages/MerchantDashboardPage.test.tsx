@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MerchantDashboardPage } from './MerchantDashboardPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { getMerchantOrders } from '../../shared/services/merchant.api';
@@ -16,9 +16,21 @@ describe('MerchantDashboardPage', () => {
 
   beforeEach(() => {
     queryClient = new QueryClient({
-      defaultOptions: { queries: { retry: false } },
+      defaultOptions: {
+        queries: {
+          retry: false,
+          // Disable refetchInterval in test environment to prevent open handles
+          refetchInterval: false,
+        },
+      },
     });
     vi.resetAllMocks();
+  });
+
+  afterEach(() => {
+    // Cancel all queries and clear the query cache to stop any polling intervals
+    queryClient.cancelQueries();
+    queryClient.clear();
   });
 
   it('renders loading skeleton initially', () => {

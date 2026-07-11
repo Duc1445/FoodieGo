@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { MyOrdersPage } from '../MyOrdersPage';
@@ -40,6 +40,11 @@ const renderWithProviders = (component: React.ReactNode) => {
 describe('MyOrdersPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    queryClient.clear();
+  });
+
+  afterEach(() => {
+    queryClient.cancelQueries();
     queryClient.clear();
   });
 

@@ -62,6 +62,8 @@ export function CheckoutPage() {
     e.preventDefault();
     setError('');
 
+    console.log('HANDLESUBMIT CALLED WITH:', formData);
+
     if (!formData.deliveryAddress.trim()) {
       setError('Please enter a delivery address');
       return;
@@ -156,8 +158,8 @@ export function CheckoutPage() {
               <div className="mb-6">
                 <AddressSelector 
                   selectedId={formData.addressId}
-                  onSelect={(id) => setFormData({ ...formData, addressId: id })}
-                  onAddressData={(address, phone) => setFormData({ ...formData, deliveryAddress: address, phone })}
+                  onSelect={(id) => setFormData(prev => ({ ...prev, addressId: id }))}
+                  onAddressData={(address, phone) => setFormData(prev => ({ ...prev, deliveryAddress: address, phone }))}
                 />
               </div>
 
@@ -166,7 +168,7 @@ export function CheckoutPage() {
                 <textarea
                   placeholder="e.g., Leave at door, ring bell twice"
                   value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
                   className="w-full px-3 py-2 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary"
                   rows={3}
                 />
@@ -182,7 +184,7 @@ export function CheckoutPage() {
                         name="payment"
                         value={method}
                         checked={formData.paymentMethod === method}
-                        onChange={() => setFormData({ ...formData, paymentMethod: method as PaymentMethodType })}
+                        onChange={() => setFormData(prev => ({ ...prev, paymentMethod: method as PaymentMethodType }))}
                         className="w-4 h-4 text-primary focus:ring-primary"
                       />
                       <span className="text-sm capitalize">

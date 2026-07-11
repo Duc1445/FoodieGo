@@ -12,6 +12,11 @@ Default labels with priority, type, and area additions. See \`docs/agents/triage
 
 Multi-context layout for monorepo. See \`docs/agents/domain.md\`.
 
+## Architectural Rules
+
+- **Architectural changes require ADR approval before implementation.**
+- **Do not introduce new architectural patterns during feature development without review.**
+
 ## Feature development workflow
 
 1. Read product requirement

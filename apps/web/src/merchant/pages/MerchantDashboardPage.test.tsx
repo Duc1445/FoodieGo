@@ -72,4 +72,55 @@ describe('MerchantDashboardPage', () => {
     expect(orderIdText).toBeInTheDocument();
     expect(screen.getByText('CONFIRMED')).toBeInTheDocument();
   });
+
+  it('renders correct badge for READY and DELIVERING status', async () => {
+    // Import dynamically or just declare it to match the backend exactly without Vite out-of-root issues
+    // The CTO specifically requested checking against the exact enum values.
+    const { OrderStatus } = await import('../../../../order-service/src/modules/checkout/state/order.state.js');
+    
+    const mockOrders = [
+      {
+        id: 'order-ready',
+        restaurantId: 'rest-1',
+        userId: 'user-1',
+        status: OrderStatus.READY,
+        subtotal: 10,
+        deliveryFee: 2,
+        tax: 1,
+        discount: 0,
+        total: 13,
+        createdAt: '2026-01-01T00:00:00.000Z',
+        items: []
+      },
+      {
+        id: 'order-delivering',
+        restaurantId: 'rest-1',
+        userId: 'user-2',
+        status: OrderStatus.DELIVERING,
+        subtotal: 10,
+        deliveryFee: 2,
+        tax: 1,
+        discount: 0,
+        total: 13,
+        createdAt: '2026-01-01T00:00:00.000Z',
+        items: []
+      }
+    ];
+
+    vi.mocked(getMerchantOrders).mockResolvedValue(mockOrders as any);
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MerchantDashboardPage />
+      </QueryClientProvider>
+    );
+
+    // Wait for render
+    await screen.findByText('Order #order-re');
+    await screen.findByText('Order #order-de');
+
+    // Assert that the exact texts from order.state.js are rendered on the screen
+    // getByText with exact: true (default) ensures strict matching
+    expect(screen.getByText(OrderStatus.READY)).toBeInTheDocument();
+    expect(screen.getByText(OrderStatus.DELIVERING)).toBeInTheDocument();
+  });
 });

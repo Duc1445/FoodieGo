@@ -6,7 +6,7 @@ import { useCartStore } from '../../shared/stores/useCartStore';
 import { FeatureUnavailable } from '../../shared/components/FeatureUnavailable';
 import { calculateDeliveryFee, calculateTotal } from '../../shared/constants/pricing';
 
-export const PAYMENT_METHODS = {
+const PAYMENT_METHODS = {
   CASH: 'cash',
   CARD: 'card',
   WALLET: 'wallet',

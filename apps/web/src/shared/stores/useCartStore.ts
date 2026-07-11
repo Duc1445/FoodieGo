@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { calculateSubtotal } from '../constants/pricing';
 import { Food } from '../services/food.api';
 
 export interface CartItem extends Food {
@@ -27,7 +28,7 @@ export interface CartState {
 
 const calculateSummary = (items: CartItem[]) => ({
   totalItems: items.reduce((total, item) => total + item.quantity, 0),
-  totalPrice: items.reduce((total, item) => total + item.price * item.quantity, 0),
+  totalPrice: calculateSubtotal(items),
 });
 
 export const useCartStore = create<CartState>()(

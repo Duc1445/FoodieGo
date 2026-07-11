@@ -3,6 +3,7 @@ import { useCartStore } from '../stores/useCartStore';
 import { Button, Badge } from '@foodiego/ui';
 import { ShoppingCart, X, Minus, Plus, Trash2 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { calculateDeliveryFee, calculateTotal } from '../constants/pricing';
 
 export function CartDrawer() {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,7 +12,9 @@ export function CartDrawer() {
   
   const { items, restaurant, summary, actions } = useCartStore();
   const { name: restaurantName } = restaurant;
-  const { totalItems, totalPrice } = summary;
+  const { totalItems, totalPrice: subtotal } = summary;
+  const deliveryFee = calculateDeliveryFee(subtotal);
+  const total = calculateTotal(subtotal, deliveryFee);
   const { removeItem, updateQuantity, clearCart } = actions;
 
   // Close drawer on route change
@@ -117,13 +120,17 @@ export function CartDrawer() {
 
         {items.length > 0 && (
           <div className="p-6 border-t bg-card mt-auto">
-            <div className="flex items-center justify-between mb-4 text-muted-foreground text-sm">
+            <div className="flex items-center justify-between mb-2 text-muted-foreground text-sm">
               <span>Subtotal</span>
-              <span>₫{totalPrice.toLocaleString()}</span>
+              <span>₫{subtotal.toLocaleString()}</span>
+            </div>
+            <div className="flex items-center justify-between mb-4 text-muted-foreground text-sm">
+              <span>Delivery</span>
+              <span>₫{deliveryFee.toLocaleString()}</span>
             </div>
             <div className="flex items-center justify-between mb-6 font-bold text-lg">
               <span>Total</span>
-              <span className="text-primary">₫{totalPrice.toLocaleString()}</span>
+              <span className="text-primary">₫{total.toLocaleString()}</span>
             </div>
             <Button 
               className="w-full h-12 text-base font-bold shadow-lg hover:shadow-xl transition-shadow"
@@ -132,7 +139,7 @@ export function CartDrawer() {
                 setIsOpen(false);
               }}
             >
-              Checkout (₫{totalPrice.toLocaleString()})
+              Checkout (₫{total.toLocaleString()})
             </Button>
             
             <div className="mt-4 text-center">

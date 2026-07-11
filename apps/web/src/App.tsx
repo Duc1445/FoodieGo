@@ -21,6 +21,7 @@ const CartPage = lazy(() => import('./customer/pages/CartPage').then(module => (
 const CheckoutPage = lazy(() => import('./customer/pages/CheckoutPage').then(module => ({ default: module.CheckoutPage })));
 const OrderSuccessPage = lazy(() => import('./customer/pages/OrderSuccessPage').then(module => ({ default: module.OrderSuccessPage })));
 const MyOrdersPage = lazy(() => import('./customer/pages/MyOrdersPage').then(module => ({ default: module.MyOrdersPage })));
+const OrderDetailPage = lazy(() => import('./customer/pages/OrderDetailPage').then(module => ({ default: module.OrderDetailPage })));
 const ProfilePage = lazy(() => import('./customer/pages/ProfilePage').then(module => ({ default: module.ProfilePage })));
 const CustomerLogin = lazy(() => import('./customer/pages/auth/Login').then(module => ({ default: module.Login })));
 const CustomerRegister = lazy(() => import('./customer/pages/auth/Register').then(module => ({ default: module.Register })));
@@ -66,6 +67,7 @@ const router = createBrowserRouter([
       { path: 'checkout', element: <ProtectedRoute allowedRoles={['customer']}><Suspense fallback={<PageLoader />}><CheckoutPage /></Suspense></ProtectedRoute> },
       { path: 'order/:orderId', element: <ProtectedRoute allowedRoles={['customer']}><Suspense fallback={<PageLoader />}><OrderSuccessPage /></Suspense></ProtectedRoute> },
       { path: 'orders', element: <ProtectedRoute allowedRoles={['customer']}><Suspense fallback={<PageLoader />}><MyOrdersPage /></Suspense></ProtectedRoute> },
+      { path: 'orders/:id', element: <ProtectedRoute allowedRoles={['customer']}><Suspense fallback={<PageLoader />}><OrderDetailPage /></Suspense></ProtectedRoute> },
       { path: 'profile', element: <ProtectedRoute allowedRoles={['customer']}><Suspense fallback={<PageLoader />}><ProfilePage /></Suspense></ProtectedRoute> },
     ],
   },

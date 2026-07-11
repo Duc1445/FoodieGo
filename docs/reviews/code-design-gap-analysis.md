@@ -61,3 +61,8 @@ Contract Test: PASS
 Build: PASS
 CI: GREEN
 ```
+
+### Sprint 2C Progress Update
+* **Phase 1 & 2**: Implemented Backend Order APIs and centralized authentication/authorization inside `packages/shared-auth`.
+* **Phase 3**: Completed Frontend Order History (`MyOrdersPage`) with `@tanstack/react-query` integration, dynamic states, and comprehensive tests.
+* **Phase 4**: Implemented Frontend Order Detail & Timeline UI (`OrderDetailPage`). Decided on a reusable `<OrderTimeline />` component. As part of MVP constraints, we are currently limiting the system to HTTP polling rather than WebSockets/SSE for status updates. The page includes structured breakdown of items, cost, and visually appealing timeline representations.

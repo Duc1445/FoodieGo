@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { FoodAPI, Food } from '../../shared/services/food.api';
@@ -8,26 +8,29 @@ import { Search as SearchIcon, AlertCircle, RefreshCw } from 'lucide-react';
 export function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
-  
   const [query, setQuery] = useState(initialQuery);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
 
-  const { data: allFoods = [], isLoading, error, refetch } = useQuery({
-    queryKey: ['foods', 'all'],
-    queryFn: () => FoodAPI.getAllFoods(),
+  // Debounce the search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(query);
+      if (query !== searchParams.get('q')) {
+        setSearchParams({ q: query });
+      }
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [query, setSearchParams, searchParams]);
+
+  const { data: filteredFoods = [], isLoading, error, refetch } = useQuery({
+    queryKey: ['foods', 'search', debouncedQuery],
+    queryFn: () => FoodAPI.getAllFoods({ q: debouncedQuery }),
     retry: 2,
   });
 
-  // Client-side search filtering
-  const filteredFoods = useMemo(() => {
-    if (!initialQuery) return allFoods;
-    return allFoods.filter(food =>
-      food.name.toLowerCase().includes(initialQuery.toLowerCase()) ||
-      food.description.toLowerCase().includes(initialQuery.toLowerCase())
-    );
-  }, [allFoods, initialQuery]);
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    setDebouncedQuery(query);
     setSearchParams({ q: query });
   };
 

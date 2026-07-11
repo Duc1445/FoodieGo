@@ -17,9 +17,8 @@ export const FoodAPI = {
     return res.data.data;
   },
   
-  // For search, we'll fetch all items - backend doesn't have dedicated search yet
-  getAllFoods: async () => {
-    const res = await api.get<{ success: boolean; data: Food[] }>('/menus/items');
+  getAllFoods: async (params?: { q?: string; page?: number; limit?: number }) => {
+    const res = await api.get<{ success: boolean; data: Food[] }>('/menus/items', { params });
     return res.data.data;
   }
 };

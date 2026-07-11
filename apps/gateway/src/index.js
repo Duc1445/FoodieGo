@@ -66,7 +66,22 @@ app.use(
   '/api/v1/restaurants',
   createProxyMiddleware(proxyOptions(process.env.RESTAURANT_SERVICE_URL)),
 );
-app.use('/api/v1/menus', createProxyMiddleware(proxyOptions(process.env.RESTAURANT_SERVICE_URL)));
+const searchLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 30, // Limit each IP to 30 requests per windowMs
+  message: {
+    success: false,
+    message: 'Too many search requests from this IP, please try again after a minute',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use(
+  '/api/v1/menus',
+  searchLimiter,
+  createProxyMiddleware(proxyOptions(process.env.RESTAURANT_SERVICE_URL)),
+);
 app.use('/api/v1/orders', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
 app.use('/api/v1/cart', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
 app.use('/api/v1/delivery', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));

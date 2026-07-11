@@ -28,6 +28,22 @@ CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_role  ON users(role);
 
 -- ─────────────────────────────────────────────
+-- ADDRESSES
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS addresses (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  address     TEXT NOT NULL,
+  phone       VARCHAR(20),
+  is_default  BOOLEAN NOT NULL DEFAULT false,
+  is_active   BOOLEAN NOT NULL DEFAULT true,
+  created_at  TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at  TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_addresses_user_id ON addresses(user_id);
+
+-- ─────────────────────────────────────────────
 -- RESTAURANTS
 -- ─────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS restaurants (

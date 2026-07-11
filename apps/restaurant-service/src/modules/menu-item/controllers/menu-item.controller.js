@@ -15,7 +15,16 @@ export class MenuItemController {
 
   async getAll(req, res, next) {
     try {
-      const menuItems = await service.getAllMenuItems();
+      const { q, page, limit } = req.query;
+      const parsedLimit = limit ? parseInt(limit, 10) : 50;
+      const parsedPage = page ? parseInt(page, 10) : 1;
+      const offset = (parsedPage - 1) * parsedLimit;
+
+      const menuItems = await service.getAllMenuItems({
+        q,
+        limit: parsedLimit,
+        offset,
+      });
       return successResponse(res, menuItems);
     } catch (err) {
       next(err);
@@ -26,7 +35,9 @@ export class MenuItemController {
     try {
       const menuItem = await service.getMenuItemById(req.params.id);
       if (!menuItem) {
-        throw new NotFoundError('Menu item not found', 'MENU_ITEM_NOT_FOUND', { id: req.params.id });
+        throw new NotFoundError('Menu item not found', 'MENU_ITEM_NOT_FOUND', {
+          id: req.params.id,
+        });
       }
       return successResponse(res, menuItem);
     } catch (err) {

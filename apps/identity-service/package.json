@@ -25,7 +25,8 @@
     "@foodiego/core": "workspace:*",
     "@foodiego/tracing": "workspace:*",
     "@foodiego/logging": "workspace:*",
-    "@foodiego/metrics": "workspace:*"
+    "@foodiego/metrics": "workspace:*",
+    "@foodiego/shared-auth": "workspace:*"
   },
   "devDependencies": {
     "nodemon": "^3.0.2",

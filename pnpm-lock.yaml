@@ -154,6 +154,9 @@ importers:
       '@foodiego/metrics':
         specifier: workspace:*
         version: link:../../packages/metrics
+      '@foodiego/shared-auth':
+        specifier: workspace:*
+        version: link:../../packages/shared-auth
       '@foodiego/tracing':
         specifier: workspace:*
         version: link:../../packages/otel

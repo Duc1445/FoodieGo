@@ -21,16 +21,16 @@ export class MenuItemRepository {
       ORDER BY c.display_order ASC, m.display_order ASC
     `;
     const { rows } = await pool.query(query, [restaurantId]);
-    
+
     // Grouping logic
     const categoriesMap = new Map();
-    rows.forEach(row => {
+    rows.forEach((row) => {
       if (!categoriesMap.has(row.category_id)) {
         categoriesMap.set(row.category_id, {
           id: row.category_id,
           name: row.category_name,
           display_order: row.category_order,
-          items: []
+          items: [],
         });
       }
       if (row.menu_item_id) {
@@ -41,7 +41,7 @@ export class MenuItemRepository {
           price: parseFloat(row.price),
           image_url: row.image_url,
           is_available: row.is_available,
-          display_order: row.menu_item_order
+          display_order: row.menu_item_order,
         });
       }
     });
@@ -49,9 +49,20 @@ export class MenuItemRepository {
     return Array.from(categoriesMap.values());
   }
 
-  async findAll() {
-    const { rows } = await pool.query('SELECT * FROM menu_items');
-    return rows.map(r => new MenuItemEntity(r));
+  async findAll({ q = '', limit = 50, offset = 0 } = {}) {
+    let query = 'SELECT * FROM menu_items WHERE is_available = true';
+    const params = [];
+
+    if (q) {
+      query += ` AND (name ILIKE $1 OR description ILIKE $1)`;
+      params.push(`%${q}%`);
+    }
+
+    query += ` ORDER BY name ASC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+    params.push(limit, offset);
+
+    const { rows } = await pool.query(query, params);
+    return rows.map((r) => new MenuItemEntity(r));
   }
 
   async findById(id) {

@@ -6,6 +6,10 @@ import { useCartStore } from '../../shared/stores/useCartStore';
 import { CheckoutAPI } from '../../shared/services/checkout.api';
 import { calculateDeliveryFee, calculateTotal } from '../../shared/constants/pricing';
 
+import { AddressSelector } from '../components/checkout/AddressSelector';
+import { useAuthStore } from '../../shared/stores/useAuthStore';
+import { AuthAPI } from '../../shared/services/auth.api';
+
 const PAYMENT_METHODS = {
   CASH: 'cash',
   CARD: 'card',
@@ -15,6 +19,7 @@ const PAYMENT_METHODS = {
 type PaymentMethodType = typeof PAYMENT_METHODS[keyof typeof PAYMENT_METHODS];
 
 interface CheckoutFormData {
+  addressId: string | null;
   deliveryAddress: string;
   phone: string;
   notes: string;
@@ -29,6 +34,7 @@ export function CheckoutPage() {
   const totalAmount = calculateTotal(subtotal, deliveryFee);
 
   const [formData, setFormData] = useState<CheckoutFormData>({
+    addressId: null,
     deliveryAddress: '',
     phone: '',
     notes: '',
@@ -68,9 +74,24 @@ export function CheckoutPage() {
 
     setIsSubmitting(true);
     try {
+      let finalAddressId = formData.addressId;
+      
+      // If manual entry (no selected address ID), create the address first
+      if (!finalAddressId) {
+        const { id: userId } = useAuthStore.getState().user || {};
+        if (userId) {
+          const newAddress = await AuthAPI.addAddress(userId, {
+            address: formData.deliveryAddress,
+            phone: formData.phone,
+            isDefault: false
+          });
+          finalAddressId = newAddress.id;
+        }
+      }
+
       const result = await CheckoutAPI.checkout({
         cartVersion: version!,
-        addressId: null,
+        addressId: finalAddressId,
         paymentMethod: formData.paymentMethod,
         idempotencyKey: idempotencyKeyRef.current,
       });
@@ -132,32 +153,12 @@ export function CheckoutPage() {
           <Card className="p-6">
             <h3 className="font-bold text-lg mb-4">Delivery Information</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Delivery Address *</label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Enter your delivery address"
-                    value={formData.deliveryAddress}
-                    onChange={(e) => setFormData({ ...formData, deliveryAddress: e.target.value })}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">Phone Number *</label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    type="tel"
-                    placeholder="Enter your phone number"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="pl-10"
-                  />
-                </div>
+              <div className="mb-6">
+                <AddressSelector 
+                  selectedId={formData.addressId}
+                  onSelect={(id) => setFormData({ ...formData, addressId: id })}
+                  onAddressData={(address, phone) => setFormData({ ...formData, deliveryAddress: address, phone })}
+                />
               </div>
 
               <div>

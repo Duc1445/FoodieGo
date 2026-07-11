@@ -57,7 +57,10 @@ app.get('/metrics', async (_req, res) => {
 
 app.use('/api/auth', authRoutes);
 import employeeRoutes from './routes/employee.routes.js';
+import addressRoutes from './modules/address/routes/address.routes.js';
+
 app.use('/api/employees', employeeRoutes);
+app.use('/api/v1/users/:id/addresses', addressRoutes);
 
 // ─── Error Handler ─────────────────────────────────────────────────────────
 app.use((err, _req, res, _next) => {

@@ -170,6 +170,11 @@ export function ProfilePage() {
         )}
       </Card>
 
+      <Card className="p-8 mb-6">
+        <h2 className="text-xl font-bold mb-6">Delivery Addresses</h2>
+        <AddressList />
+      </Card>
+
       <Button
         variant="destructive"
         onClick={handleLogout}
@@ -178,6 +183,68 @@ export function ProfilePage() {
         <LogOut className="w-4 h-4" />
         Logout
       </Button>
+    </div>
+  );
+}
+
+function AddressList() {
+  const { user } = useAuthStore();
+  const [isAdding, setIsAdding] = useState(false);
+  const [newAddress, setNewAddress] = useState({ address: '', phone: '' });
+  
+  const { data: addresses = [], refetch } = useQuery({
+    queryKey: ['addresses', user?.id],
+    queryFn: () => AuthAPI.getAddresses(user!.id),
+    enabled: !!user?.id,
+  });
+
+  const addMutation = useMutation({
+    mutationFn: () => AuthAPI.addAddress(user!.id, newAddress),
+    onSuccess: () => {
+      setIsAdding(false);
+      setNewAddress({ address: '', phone: '' });
+      refetch();
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (addressId: string) => AuthAPI.deleteAddress(user!.id, addressId),
+    onSuccess: () => refetch()
+  });
+
+  return (
+    <div>
+      {addresses.length === 0 ? (
+        <p className="text-muted-foreground text-sm mb-4">No addresses saved yet.</p>
+      ) : (
+        <div className="space-y-4 mb-6">
+          {addresses.map((addr: any) => (
+            <div key={addr.id} className="p-4 border rounded-lg flex justify-between items-start">
+              <div>
+                <p className="font-medium">{addr.address}</p>
+                <p className="text-sm text-muted-foreground">{addr.phone}</p>
+                {addr.isDefault && <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded mt-2 inline-block">Default</span>}
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => deleteMutation.mutate(addr.id)} disabled={deleteMutation.isPending}>
+                Remove
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {isAdding ? (
+        <div className="space-y-3 p-4 border rounded-lg bg-muted/20">
+          <Input placeholder="Full Address" value={newAddress.address} onChange={(e) => setNewAddress({...newAddress, address: e.target.value})} />
+          <Input placeholder="Phone Number" value={newAddress.phone} onChange={(e) => setNewAddress({...newAddress, phone: e.target.value})} />
+          <div className="flex gap-2">
+            <Button onClick={() => addMutation.mutate()} disabled={addMutation.isPending || !newAddress.address}>Save Address</Button>
+            <Button variant="outline" onClick={() => setIsAdding(false)}>Cancel</Button>
+          </div>
+        </div>
+      ) : (
+        <Button variant="outline" onClick={() => setIsAdding(true)}>+ Add New Address</Button>
+      )}
     </div>
   );
 }

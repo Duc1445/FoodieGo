@@ -72,3 +72,10 @@ Before implementing any feature:
 2. Read ADRs
 3. Read service CONTEXT.md
 4. Create API implementation plan
+
+
+## Engineering Practices
+- **Code Review**: Aim for continuous improvement, not perfection. Unblock peers quickly.
+- **Design Docs**: Required for major architectural changes.
+- **Testing**: Write behavior-driven tests. Avoid over-mocking.
+- **Ownership**: Every module has an owner. You touch it, you own it.

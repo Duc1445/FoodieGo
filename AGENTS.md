@@ -39,3 +39,25 @@ Before implementing any feature:
 2. Read ADRs
 3. Read service CONTEXT.md
 4. Create API implementation plan
+
+
+## Before merging:
+1. Run lint
+2. Run typecheck
+3. Run tests
+4. Review architecture impact
+5. Update documentation if needed
+
+
+## Feature development workflow:
+1. Read product requirement
+2. Read user story
+3. Read acceptance criteria
+4. Read architecture docs
+5. Read ADR
+6. Create implementation plan
+7. Request approval
+8. Implement
+9. Test
+10. Update docs
+11. Commit and push

@@ -1,4 +1,4 @@
-import { CartItem } from '../stores/useCartStore';
+import type { CartItem } from '../services/cart.api';
 
 export const PRICING = {
   DELIVERY_FEE: 15000,

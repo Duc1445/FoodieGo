@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAuthStore } from '../../shared/stores/useAuthStore';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { FoodAPI } from '../../shared/services/food.api';
@@ -12,8 +13,10 @@ import { Image } from '../../shared/components/Image';
 export function FoodDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const addItem = useCartStore(state => state.actions.addItem);
-  const clearCart = useCartStore(state => state.actions.clearCart);
+  const addItem = useCartStore((state) => state.actions.addItem);
+  const clearCart = useCartStore((state) => state.actions.clearCart);
+  const pendingItemIds = useCartStore((state) => state.pendingItemIds);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   
   const [quantity, setQuantity] = useState(1);
   const [isConflictDialogOpen, setIsConflictDialogOpen] = useState(false);
@@ -82,27 +85,41 @@ export function FoodDetailPage() {
     );
   }
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
+    if (!isAuthenticated()) {
+      toast.error('Please log in to add items to your cart.');
+      return;
+    }
     if (!restaurant) {
       toast.error('Cannot add to cart. Restaurant info missing.');
       return;
     }
-    const success = addItem(food, quantity, { id: restaurant.id, name: restaurant.name });
-    if (success) {
-      toast.success(`Added ${quantity}x ${food.name} to cart!`);
-      navigate(-1);
-    } else {
-      setIsConflictDialogOpen(true);
+    try {
+      const success = await addItem(food, quantity, { id: restaurant.id, name: restaurant.name });
+      if (success) {
+        toast.success(`Added ${quantity}x ${food.name} to cart!`);
+        navigate(-1);
+      } else {
+        setIsConflictDialogOpen(true);
+      }
+    } catch {
+      toast.error('Could not add item. Please try again.');
     }
   };
 
-  const handleReplaceCart = () => {
+  const handleReplaceCart = async () => {
     if (!restaurant) return;
-    clearCart();
-    addItem(food, quantity, { id: restaurant.id, name: restaurant.name });
-    toast.success(`Started new order with ${quantity}x ${food.name}!`);
-    setIsConflictDialogOpen(false);
-    navigate(-1);
+    try {
+      await clearCart();
+      await addItem(food, quantity, { id: restaurant.id, name: restaurant.name });
+      toast.success(`Started new order with ${quantity}x ${food.name}!`);
+      setIsConflictDialogOpen(false);
+      navigate(-1);
+    } catch {
+      // DELETE succeeded but PUT failed — cart is now empty on backend.
+      toast.error('Could not add item. Your previous cart was cleared.');
+      setIsConflictDialogOpen(false);
+    }
   };
 
   // Success state
@@ -161,14 +178,14 @@ export function FoodDetailPage() {
             </div>
           </div>
 
-          <Button 
-            size="lg" 
+          <Button
+            size="lg"
             className="w-full text-lg h-14 rounded-xl shadow-lg"
             onClick={handleAddToCart}
-            disabled={food.is_available === false}
+            disabled={food.is_available === false || pendingItemIds.includes(food.id)}
           >
             <ShoppingCart className="w-5 h-5 mr-2" />
-            Add to Cart
+            {pendingItemIds.includes(food.id) ? 'Adding...' : 'Add to Cart'}
           </Button>
         </div>
       </div>

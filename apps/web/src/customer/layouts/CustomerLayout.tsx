@@ -1,11 +1,33 @@
+import { useEffect } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { LocationSelector } from '../../shared/components/LocationSelector';
 import { CartDrawer } from '../../shared/components/CartDrawer';
 import { useAuthStore } from '../../shared/stores/useAuthStore';
+import { useCartStore } from '../../shared/stores/useCartStore';
+import { CartAPI } from '../../shared/services/cart.api';
 import { Button } from '@foodiego/ui';
 
 export function CustomerLayout() {
   const { user, isAuthenticated, logout } = useAuthStore();
+  const loadCart = useCartStore((state) => state.actions.loadCart);
+  const resetCart = useCartStore((state) => state.actions.reset);
+
+  // Hydrate cart from backend on mount and whenever the logged-in user changes.
+  useEffect(() => {
+    if (user) {
+      loadCart();
+    }
+  }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleLogout = () => {
+    // Reset local state immediately — never block on the API.
+    resetCart();
+    localStorage.removeItem('foodiego-auth-token');
+    logout();
+    // Best-effort backend clear — fire-and-forget, don't await.
+    CartAPI.clearCart().catch(() => {});
+  };
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
@@ -23,15 +45,13 @@ export function CustomerLayout() {
           </nav>
           <div className="ml-auto flex items-center space-x-4">
             <LocationSelector />
-            <LocationSelector />
             <div className="border-l h-6 mx-2 border-border" />
             {isAuthenticated() ? (
               <div className="flex items-center space-x-4">
                 <span className="text-sm font-medium">{user?.full_name}</span>
-                <Button variant="ghost" size="sm" onClick={() => {
-                  localStorage.removeItem('foodiego-auth-token');
-                  logout();
-                }}>Logout</Button>
+                <Button variant="ghost" size="sm" onClick={handleLogout}>
+                  Logout
+                </Button>
               </div>
             ) : (
               <div className="flex items-center space-x-2">

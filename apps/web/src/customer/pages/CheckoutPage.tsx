@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, Input } from '@foodiego/ui';
 import { ArrowLeft, MapPin, Phone } from 'lucide-react';
 import { useCartStore } from '../../shared/stores/useCartStore';
-import { FeatureUnavailable } from '../../shared/components/FeatureUnavailable';
+import { CheckoutAPI } from '../../shared/services/checkout.api';
 import { calculateDeliveryFee, calculateTotal } from '../../shared/constants/pricing';
 
 const PAYMENT_METHODS = {
@@ -23,7 +23,7 @@ interface CheckoutFormData {
 
 export function CheckoutPage() {
   const navigate = useNavigate();
-  const { items, summary } = useCartStore();
+  const { items, summary, version, actions } = useCartStore();
   const { totalPrice: subtotal } = summary;
   const deliveryFee = calculateDeliveryFee(subtotal);
   const totalAmount = calculateTotal(subtotal, deliveryFee);
@@ -34,9 +34,23 @@ export function CheckoutPage() {
     notes: '',
     paymentMethod: PAYMENT_METHODS.CASH,
   });
-  
-  const [showUnavailableModal, setShowUnavailableModal] = useState(false);
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  /**
+   * Idempotency key: generated once on mount.
+   * Reused on every retry (ref — no re-render).
+   * Discarded automatically when component unmounts (navigate on success or user leaves).
+   */
+  const idempotencyKeyRef = useRef(crypto.randomUUID());
+
+  /**
+   * Checkout is only possible when:
+   * - Cart has items
+   * - version is known (received from backend — not null)
+   * - Not currently submitting
+   */
+  const canCheckout = items.length > 0 && version !== null && !isSubmitting;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,26 +60,44 @@ export function CheckoutPage() {
       setError('Please enter a delivery address');
       return;
     }
-
     if (!formData.phone.trim()) {
       setError('Please enter a phone number');
       return;
     }
+    if (!canCheckout) return;
 
-    // Intercept Submit button. Show <FeatureUnavailable /> modal. Do NOT call backend API.
-    setShowUnavailableModal(true);
+    setIsSubmitting(true);
+    try {
+      const result = await CheckoutAPI.checkout({
+        cartVersion: version!,
+        addressId: null,
+        paymentMethod: formData.paymentMethod,
+        idempotencyKey: idempotencyKeyRef.current,
+      });
+
+      // Success — clear local cart then navigate. UUID is discarded with the component.
+      await actions.clearCart();
+      navigate(`/order-success?orderId=${result.orderId}`);
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+
+      if (status === 409) {
+        // cartVersion mismatch — re-sync cart so version is fresh for retry
+        setError('Your cart was updated. Please review and try again.');
+        await actions.loadCart();
+      } else if (status === 422) {
+        setError(message || 'One or more items are no longer available.');
+      } else if (status === 400) {
+        setError('Invalid checkout request. Please try again.');
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
+      // Idempotency key is retained — same key used on retry.
+    } finally {
+      setIsSubmitting(false);
+    }
   };
-
-  if (showUnavailableModal) {
-    return (
-      <FeatureUnavailable 
-        title="Checkout Unavailable" 
-        description="Checkout functionality and backend cart synchronization will be available in Sprint 2B."
-        actionLabel="Back to Cart"
-        onAction={() => navigate('/cart')}
-      />
-    );
-  }
 
   if (items.length === 0) {
     return (
@@ -142,7 +174,7 @@ export function CheckoutPage() {
               <div>
                 <label className="block text-sm font-medium mb-4">Payment Method</label>
                 <div className="space-y-3">
-                  {Object.values(PAYMENT_METHODS).map(method => (
+                  {Object.values(PAYMENT_METHODS).map((method) => (
                     <label key={method} className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="radio"
@@ -152,18 +184,31 @@ export function CheckoutPage() {
                         onChange={() => setFormData({ ...formData, paymentMethod: method as PaymentMethodType })}
                         className="w-4 h-4 text-primary focus:ring-primary"
                       />
-                      <span className="text-sm capitalize">{method === PAYMENT_METHODS.CASH ? 'Cash on Delivery' : method === PAYMENT_METHODS.CARD ? 'Credit/Debit Card' : 'Digital Wallet'}</span>
+                      <span className="text-sm capitalize">
+                        {method === PAYMENT_METHODS.CASH
+                          ? 'Cash on Delivery'
+                          : method === PAYMENT_METHODS.CARD
+                          ? 'Credit/Debit Card'
+                          : 'Digital Wallet'}
+                      </span>
                     </label>
                   ))}
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full mt-6 h-12 text-lg"
+                disabled={!canCheckout}
               >
-                Place Order - ₫{totalAmount.toLocaleString()}
+                {isSubmitting ? 'Placing Order...' : `Place Order — ₫${totalAmount.toLocaleString()}`}
               </Button>
+
+              {version === null && (
+                <p className="text-xs text-center text-muted-foreground">
+                  Syncing cart with server…
+                </p>
+              )}
             </form>
           </Card>
         </div>
@@ -172,7 +217,7 @@ export function CheckoutPage() {
           <Card className="p-6 sticky top-4">
             <h3 className="font-bold text-lg mb-6">Order Summary</h3>
             <div className="space-y-3 border-b pb-4 mb-4 max-h-[300px] overflow-y-auto">
-              {items.map(item => (
+              {items.map((item) => (
                 <div key={item.id} className="flex justify-between text-sm">
                   <span className="line-clamp-1 pr-2">{item.quantity}x {item.name}</span>
                   <span className="flex-shrink-0">₫{(Number(item.price) * item.quantity).toLocaleString()}</span>

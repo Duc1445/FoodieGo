@@ -3,15 +3,32 @@ import { Button, Card } from '@foodiego/ui';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { useCartStore } from '../../shared/stores/useCartStore';
 import { calculateDeliveryFee, calculateTotal } from '../../shared/constants/pricing';
+import { toast } from 'sonner';
 
 export function CartPage() {
   const navigate = useNavigate();
-  const { items, restaurant, summary, actions } = useCartStore();
+  const { items, restaurant, summary, pendingItemIds, actions } = useCartStore();
   const { removeItem, updateQuantity } = actions;
   const { name: restaurantName } = restaurant;
   const { totalPrice: subtotal } = summary;
   const deliveryFee = calculateDeliveryFee(subtotal);
   const total = calculateTotal(subtotal, deliveryFee);
+
+  const handleUpdateQuantity = async (itemId: string, quantity: number) => {
+    try {
+      await updateQuantity(itemId, quantity);
+    } catch {
+      toast.error('Could not update quantity. Please try again.');
+    }
+  };
+
+  const handleRemove = async (itemId: string) => {
+    try {
+      await removeItem(itemId);
+    } catch {
+      toast.error('Could not remove item. Please try again.');
+    }
+  };
 
   if (items.length === 0) {
     return (
@@ -43,40 +60,49 @@ export function CartPage() {
           <Card className="p-6">
             <h3 className="font-semibold text-lg mb-4">{restaurantName}</h3>
             <div className="space-y-4">
-              {items.map((item: any) => (
-                <div key={item.id} className="flex items-center justify-between border-b pb-4 last:border-0">
-                  <div className="flex-1">
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-sm text-muted-foreground">₫{Number(item.price).toLocaleString()}</p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center border rounded-lg overflow-hidden">
-                      <button 
-                        className="px-3 py-2 hover:bg-accent"
-                        onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+              {items.map((item) => {
+                const isPending = pendingItemIds.includes(item.id);
+                return (
+                  <div
+                    key={item.id}
+                    className={`flex items-center justify-between border-b pb-4 last:border-0 transition-opacity ${isPending ? 'opacity-60' : ''}`}
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium">{item.name}</p>
+                      <p className="text-sm text-muted-foreground">₫{Number(item.price).toLocaleString()}</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center border rounded-lg overflow-hidden">
+                        <button
+                          className="px-3 py-2 hover:bg-accent disabled:opacity-50"
+                          onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                          disabled={isPending}
+                        >
+                          <Minus className="w-4 h-4" />
+                        </button>
+                        <span className="px-4 font-semibold">{item.quantity}</span>
+                        <button
+                          className="px-3 py-2 hover:bg-accent disabled:opacity-50"
+                          onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                          disabled={isPending}
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <p className="font-bold min-w-[80px] text-right">
+                        ₫{(Number(item.price) * item.quantity).toLocaleString()}
+                      </p>
+                      <button
+                        className="text-red-500 hover:text-red-700 disabled:opacity-50"
+                        onClick={() => handleRemove(item.id)}
+                        disabled={isPending}
                       >
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="px-4 font-semibold">{item.quantity}</span>
-                      <button 
-                        className="px-3 py-2 hover:bg-accent"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      >
-                        <Plus className="w-4 h-4" />
+                        <Trash2 className="w-5 h-5" />
                       </button>
                     </div>
-                    <p className="font-bold min-w-[80px] text-right">
-                      ₫{(Number(item.price) * item.quantity).toLocaleString()}
-                    </p>
-                    <button 
-                      className="text-red-500 hover:text-red-700"
-                      onClick={() => removeItem(item.id)}
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </Card>
         </div>
@@ -98,15 +124,15 @@ export function CartPage() {
               <span>Total</span>
               <span>₫{total.toLocaleString()}</span>
             </div>
-            <Button 
-              className="w-full mb-2" 
+            <Button
+              className="w-full mb-2"
               onClick={() => navigate('/checkout')}
             >
               Checkout
             </Button>
-            <Button 
-              variant="outline" 
-              className="w-full" 
+            <Button
+              variant="outline"
+              className="w-full"
               onClick={() => navigate('/')}
             >
               Continue Shopping

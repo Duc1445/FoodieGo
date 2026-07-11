@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { clearAuthStorage, getLoginPath } from '../auth/session';
+import { useAuthStore } from '../stores/useAuthStore';
 
 const baseURL = import.meta.env.VITE_GATEWAY_URL || 'http://localhost:3000/api/v1';
 
@@ -15,6 +16,12 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const token = localStorage.getItem('foodiego-auth-token');
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
+  }
+  // user.id is in the persisted Zustand auth store — no JWT decoding needed.
+  // useAuthStore.getState() is safe outside React (module-level singleton).
+  const userId: string | undefined = useAuthStore.getState().user?.id;
+  if (userId && config.headers) {
+    config.headers['X-User-Id'] = userId;
   }
   return config;
 });

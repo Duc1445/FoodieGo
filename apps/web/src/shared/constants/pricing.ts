@@ -1,12 +1,10 @@
-import type { CartItem } from '../services/cart.api';
-
 export const PRICING = {
   DELIVERY_FEE: 15000,
   FREE_DELIVERY_THRESHOLD: 300000,
   VAT_RATE: 0
 };
 
-export const calculateSubtotal = (items: CartItem[]): number => {
+export const calculateSubtotal = (items: { price: number; quantity: number }[]): number => {
   return items.reduce((total, item) => total + item.price * item.quantity, 0);
 };
 

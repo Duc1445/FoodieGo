@@ -13,3 +13,16 @@ This is a monorepo. Each package and app has its own context.
 - [packages/ui](./packages/ui/CONTEXT.md)
 - [packages/eslint-config](./packages/eslint-config/CONTEXT.md)
 - [packages/typescript-config](./packages/typescript-config/CONTEXT.md)
+
+## AI Agent Workflow
+
+Before implementing any feature:
+
+1. Read SYSTEM_CONTEXT.md
+2. Read relevant arc42 architecture docs
+3. Read related ADRs
+4. Read package CONTEXT.md
+5. Create implementation plan
+6. Execute
+7. Update documentation
+8. Commit and push

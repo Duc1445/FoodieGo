@@ -17,3 +17,7 @@
 - **Docs State**: \`DEVELOPMENT_RULES.md\` mandates granular loading states.
 - **Code State**: \`useCartStore\` currently uses an array for \`pendingItemIds\`.
 - **Action**: Refactor to \`Set<string>\` for performance as discussed in Sprint 2B reviews.
+
+## 5. Sprint Zero Runtime Validation
+- **Docs State**: CI pipelines and architectural dependencies assume the code can build cleanly across all boundaries.
+- **Code State**: Validated on Sprint Zero. The monorepo builds perfectly. No code-design gaps found in the build tooling or dependency chain. The \`docker-compose.yml\` matches the architecture accurately.

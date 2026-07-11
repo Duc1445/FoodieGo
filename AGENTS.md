@@ -2,34 +2,32 @@
 
 ### Issue tracker
 
-GitHub issue tracker. See \`docs/agents/issue-tracker.md\`.
+GitHub issue tracker. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
-Default labels with priority, type, and area additions. See \`docs/agents/triage-labels.md\`.
+Default labels with priority, type, and area additions. See `docs/agents/triage-labels.md`.
 
 ### Domain docs
 
-Multi-context layout for monorepo. See \`docs/agents/domain.md\`.
+Multi-context layout for monorepo. See `docs/agents/domain.md`.
 
 ## Architectural Rules
 
 - **Architectural changes require ADR approval before implementation.**
 - **Do not introduce new architectural patterns during feature development without review.**
 
-## Feature development workflow
+## MVP Feature Development Workflow
 
-1. Read product requirement
-2. Read user story
-3. Read acceptance criteria
-4. Read architecture docs
-5. Read ADR
-6. Create implementation plan
-7. Request approval
-8. Implement
-9. Test
-10. Update docs
-11. Commit and push
+Before starting any MVP feature:
+1. Complete feature plan (`docs/templates/mvp-feature-plan.md`)
+2. Identify affected services
+3. Check ADR impact
+4. Create implementation plan
+5. Implement
+6. Run CI checks
+7. Update docs
+8. Commit and push
 
 ## Context-specific workflows
 

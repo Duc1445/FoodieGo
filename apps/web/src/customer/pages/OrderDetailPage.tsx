@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent, Badge, Skeleton, Button } fro
 import { Package, ArrowLeft, RefreshCw, AlertCircle } from 'lucide-react';
 import { EmptyState } from '../../shared/components/EmptyState';
 import { OrderTimeline } from '../components/OrderTimeline';
+import { OrderStatus } from '@foodiego/platform-sdk/src/order-status';
 
 export function OrderDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -92,13 +93,14 @@ export function OrderDetailPage() {
   }
 
   const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'pending': return 'bg-yellow-500 hover:bg-yellow-600';
-      case 'accepted': return 'bg-blue-500 hover:bg-blue-600';
-      case 'preparing': return 'bg-indigo-500 hover:bg-indigo-600';
-      case 'delivering': return 'bg-purple-500 hover:bg-purple-600';
-      case 'completed': return 'bg-green-500 hover:bg-green-600';
-      case 'cancelled': return 'bg-red-500 hover:bg-red-600';
+    switch (status) {
+      case OrderStatus.CREATED: return 'bg-yellow-500 hover:bg-yellow-600';
+      case OrderStatus.CONFIRMED: return 'bg-blue-500 hover:bg-blue-600';
+      case OrderStatus.PREPARING: return 'bg-indigo-500 hover:bg-indigo-600';
+      case OrderStatus.READY: return 'bg-orange-500 hover:bg-orange-600';
+      case OrderStatus.DELIVERING: return 'bg-purple-500 hover:bg-purple-600';
+      case OrderStatus.COMPLETED: return 'bg-green-500 hover:bg-green-600';
+      case OrderStatus.CANCELLED: return 'bg-red-500 hover:bg-red-600';
       default: return 'bg-gray-500 hover:bg-gray-600';
     }
   };
@@ -119,12 +121,12 @@ export function OrderDetailPage() {
               variant="outline"
               size="sm"
               onClick={async () => {
-                const statuses = ['pending', 'accepted', 'preparing', 'ready', 'delivering', 'completed'];
-                const currentIdx = statuses.indexOf(order.status.toLowerCase());
+                const statuses = [OrderStatus.CREATED, OrderStatus.CONFIRMED, OrderStatus.PREPARING, OrderStatus.READY, OrderStatus.DELIVERING, OrderStatus.COMPLETED];
+                const currentIdx = statuses.indexOf(order.status as any);
                 if (currentIdx >= 0 && currentIdx < statuses.length - 1) {
                   const nextStatus = statuses[currentIdx + 1];
                   try {
-                    await OrderAPI.updateOrderStatus(order.id, nextStatus.toUpperCase());
+                    await OrderAPI.updateOrderStatus(order.id, nextStatus);
                     refetch();
                   } catch (e) {
                     console.error('Failed to advance status', e);

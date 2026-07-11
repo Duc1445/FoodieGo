@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "description": "FoodieGo Platform SDK",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "index.js",
   "scripts": {
-    "build": "tsc",
     "test": "echo \"no test specified\" && exit 0"
   },
   "dependencies": {

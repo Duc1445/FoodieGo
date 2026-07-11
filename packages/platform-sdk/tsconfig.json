@@ -5,12 +5,10 @@
     "moduleResolution": "nodenext",
     "allowJs": true,
     "checkJs": false,
-    "noEmit": false,
-    "declaration": true,
-    "outDir": "./dist",
+    "noEmit": true,
     "strict": false,
     "skipLibCheck": true
   },
-  "include": ["index.js", "src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["**/*.js"],
+  "exclude": ["node_modules"]
 }

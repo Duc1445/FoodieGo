@@ -1,4 +1,4 @@
-export const OrderStatus = {
+export const OrderStatus = Object.freeze({
   CREATED: 'CREATED',
   PENDING_RESERVATION: 'PENDING_RESERVATION',
   READY_FOR_PAYMENT: 'READY_FOR_PAYMENT',
@@ -10,6 +10,4 @@ export const OrderStatus = {
   COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED',
   REFUNDED: 'REFUNDED',
-} as const;
-
-export type OrderStatus = typeof OrderStatus[keyof typeof OrderStatus];
+});

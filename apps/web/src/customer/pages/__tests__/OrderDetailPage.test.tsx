@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { OrderDetailPage } from '../OrderDetailPage';
 import { OrderAPI } from '../../../shared/services/order.api';
 import { RestaurantAPI } from '../../../shared/services/restaurant.api';
+import { OrderStatus } from '@foodiego/platform-sdk/src/order-status';
 
 vi.mock('../../../shared/services/order.api', () => ({
   OrderAPI: {
@@ -61,7 +62,7 @@ describe('OrderDetailPage', () => {
       id: '12345678-bbbb-cccc-dddd-eeeeeeeeeeee',
       userId: 'u1',
       restaurantId: 'r1',
-      status: 'preparing',
+      status: OrderStatus.PREPARING,
       subtotal: 2000,
       deliveryFee: 500,
       tax: 250,
@@ -132,7 +133,7 @@ describe('OrderDetailPage', () => {
       id: '12345678-bbbb-cccc-dddd-eeeeeeeeeeee',
       userId: 'u1',
       restaurantId: 'r1',
-      status: 'preparing', // Current status
+      status: OrderStatus.PREPARING, // Current status
       subtotal: 2000,
       deliveryFee: 500,
       tax: 250,
@@ -178,7 +179,7 @@ describe('OrderDetailPage', () => {
       id: '12345678-bbbb-cccc-dddd-eeeeeeeeeeee',
       userId: 'u1',
       restaurantId: 'r1',
-      status: 'pending', // Current status
+      status: OrderStatus.CREATED, // Current status
       subtotal: 2000,
       deliveryFee: 500,
       tax: 250,
@@ -206,8 +207,8 @@ describe('OrderDetailPage', () => {
     // Click it
     advanceBtn.click();
 
-    // Should call API to update status to next status: 'ACCEPTED'
-    expect(OrderAPI.updateOrderStatus).toHaveBeenCalledWith('12345678-bbbb-cccc-dddd-eeeeeeeeeeee', 'ACCEPTED');
+    // Should call API to update status to next status: 'CONFIRMED'
+    expect(OrderAPI.updateOrderStatus).toHaveBeenCalledWith('12345678-bbbb-cccc-dddd-eeeeeeeeeeee', OrderStatus.CONFIRMED);
     
     vi.unstubAllEnvs();
   });

@@ -172,7 +172,6 @@ describe('OrderDetailPage', () => {
 
   it('Advance Status (DEV) button works and refreshes data', async () => {
     // Mock DEV environment
-    // @ts-ignore
     vi.stubEnv('DEV', true);
 
     const mockOrder = {

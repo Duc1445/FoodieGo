@@ -344,6 +344,7 @@ CREATE TABLE IF NOT EXISTS payments (
   currency        VARCHAR(3) DEFAULT 'USD',
   status          VARCHAR(50) NOT NULL DEFAULT 'PENDING', -- CREATED, PENDING, AUTHORIZED, CAPTURED, REFUNDED, FAILED, EXPIRED
   payment_method  VARCHAR(50) NOT NULL, -- CASH, CARD, etc.
+  gateway_provider VARCHAR(50) DEFAULT 'mock', -- The actual provider: stripe, vnpay, mock
   gateway_tx_id   VARCHAR(255),
   provider_transaction_id VARCHAR(255),
   idempotency_key VARCHAR(255) UNIQUE NOT NULL,

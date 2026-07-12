@@ -1,4 +1,3 @@
-
 import { PaymentAggregate } from './payment.aggregate.js';
 import { IntegrationEventMapper } from './integration-event.mapper.js';
 import { PaymentStatus } from './payment.state.js';
@@ -31,6 +30,7 @@ export class PaymentDomainService {
       amount,
       currency,
       paymentMethod,
+      gatewayProvider: providerId || 'mock',
       status: PaymentStatus.CREATED,
       idempotencyKey,
     };
@@ -48,7 +48,7 @@ export class PaymentDomainService {
 
     if (aggregate.status !== PaymentStatus.CREATED && aggregate.status !== PaymentStatus.PENDING) {
       logger.info({ paymentId, status: aggregate.status }, 'Payment already processed');
-      return; 
+      return;
     }
 
     // 2. Call Gateway
@@ -68,11 +68,14 @@ export class PaymentDomainService {
         aggregate.fail(gatewayRes.errorReason);
       } else {
         // Wait for webhook for authorization
-        await this.repository.updatePaymentStatus(paymentId, PaymentStatus.PENDING, gatewayRes.gatewayTxId);
+        await this.repository.updatePaymentStatus(
+          paymentId,
+          PaymentStatus.PENDING,
+          gatewayRes.gatewayTxId,
+        );
         logger.info({ paymentId }, 'Payment pending asynchronous webhook confirmation');
         return;
       }
-
     } catch (err) {
       metrics.increment('payment_timeout_total');
       logger.error({ paymentId, err: err.message }, 'Gateway error');
@@ -80,10 +83,22 @@ export class PaymentDomainService {
     }
 
     // Persist Domain Events if any (e.g. Failure)
-    await this._persistAggregateState(aggregate, correlationId, idempotencyKey, event.payload.traceId);
+    await this._persistAggregateState(
+      aggregate,
+      correlationId,
+      idempotencyKey,
+      event.payload.traceId,
+    );
   }
 
-  async processVerifiedWebhook(eventId, provider, providerTransactionId, status, payload, traceparentHeader) {
+  async processVerifiedWebhook(
+    eventId,
+    provider,
+    providerTransactionId,
+    status,
+    payload,
+    traceparentHeader,
+  ) {
     return await withSpan('Payment Service', async (span) => {
       const { reference } = payload.data; // reference corresponds to paymentId
 
@@ -101,17 +116,23 @@ export class PaymentDomainService {
 
       if (status === 'AUTHORIZED' || status === 'CAPTURED') {
         if (aggregate.status === PaymentStatus.PENDING) {
-           aggregate.authorize(providerTransactionId);
-           metrics.increment('payment_authorized_total');
+          aggregate.authorize(providerTransactionId);
+          metrics.increment('payment_authorized_total');
         } else if (aggregate.status === PaymentStatus.AUTHORIZED && status === 'CAPTURED') {
-           aggregate.capture(providerTransactionId);
+          aggregate.capture(providerTransactionId);
         }
       } else if (status === 'FAILED') {
         aggregate.fail('Gateway reported failure via webhook');
         metrics.increment('payment_failed_total');
       }
 
-      await this._persistAggregateState(aggregate, correlationId, eventId, paymentRecord.idempotency_key, traceparentHeader);
+      await this._persistAggregateState(
+        aggregate,
+        correlationId,
+        eventId,
+        paymentRecord.idempotency_key,
+        traceparentHeader,
+      );
       span.setStatus({ code: 1, message: 'Processed' });
     });
   }
@@ -136,14 +157,15 @@ export class PaymentDomainService {
     const correlationId = paymentRecord.idempotency_key;
 
     // Call gateway
-    const gateway = this.gatewayRegistry.resolve('mock'); // For now fallback to mock or parse provider
+    const provider = paymentRecord.gateway_provider || 'mock';
+    const gateway = this.gatewayRegistry.resolve(provider);
     try {
       logger.info({ paymentId: aggregate.id, reason }, 'Requesting refund from gateway');
       const refundRes = await gateway.refund({
         paymentId: aggregate.id,
         gatewayTxId: aggregate.gatewayTxId,
         amount: aggregate.amount,
-        idempotencyKey: refundIdempotencyKey
+        idempotencyKey: refundIdempotencyKey,
       });
 
       if (refundRes.status === 'REFUNDED') {
@@ -159,15 +181,15 @@ export class PaymentDomainService {
 
   async _persistAggregateState(aggregate, correlationId, causationId, traceId, traceparent = null) {
     const domainEvents = aggregate.pullDomainEvents();
-    
+
     // We only process the first domain event for simplicity in this PoC Outbox
     // In a real system, you'd insert multiple outbox records.
     let outboxEvent = null;
-    
+
     if (domainEvents.length > 0) {
       const integrationEvent = IntegrationEventMapper.mapDomainToIntegration(domainEvents[0], {
         orderId: aggregate.orderId,
-        traceId: traceId
+        traceId: traceId,
       });
 
       if (integrationEvent) {
@@ -179,7 +201,7 @@ export class PaymentDomainService {
             traceparent: traceparent,
             correlation_id: correlationId,
             causation_id: causationId,
-          }
+          },
         };
       }
     }
@@ -189,7 +211,7 @@ export class PaymentDomainService {
       aggregate.status,
       aggregate.gatewayTxId,
       aggregate.errorReason,
-      outboxEvent
+      outboxEvent,
     );
   }
 }

@@ -15,8 +15,8 @@ export class PaymentRepository {
       const insertRes = await client.query(
         `
         INSERT INTO payments (
-          order_id, amount, currency, status, payment_method, idempotency_key
-        ) VALUES ($1, $2, $3, $4, $5, $6)
+          order_id, amount, currency, status, payment_method, gateway_provider, idempotency_key
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7)
         ON CONFLICT (idempotency_key) DO NOTHING
         RETURNING id
       `,
@@ -26,6 +26,7 @@ export class PaymentRepository {
           paymentData.currency || 'USD',
           paymentData.status || 'PENDING',
           paymentData.paymentMethod,
+          paymentData.gatewayProvider || 'mock',
           paymentData.idempotencyKey,
         ],
       );

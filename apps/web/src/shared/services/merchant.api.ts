@@ -7,6 +7,8 @@ import { OrderStatus } from '@foodiego/platform-sdk/src/order-status';
 
 export type { Order, MenuItem };
 
+export const MERCHANT_MENU_QUERY_KEY = ['merchant-menu'];
+
 export interface CreateMenuItemDto {
   name: string;
   description?: string;
@@ -35,6 +37,11 @@ export interface UpdateOrderStatusDto {
 
 export const getMerchantMenu = async (): Promise<MenuItem[]> => {
   const response = await api.get('/menus/merchant/items');
+  return response.data.data;
+};
+
+export const getGlobalCategories = async (): Promise<any[]> => {
+  const response = await api.get('/categories');
   return response.data.data;
 };
 

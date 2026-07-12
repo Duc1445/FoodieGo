@@ -27,17 +27,17 @@ const validateUpdate = [
   body('display_order').optional().isInt(),
 ];
 
-router.get('/', menuController.getAll.bind(menuController));
+router.get('/items', menuController.getAll.bind(menuController));
 router.get(
   '/merchant/items',
   authenticate,
   authorize('merchant'),
   menuController.getMerchantItems.bind(menuController),
 );
-router.get('/:id', menuController.getById.bind(menuController));
+router.get('/items/:id', menuController.getById.bind(menuController));
 
 router.post(
-  '/',
+  '/items',
   authenticate,
   authorize('admin', 'merchant'),
   validateCreate,
@@ -46,7 +46,7 @@ router.post(
 );
 
 router.put(
-  '/:id',
+  '/items/:id',
   authenticate,
   authorize('admin', 'merchant'),
   validateUpdate,
@@ -55,7 +55,7 @@ router.put(
 );
 
 router.delete(
-  '/:id',
+  '/items/:id',
   authenticate,
   authorize('admin', 'merchant'),
   menuController.softDelete.bind(menuController),

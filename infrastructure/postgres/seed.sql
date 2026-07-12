@@ -84,905 +84,846 @@ ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, latitude = EXCLUDED.latitud
 
 
 -- CATEGORIES
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000001', '00000000-0000-4000-1111-000000000001', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000002', '00000000-0000-4000-1111-000000000001', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000003', '00000000-0000-4000-1111-000000000002', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000004', '00000000-0000-4000-1111-000000000002', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000005', '00000000-0000-4000-1111-000000000003', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000006', '00000000-0000-4000-1111-000000000003', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000007', '00000000-0000-4000-1111-000000000004', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000008', '00000000-0000-4000-1111-000000000004', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000009', '00000000-0000-4000-1111-000000000005', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000010', '00000000-0000-4000-1111-000000000005', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000011', '00000000-0000-4000-1111-000000000006', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000012', '00000000-0000-4000-1111-000000000006', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000013', '00000000-0000-4000-1111-000000000007', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000014', '00000000-0000-4000-1111-000000000007', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000015', '00000000-0000-4000-1111-000000000008', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000016', '00000000-0000-4000-1111-000000000008', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000017', '00000000-0000-4000-1111-000000000009', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000018', '00000000-0000-4000-1111-000000000009', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000019', '00000000-0000-4000-1111-000000000010', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000020', '00000000-0000-4000-1111-000000000010', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000021', '00000000-0000-4000-1111-000000000011', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000022', '00000000-0000-4000-1111-000000000011', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000023', '00000000-0000-4000-1111-000000000012', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000024', '00000000-0000-4000-1111-000000000012', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000025', '00000000-0000-4000-1111-000000000013', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000026', '00000000-0000-4000-1111-000000000013', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000027', '00000000-0000-4000-1111-000000000014', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000028', '00000000-0000-4000-1111-000000000014', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000029', '00000000-0000-4000-1111-000000000015', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000030', '00000000-0000-4000-1111-000000000015', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000031', '00000000-0000-4000-1111-000000000016', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000032', '00000000-0000-4000-1111-000000000016', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000033', '00000000-0000-4000-1111-000000000017', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000034', '00000000-0000-4000-1111-000000000017', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000035', '00000000-0000-4000-1111-000000000018', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000036', '00000000-0000-4000-1111-000000000018', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000037', '00000000-0000-4000-1111-000000000019', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000038', '00000000-0000-4000-1111-000000000019', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
 
-INSERT INTO categories (id, restaurant_id, name, display_order) VALUES 
-('00000000-0000-4000-2222-000000000039', '00000000-0000-4000-1111-000000000020', 'Main Course', 1),
-('00000000-0000-4000-2222-000000000040', '00000000-0000-4000-1111-000000000020', 'Drinks & Desserts', 2)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 -- MENU ITEMS
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000001', '00000000-0000-4000-1111-000000000001', '00000000-0000-4000-2222-000000000001', 'Signature Dish', 'Delicious Signature Dish prepared fresh.', 102000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000001/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000001', '00000000-0000-4000-1111-000000000001', '55555555-5555-5555-5555-555555555555', 'Signature Dish', 'Delicious Signature Dish prepared fresh.', 102000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000001/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000002', '00000000-0000-4000-1111-000000000001', '00000000-0000-4000-2222-000000000001', 'Spicy Noodles', 'Delicious Spicy Noodles prepared fresh.', 84000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000002/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000002', '00000000-0000-4000-1111-000000000001', '11111111-1111-1111-1111-111111111111', 'Spicy Noodles', 'Delicious Spicy Noodles prepared fresh.', 84000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000002/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000003', '00000000-0000-4000-1111-000000000001', '00000000-0000-4000-2222-000000000001', 'Spring Rolls', 'Delicious Spring Rolls prepared fresh.', 126000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000003/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000003', '00000000-0000-4000-1111-000000000001', '55555555-5555-5555-5555-555555555555', 'Spring Rolls', 'Delicious Spring Rolls prepared fresh.', 126000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000003/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000004', '00000000-0000-4000-1111-000000000001', '00000000-0000-4000-2222-000000000001', 'Grilled Pork', 'Delicious Grilled Pork prepared fresh.', 39000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000004/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000004', '00000000-0000-4000-1111-000000000001', '55555555-5555-5555-5555-555555555555', 'Grilled Pork', 'Delicious Grilled Pork prepared fresh.', 39000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000004/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000005', '00000000-0000-4000-1111-000000000001', '00000000-0000-4000-2222-000000000001', 'Fried Rice', 'Delicious Fried Rice prepared fresh.', 76000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000005/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000005', '00000000-0000-4000-1111-000000000001', '11111111-1111-1111-1111-111111111111', 'Fried Rice', 'Delicious Fried Rice prepared fresh.', 76000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000005/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000006', '00000000-0000-4000-1111-000000000001', '00000000-0000-4000-2222-000000000001', 'Papaya Salad', 'Delicious Papaya Salad prepared fresh.', 87000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000006/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000006', '00000000-0000-4000-1111-000000000001', '11111111-1111-1111-1111-111111111111', 'Papaya Salad', 'Delicious Papaya Salad prepared fresh.', 87000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000006/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000007', '00000000-0000-4000-1111-000000000001', '00000000-0000-4000-2222-000000000002', 'Mango Smoothie', 'Delicious Mango Smoothie prepared fresh.', 57000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000007/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000007', '00000000-0000-4000-1111-000000000001', '33333333-3333-3333-3333-333333333333', 'Mango Smoothie', 'Delicious Mango Smoothie prepared fresh.', 57000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000007/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000008', '00000000-0000-4000-1111-000000000001', '00000000-0000-4000-2222-000000000002', 'Iced Coffee', 'Delicious Iced Coffee prepared fresh.', 57000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000008/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000008', '00000000-0000-4000-1111-000000000001', '55555555-5555-5555-5555-555555555555', 'Iced Coffee', 'Delicious Iced Coffee prepared fresh.', 57000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000008/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000009', '00000000-0000-4000-1111-000000000001', '00000000-0000-4000-2222-000000000002', 'Coconut Water', 'Delicious Coconut Water prepared fresh.', 83000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000009/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000009', '00000000-0000-4000-1111-000000000001', '22222222-2222-2222-2222-222222222222', 'Coconut Water', 'Delicious Coconut Water prepared fresh.', 83000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000009/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000010', '00000000-0000-4000-1111-000000000001', '00000000-0000-4000-2222-000000000002', 'Pudding', 'Delicious Pudding prepared fresh.', 66000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000010/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000010', '00000000-0000-4000-1111-000000000001', '11111111-1111-1111-1111-111111111111', 'Pudding', 'Delicious Pudding prepared fresh.', 66000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000010/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000011', '00000000-0000-4000-1111-000000000002', '00000000-0000-4000-2222-000000000003', 'Classic Burger', 'Delicious Classic Burger prepared fresh.', 109000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000011/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000011', '00000000-0000-4000-1111-000000000002', '55555555-5555-5555-5555-555555555555', 'Classic Burger', 'Delicious Classic Burger prepared fresh.', 109000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000011/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000012', '00000000-0000-4000-1111-000000000002', '00000000-0000-4000-2222-000000000003', 'Cheeseburger', 'Delicious Cheeseburger prepared fresh.', 121000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000012/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000012', '00000000-0000-4000-1111-000000000002', '33333333-3333-3333-3333-333333333333', 'Cheeseburger', 'Delicious Cheeseburger prepared fresh.', 121000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000012/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000013', '00000000-0000-4000-1111-000000000002', '00000000-0000-4000-2222-000000000003', 'French Fries', 'Delicious French Fries prepared fresh.', 50000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000013/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000013', '00000000-0000-4000-1111-000000000002', '22222222-2222-2222-2222-222222222222', 'French Fries', 'Delicious French Fries prepared fresh.', 50000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000013/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000014', '00000000-0000-4000-1111-000000000002', '00000000-0000-4000-2222-000000000003', 'Onion Rings', 'Delicious Onion Rings prepared fresh.', 83000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000014/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000014', '00000000-0000-4000-1111-000000000002', '33333333-3333-3333-3333-333333333333', 'Onion Rings', 'Delicious Onion Rings prepared fresh.', 83000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000014/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000015', '00000000-0000-4000-1111-000000000002', '00000000-0000-4000-2222-000000000003', 'Milkshake', 'Delicious Milkshake prepared fresh.', 62000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000015/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000015', '00000000-0000-4000-1111-000000000002', '11111111-1111-1111-1111-111111111111', 'Milkshake', 'Delicious Milkshake prepared fresh.', 62000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000015/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000016', '00000000-0000-4000-1111-000000000002', '00000000-0000-4000-2222-000000000003', 'Chicken Wings', 'Delicious Chicken Wings prepared fresh.', 41000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000016/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000016', '00000000-0000-4000-1111-000000000002', '33333333-3333-3333-3333-333333333333', 'Chicken Wings', 'Delicious Chicken Wings prepared fresh.', 41000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000016/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000017', '00000000-0000-4000-1111-000000000002', '00000000-0000-4000-2222-000000000004', 'BBQ Ribs', 'Delicious BBQ Ribs prepared fresh.', 117000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000017/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000017', '00000000-0000-4000-1111-000000000002', '22222222-2222-2222-2222-222222222222', 'BBQ Ribs', 'Delicious BBQ Ribs prepared fresh.', 117000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000017/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000018', '00000000-0000-4000-1111-000000000002', '00000000-0000-4000-2222-000000000004', 'Caesar Salad', 'Delicious Caesar Salad prepared fresh.', 81000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000018/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000018', '00000000-0000-4000-1111-000000000002', '44444444-4444-4444-4444-444444444444', 'Caesar Salad', 'Delicious Caesar Salad prepared fresh.', 81000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000018/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000019', '00000000-0000-4000-1111-000000000002', '00000000-0000-4000-2222-000000000004', 'Brownie', 'Delicious Brownie prepared fresh.', 115000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000019/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000019', '00000000-0000-4000-1111-000000000002', '44444444-4444-4444-4444-444444444444', 'Brownie', 'Delicious Brownie prepared fresh.', 115000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000019/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000020', '00000000-0000-4000-1111-000000000002', '00000000-0000-4000-2222-000000000004', 'Lemonade', 'Delicious Lemonade prepared fresh.', 55000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000020/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000020', '00000000-0000-4000-1111-000000000002', '33333333-3333-3333-3333-333333333333', 'Lemonade', 'Delicious Lemonade prepared fresh.', 55000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000020/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000021', '00000000-0000-4000-1111-000000000003', '00000000-0000-4000-2222-000000000005', 'Margherita Pizza', 'Delicious Margherita Pizza prepared fresh.', 38000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000021/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000021', '00000000-0000-4000-1111-000000000003', '22222222-2222-2222-2222-222222222222', 'Margherita Pizza', 'Delicious Margherita Pizza prepared fresh.', 38000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000021/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000022', '00000000-0000-4000-1111-000000000003', '00000000-0000-4000-2222-000000000005', 'Pepperoni Pizza', 'Delicious Pepperoni Pizza prepared fresh.', 104000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000022/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000022', '00000000-0000-4000-1111-000000000003', '11111111-1111-1111-1111-111111111111', 'Pepperoni Pizza', 'Delicious Pepperoni Pizza prepared fresh.', 104000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000022/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000023', '00000000-0000-4000-1111-000000000003', '00000000-0000-4000-2222-000000000005', 'Pasta Carbonara', 'Delicious Pasta Carbonara prepared fresh.', 42000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000023/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000023', '00000000-0000-4000-1111-000000000003', '55555555-5555-5555-5555-555555555555', 'Pasta Carbonara', 'Delicious Pasta Carbonara prepared fresh.', 42000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000023/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000024', '00000000-0000-4000-1111-000000000003', '00000000-0000-4000-2222-000000000005', 'Tiramisu', 'Delicious Tiramisu prepared fresh.', 67000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000024/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000024', '00000000-0000-4000-1111-000000000003', '22222222-2222-2222-2222-222222222222', 'Tiramisu', 'Delicious Tiramisu prepared fresh.', 67000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000024/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000025', '00000000-0000-4000-1111-000000000003', '00000000-0000-4000-2222-000000000005', 'Garlic Bread', 'Delicious Garlic Bread prepared fresh.', 63000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000025/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000025', '00000000-0000-4000-1111-000000000003', '55555555-5555-5555-5555-555555555555', 'Garlic Bread', 'Delicious Garlic Bread prepared fresh.', 63000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000025/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000026', '00000000-0000-4000-1111-000000000003', '00000000-0000-4000-2222-000000000005', 'Minestrone Soup', 'Delicious Minestrone Soup prepared fresh.', 77000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000026/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000026', '00000000-0000-4000-1111-000000000003', '44444444-4444-4444-4444-444444444444', 'Minestrone Soup', 'Delicious Minestrone Soup prepared fresh.', 77000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000026/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000027', '00000000-0000-4000-1111-000000000003', '00000000-0000-4000-2222-000000000006', 'Caprese Salad', 'Delicious Caprese Salad prepared fresh.', 39000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000027/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000027', '00000000-0000-4000-1111-000000000003', '33333333-3333-3333-3333-333333333333', 'Caprese Salad', 'Delicious Caprese Salad prepared fresh.', 39000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000027/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000028', '00000000-0000-4000-1111-000000000003', '00000000-0000-4000-2222-000000000006', 'Espresso', 'Delicious Espresso prepared fresh.', 103000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000028/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000028', '00000000-0000-4000-1111-000000000003', '55555555-5555-5555-5555-555555555555', 'Espresso', 'Delicious Espresso prepared fresh.', 103000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000028/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000029', '00000000-0000-4000-1111-000000000003', '00000000-0000-4000-2222-000000000006', 'Gelato', 'Delicious Gelato prepared fresh.', 65000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000029/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000029', '00000000-0000-4000-1111-000000000003', '33333333-3333-3333-3333-333333333333', 'Gelato', 'Delicious Gelato prepared fresh.', 65000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000029/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000030', '00000000-0000-4000-1111-000000000003', '00000000-0000-4000-2222-000000000006', 'Risotto', 'Delicious Risotto prepared fresh.', 103000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000030/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000030', '00000000-0000-4000-1111-000000000003', '22222222-2222-2222-2222-222222222222', 'Risotto', 'Delicious Risotto prepared fresh.', 103000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000030/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000031', '00000000-0000-4000-1111-000000000004', '00000000-0000-4000-2222-000000000007', 'Salmon Sashimi', 'Delicious Salmon Sashimi prepared fresh.', 53000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000031/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000031', '00000000-0000-4000-1111-000000000004', '44444444-4444-4444-4444-444444444444', 'Salmon Sashimi', 'Delicious Salmon Sashimi prepared fresh.', 53000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000031/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000032', '00000000-0000-4000-1111-000000000004', '00000000-0000-4000-2222-000000000007', 'Tuna Nigiri', 'Delicious Tuna Nigiri prepared fresh.', 60000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000032/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000032', '00000000-0000-4000-1111-000000000004', '11111111-1111-1111-1111-111111111111', 'Tuna Nigiri', 'Delicious Tuna Nigiri prepared fresh.', 60000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000032/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000033', '00000000-0000-4000-1111-000000000004', '00000000-0000-4000-2222-000000000007', 'California Roll', 'Delicious California Roll prepared fresh.', 40000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000033/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000033', '00000000-0000-4000-1111-000000000004', '44444444-4444-4444-4444-444444444444', 'California Roll', 'Delicious California Roll prepared fresh.', 40000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000033/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000034', '00000000-0000-4000-1111-000000000004', '00000000-0000-4000-2222-000000000007', 'Miso Soup', 'Delicious Miso Soup prepared fresh.', 121000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000034/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000034', '00000000-0000-4000-1111-000000000004', '22222222-2222-2222-2222-222222222222', 'Miso Soup', 'Delicious Miso Soup prepared fresh.', 121000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000034/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000035', '00000000-0000-4000-1111-000000000004', '00000000-0000-4000-2222-000000000007', 'Edamame', 'Delicious Edamame prepared fresh.', 115000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000035/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000035', '00000000-0000-4000-1111-000000000004', '33333333-3333-3333-3333-333333333333', 'Edamame', 'Delicious Edamame prepared fresh.', 115000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000035/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000036', '00000000-0000-4000-1111-000000000004', '00000000-0000-4000-2222-000000000007', 'Tempura', 'Delicious Tempura prepared fresh.', 75000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000036/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000036', '00000000-0000-4000-1111-000000000004', '22222222-2222-2222-2222-222222222222', 'Tempura', 'Delicious Tempura prepared fresh.', 75000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000036/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000037', '00000000-0000-4000-1111-000000000004', '00000000-0000-4000-2222-000000000008', 'Teriyaki Chicken', 'Delicious Teriyaki Chicken prepared fresh.', 86000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000037/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000037', '00000000-0000-4000-1111-000000000004', '55555555-5555-5555-5555-555555555555', 'Teriyaki Chicken', 'Delicious Teriyaki Chicken prepared fresh.', 86000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000037/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000038', '00000000-0000-4000-1111-000000000004', '00000000-0000-4000-2222-000000000008', 'Green Tea', 'Delicious Green Tea prepared fresh.', 95000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000038/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000038', '00000000-0000-4000-1111-000000000004', '44444444-4444-4444-4444-444444444444', 'Green Tea', 'Delicious Green Tea prepared fresh.', 95000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000038/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000039', '00000000-0000-4000-1111-000000000004', '00000000-0000-4000-2222-000000000008', 'Mochi', 'Delicious Mochi prepared fresh.', 52000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000039/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000039', '00000000-0000-4000-1111-000000000004', '55555555-5555-5555-5555-555555555555', 'Mochi', 'Delicious Mochi prepared fresh.', 52000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000039/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000040', '00000000-0000-4000-1111-000000000004', '00000000-0000-4000-2222-000000000008', 'Udon', 'Delicious Udon prepared fresh.', 118000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000040/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000040', '00000000-0000-4000-1111-000000000004', '44444444-4444-4444-4444-444444444444', 'Udon', 'Delicious Udon prepared fresh.', 118000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000040/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000041', '00000000-0000-4000-1111-000000000005', '00000000-0000-4000-2222-000000000009', 'Signature Dish', 'Delicious Signature Dish prepared fresh.', 100000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000041/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000041', '00000000-0000-4000-1111-000000000005', '11111111-1111-1111-1111-111111111111', 'Signature Dish', 'Delicious Signature Dish prepared fresh.', 100000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000041/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000042', '00000000-0000-4000-1111-000000000005', '00000000-0000-4000-2222-000000000009', 'Spicy Noodles', 'Delicious Spicy Noodles prepared fresh.', 44000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000042/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000042', '00000000-0000-4000-1111-000000000005', '44444444-4444-4444-4444-444444444444', 'Spicy Noodles', 'Delicious Spicy Noodles prepared fresh.', 44000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000042/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000043', '00000000-0000-4000-1111-000000000005', '00000000-0000-4000-2222-000000000009', 'Spring Rolls', 'Delicious Spring Rolls prepared fresh.', 81000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000043/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000043', '00000000-0000-4000-1111-000000000005', '55555555-5555-5555-5555-555555555555', 'Spring Rolls', 'Delicious Spring Rolls prepared fresh.', 81000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000043/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000044', '00000000-0000-4000-1111-000000000005', '00000000-0000-4000-2222-000000000009', 'Grilled Pork', 'Delicious Grilled Pork prepared fresh.', 41000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000044/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000044', '00000000-0000-4000-1111-000000000005', '22222222-2222-2222-2222-222222222222', 'Grilled Pork', 'Delicious Grilled Pork prepared fresh.', 41000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000044/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000045', '00000000-0000-4000-1111-000000000005', '00000000-0000-4000-2222-000000000009', 'Fried Rice', 'Delicious Fried Rice prepared fresh.', 110000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000045/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000045', '00000000-0000-4000-1111-000000000005', '44444444-4444-4444-4444-444444444444', 'Fried Rice', 'Delicious Fried Rice prepared fresh.', 110000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000045/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000046', '00000000-0000-4000-1111-000000000005', '00000000-0000-4000-2222-000000000009', 'Papaya Salad', 'Delicious Papaya Salad prepared fresh.', 34000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000046/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000046', '00000000-0000-4000-1111-000000000005', '22222222-2222-2222-2222-222222222222', 'Papaya Salad', 'Delicious Papaya Salad prepared fresh.', 34000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000046/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000047', '00000000-0000-4000-1111-000000000005', '00000000-0000-4000-2222-000000000010', 'Mango Smoothie', 'Delicious Mango Smoothie prepared fresh.', 120000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000047/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000047', '00000000-0000-4000-1111-000000000005', '55555555-5555-5555-5555-555555555555', 'Mango Smoothie', 'Delicious Mango Smoothie prepared fresh.', 120000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000047/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000048', '00000000-0000-4000-1111-000000000005', '00000000-0000-4000-2222-000000000010', 'Iced Coffee', 'Delicious Iced Coffee prepared fresh.', 80000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000048/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000048', '00000000-0000-4000-1111-000000000005', '44444444-4444-4444-4444-444444444444', 'Iced Coffee', 'Delicious Iced Coffee prepared fresh.', 80000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000048/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000049', '00000000-0000-4000-1111-000000000005', '00000000-0000-4000-2222-000000000010', 'Coconut Water', 'Delicious Coconut Water prepared fresh.', 121000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000049/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000049', '00000000-0000-4000-1111-000000000005', '11111111-1111-1111-1111-111111111111', 'Coconut Water', 'Delicious Coconut Water prepared fresh.', 121000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000049/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000050', '00000000-0000-4000-1111-000000000005', '00000000-0000-4000-2222-000000000010', 'Pudding', 'Delicious Pudding prepared fresh.', 93000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000050/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000050', '00000000-0000-4000-1111-000000000005', '33333333-3333-3333-3333-333333333333', 'Pudding', 'Delicious Pudding prepared fresh.', 93000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000050/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000051', '00000000-0000-4000-1111-000000000006', '00000000-0000-4000-2222-000000000011', 'Classic Burger', 'Delicious Classic Burger prepared fresh.', 101000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000051/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000051', '00000000-0000-4000-1111-000000000006', '11111111-1111-1111-1111-111111111111', 'Classic Burger', 'Delicious Classic Burger prepared fresh.', 101000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000051/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000052', '00000000-0000-4000-1111-000000000006', '00000000-0000-4000-2222-000000000011', 'Cheeseburger', 'Delicious Cheeseburger prepared fresh.', 52000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000052/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000052', '00000000-0000-4000-1111-000000000006', '22222222-2222-2222-2222-222222222222', 'Cheeseburger', 'Delicious Cheeseburger prepared fresh.', 52000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000052/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000053', '00000000-0000-4000-1111-000000000006', '00000000-0000-4000-2222-000000000011', 'French Fries', 'Delicious French Fries prepared fresh.', 110000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000053/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000053', '00000000-0000-4000-1111-000000000006', '11111111-1111-1111-1111-111111111111', 'French Fries', 'Delicious French Fries prepared fresh.', 110000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000053/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000054', '00000000-0000-4000-1111-000000000006', '00000000-0000-4000-2222-000000000011', 'Onion Rings', 'Delicious Onion Rings prepared fresh.', 88000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000054/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000054', '00000000-0000-4000-1111-000000000006', '11111111-1111-1111-1111-111111111111', 'Onion Rings', 'Delicious Onion Rings prepared fresh.', 88000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000054/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000055', '00000000-0000-4000-1111-000000000006', '00000000-0000-4000-2222-000000000011', 'Milkshake', 'Delicious Milkshake prepared fresh.', 91000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000055/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000055', '00000000-0000-4000-1111-000000000006', '55555555-5555-5555-5555-555555555555', 'Milkshake', 'Delicious Milkshake prepared fresh.', 91000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000055/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000056', '00000000-0000-4000-1111-000000000006', '00000000-0000-4000-2222-000000000011', 'Chicken Wings', 'Delicious Chicken Wings prepared fresh.', 60000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000056/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000056', '00000000-0000-4000-1111-000000000006', '44444444-4444-4444-4444-444444444444', 'Chicken Wings', 'Delicious Chicken Wings prepared fresh.', 60000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000056/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000057', '00000000-0000-4000-1111-000000000006', '00000000-0000-4000-2222-000000000012', 'BBQ Ribs', 'Delicious BBQ Ribs prepared fresh.', 80000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000057/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000057', '00000000-0000-4000-1111-000000000006', '55555555-5555-5555-5555-555555555555', 'BBQ Ribs', 'Delicious BBQ Ribs prepared fresh.', 80000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000057/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000058', '00000000-0000-4000-1111-000000000006', '00000000-0000-4000-2222-000000000012', 'Caesar Salad', 'Delicious Caesar Salad prepared fresh.', 60000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000058/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000058', '00000000-0000-4000-1111-000000000006', '44444444-4444-4444-4444-444444444444', 'Caesar Salad', 'Delicious Caesar Salad prepared fresh.', 60000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000058/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000059', '00000000-0000-4000-1111-000000000006', '00000000-0000-4000-2222-000000000012', 'Brownie', 'Delicious Brownie prepared fresh.', 90000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000059/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000059', '00000000-0000-4000-1111-000000000006', '22222222-2222-2222-2222-222222222222', 'Brownie', 'Delicious Brownie prepared fresh.', 90000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000059/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000060', '00000000-0000-4000-1111-000000000006', '00000000-0000-4000-2222-000000000012', 'Lemonade', 'Delicious Lemonade prepared fresh.', 90000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000060/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000060', '00000000-0000-4000-1111-000000000006', '44444444-4444-4444-4444-444444444444', 'Lemonade', 'Delicious Lemonade prepared fresh.', 90000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000060/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000061', '00000000-0000-4000-1111-000000000007', '00000000-0000-4000-2222-000000000013', 'Margherita Pizza', 'Delicious Margherita Pizza prepared fresh.', 53000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000061/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000061', '00000000-0000-4000-1111-000000000007', '22222222-2222-2222-2222-222222222222', 'Margherita Pizza', 'Delicious Margherita Pizza prepared fresh.', 53000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000061/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000062', '00000000-0000-4000-1111-000000000007', '00000000-0000-4000-2222-000000000013', 'Pepperoni Pizza', 'Delicious Pepperoni Pizza prepared fresh.', 53000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000062/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000062', '00000000-0000-4000-1111-000000000007', '22222222-2222-2222-2222-222222222222', 'Pepperoni Pizza', 'Delicious Pepperoni Pizza prepared fresh.', 53000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000062/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000063', '00000000-0000-4000-1111-000000000007', '00000000-0000-4000-2222-000000000013', 'Pasta Carbonara', 'Delicious Pasta Carbonara prepared fresh.', 107000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000063/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000063', '00000000-0000-4000-1111-000000000007', '44444444-4444-4444-4444-444444444444', 'Pasta Carbonara', 'Delicious Pasta Carbonara prepared fresh.', 107000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000063/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000064', '00000000-0000-4000-1111-000000000007', '00000000-0000-4000-2222-000000000013', 'Tiramisu', 'Delicious Tiramisu prepared fresh.', 69000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000064/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000064', '00000000-0000-4000-1111-000000000007', '11111111-1111-1111-1111-111111111111', 'Tiramisu', 'Delicious Tiramisu prepared fresh.', 69000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000064/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000065', '00000000-0000-4000-1111-000000000007', '00000000-0000-4000-2222-000000000013', 'Garlic Bread', 'Delicious Garlic Bread prepared fresh.', 52000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000065/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000065', '00000000-0000-4000-1111-000000000007', '11111111-1111-1111-1111-111111111111', 'Garlic Bread', 'Delicious Garlic Bread prepared fresh.', 52000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000065/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000066', '00000000-0000-4000-1111-000000000007', '00000000-0000-4000-2222-000000000013', 'Minestrone Soup', 'Delicious Minestrone Soup prepared fresh.', 45000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000066/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000066', '00000000-0000-4000-1111-000000000007', '22222222-2222-2222-2222-222222222222', 'Minestrone Soup', 'Delicious Minestrone Soup prepared fresh.', 45000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000066/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000067', '00000000-0000-4000-1111-000000000007', '00000000-0000-4000-2222-000000000014', 'Caprese Salad', 'Delicious Caprese Salad prepared fresh.', 118000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000067/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000067', '00000000-0000-4000-1111-000000000007', '11111111-1111-1111-1111-111111111111', 'Caprese Salad', 'Delicious Caprese Salad prepared fresh.', 118000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000067/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000068', '00000000-0000-4000-1111-000000000007', '00000000-0000-4000-2222-000000000014', 'Espresso', 'Delicious Espresso prepared fresh.', 58000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000068/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000068', '00000000-0000-4000-1111-000000000007', '55555555-5555-5555-5555-555555555555', 'Espresso', 'Delicious Espresso prepared fresh.', 58000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000068/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000069', '00000000-0000-4000-1111-000000000007', '00000000-0000-4000-2222-000000000014', 'Gelato', 'Delicious Gelato prepared fresh.', 86000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000069/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000069', '00000000-0000-4000-1111-000000000007', '33333333-3333-3333-3333-333333333333', 'Gelato', 'Delicious Gelato prepared fresh.', 86000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000069/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000070', '00000000-0000-4000-1111-000000000007', '00000000-0000-4000-2222-000000000014', 'Risotto', 'Delicious Risotto prepared fresh.', 117000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000070/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000070', '00000000-0000-4000-1111-000000000007', '11111111-1111-1111-1111-111111111111', 'Risotto', 'Delicious Risotto prepared fresh.', 117000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000070/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000071', '00000000-0000-4000-1111-000000000008', '00000000-0000-4000-2222-000000000015', 'Salmon Sashimi', 'Delicious Salmon Sashimi prepared fresh.', 108000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000071/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000071', '00000000-0000-4000-1111-000000000008', '33333333-3333-3333-3333-333333333333', 'Salmon Sashimi', 'Delicious Salmon Sashimi prepared fresh.', 108000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000071/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000072', '00000000-0000-4000-1111-000000000008', '00000000-0000-4000-2222-000000000015', 'Tuna Nigiri', 'Delicious Tuna Nigiri prepared fresh.', 56000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000072/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000072', '00000000-0000-4000-1111-000000000008', '11111111-1111-1111-1111-111111111111', 'Tuna Nigiri', 'Delicious Tuna Nigiri prepared fresh.', 56000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000072/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000073', '00000000-0000-4000-1111-000000000008', '00000000-0000-4000-2222-000000000015', 'California Roll', 'Delicious California Roll prepared fresh.', 92000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000073/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000073', '00000000-0000-4000-1111-000000000008', '11111111-1111-1111-1111-111111111111', 'California Roll', 'Delicious California Roll prepared fresh.', 92000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000073/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000074', '00000000-0000-4000-1111-000000000008', '00000000-0000-4000-2222-000000000015', 'Miso Soup', 'Delicious Miso Soup prepared fresh.', 122000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000074/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000074', '00000000-0000-4000-1111-000000000008', '44444444-4444-4444-4444-444444444444', 'Miso Soup', 'Delicious Miso Soup prepared fresh.', 122000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000074/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000075', '00000000-0000-4000-1111-000000000008', '00000000-0000-4000-2222-000000000015', 'Edamame', 'Delicious Edamame prepared fresh.', 53000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000075/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000075', '00000000-0000-4000-1111-000000000008', '33333333-3333-3333-3333-333333333333', 'Edamame', 'Delicious Edamame prepared fresh.', 53000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000075/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000076', '00000000-0000-4000-1111-000000000008', '00000000-0000-4000-2222-000000000015', 'Tempura', 'Delicious Tempura prepared fresh.', 72000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000076/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000076', '00000000-0000-4000-1111-000000000008', '11111111-1111-1111-1111-111111111111', 'Tempura', 'Delicious Tempura prepared fresh.', 72000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000076/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000077', '00000000-0000-4000-1111-000000000008', '00000000-0000-4000-2222-000000000016', 'Teriyaki Chicken', 'Delicious Teriyaki Chicken prepared fresh.', 53000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000077/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000077', '00000000-0000-4000-1111-000000000008', '33333333-3333-3333-3333-333333333333', 'Teriyaki Chicken', 'Delicious Teriyaki Chicken prepared fresh.', 53000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000077/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000078', '00000000-0000-4000-1111-000000000008', '00000000-0000-4000-2222-000000000016', 'Green Tea', 'Delicious Green Tea prepared fresh.', 81000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000078/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000078', '00000000-0000-4000-1111-000000000008', '11111111-1111-1111-1111-111111111111', 'Green Tea', 'Delicious Green Tea prepared fresh.', 81000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000078/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000079', '00000000-0000-4000-1111-000000000008', '00000000-0000-4000-2222-000000000016', 'Mochi', 'Delicious Mochi prepared fresh.', 46000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000079/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000079', '00000000-0000-4000-1111-000000000008', '55555555-5555-5555-5555-555555555555', 'Mochi', 'Delicious Mochi prepared fresh.', 46000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000079/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000080', '00000000-0000-4000-1111-000000000008', '00000000-0000-4000-2222-000000000016', 'Udon', 'Delicious Udon prepared fresh.', 101000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000080/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000080', '00000000-0000-4000-1111-000000000008', '33333333-3333-3333-3333-333333333333', 'Udon', 'Delicious Udon prepared fresh.', 101000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000080/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000081', '00000000-0000-4000-1111-000000000009', '00000000-0000-4000-2222-000000000017', 'Signature Dish', 'Delicious Signature Dish prepared fresh.', 37000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000081/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000081', '00000000-0000-4000-1111-000000000009', '22222222-2222-2222-2222-222222222222', 'Signature Dish', 'Delicious Signature Dish prepared fresh.', 37000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000081/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000082', '00000000-0000-4000-1111-000000000009', '00000000-0000-4000-2222-000000000017', 'Spicy Noodles', 'Delicious Spicy Noodles prepared fresh.', 57000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000082/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000082', '00000000-0000-4000-1111-000000000009', '55555555-5555-5555-5555-555555555555', 'Spicy Noodles', 'Delicious Spicy Noodles prepared fresh.', 57000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000082/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000083', '00000000-0000-4000-1111-000000000009', '00000000-0000-4000-2222-000000000017', 'Spring Rolls', 'Delicious Spring Rolls prepared fresh.', 91000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000083/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000083', '00000000-0000-4000-1111-000000000009', '55555555-5555-5555-5555-555555555555', 'Spring Rolls', 'Delicious Spring Rolls prepared fresh.', 91000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000083/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000084', '00000000-0000-4000-1111-000000000009', '00000000-0000-4000-2222-000000000017', 'Grilled Pork', 'Delicious Grilled Pork prepared fresh.', 41000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000084/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000084', '00000000-0000-4000-1111-000000000009', '22222222-2222-2222-2222-222222222222', 'Grilled Pork', 'Delicious Grilled Pork prepared fresh.', 41000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000084/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000085', '00000000-0000-4000-1111-000000000009', '00000000-0000-4000-2222-000000000017', 'Fried Rice', 'Delicious Fried Rice prepared fresh.', 61000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000085/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000085', '00000000-0000-4000-1111-000000000009', '55555555-5555-5555-5555-555555555555', 'Fried Rice', 'Delicious Fried Rice prepared fresh.', 61000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000085/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000086', '00000000-0000-4000-1111-000000000009', '00000000-0000-4000-2222-000000000017', 'Papaya Salad', 'Delicious Papaya Salad prepared fresh.', 69000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000086/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000086', '00000000-0000-4000-1111-000000000009', '44444444-4444-4444-4444-444444444444', 'Papaya Salad', 'Delicious Papaya Salad prepared fresh.', 69000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000086/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000087', '00000000-0000-4000-1111-000000000009', '00000000-0000-4000-2222-000000000018', 'Mango Smoothie', 'Delicious Mango Smoothie prepared fresh.', 97000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000087/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000087', '00000000-0000-4000-1111-000000000009', '55555555-5555-5555-5555-555555555555', 'Mango Smoothie', 'Delicious Mango Smoothie prepared fresh.', 97000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000087/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000088', '00000000-0000-4000-1111-000000000009', '00000000-0000-4000-2222-000000000018', 'Iced Coffee', 'Delicious Iced Coffee prepared fresh.', 93000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000088/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000088', '00000000-0000-4000-1111-000000000009', '44444444-4444-4444-4444-444444444444', 'Iced Coffee', 'Delicious Iced Coffee prepared fresh.', 93000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000088/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000089', '00000000-0000-4000-1111-000000000009', '00000000-0000-4000-2222-000000000018', 'Coconut Water', 'Delicious Coconut Water prepared fresh.', 129000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000089/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000089', '00000000-0000-4000-1111-000000000009', '33333333-3333-3333-3333-333333333333', 'Coconut Water', 'Delicious Coconut Water prepared fresh.', 129000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000089/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000090', '00000000-0000-4000-1111-000000000009', '00000000-0000-4000-2222-000000000018', 'Pudding', 'Delicious Pudding prepared fresh.', 102000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000090/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000090', '00000000-0000-4000-1111-000000000009', '33333333-3333-3333-3333-333333333333', 'Pudding', 'Delicious Pudding prepared fresh.', 102000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000090/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000091', '00000000-0000-4000-1111-000000000010', '00000000-0000-4000-2222-000000000019', 'Classic Burger', 'Delicious Classic Burger prepared fresh.', 35000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000091/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000091', '00000000-0000-4000-1111-000000000010', '55555555-5555-5555-5555-555555555555', 'Classic Burger', 'Delicious Classic Burger prepared fresh.', 35000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000091/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000092', '00000000-0000-4000-1111-000000000010', '00000000-0000-4000-2222-000000000019', 'Cheeseburger', 'Delicious Cheeseburger prepared fresh.', 116000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000092/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000092', '00000000-0000-4000-1111-000000000010', '55555555-5555-5555-5555-555555555555', 'Cheeseburger', 'Delicious Cheeseburger prepared fresh.', 116000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000092/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000093', '00000000-0000-4000-1111-000000000010', '00000000-0000-4000-2222-000000000019', 'French Fries', 'Delicious French Fries prepared fresh.', 129000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000093/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000093', '00000000-0000-4000-1111-000000000010', '22222222-2222-2222-2222-222222222222', 'French Fries', 'Delicious French Fries prepared fresh.', 129000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000093/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000094', '00000000-0000-4000-1111-000000000010', '00000000-0000-4000-2222-000000000019', 'Onion Rings', 'Delicious Onion Rings prepared fresh.', 67000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000094/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000094', '00000000-0000-4000-1111-000000000010', '11111111-1111-1111-1111-111111111111', 'Onion Rings', 'Delicious Onion Rings prepared fresh.', 67000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000094/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000095', '00000000-0000-4000-1111-000000000010', '00000000-0000-4000-2222-000000000019', 'Milkshake', 'Delicious Milkshake prepared fresh.', 85000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000095/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000095', '00000000-0000-4000-1111-000000000010', '11111111-1111-1111-1111-111111111111', 'Milkshake', 'Delicious Milkshake prepared fresh.', 85000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000095/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000096', '00000000-0000-4000-1111-000000000010', '00000000-0000-4000-2222-000000000019', 'Chicken Wings', 'Delicious Chicken Wings prepared fresh.', 102000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000096/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000096', '00000000-0000-4000-1111-000000000010', '55555555-5555-5555-5555-555555555555', 'Chicken Wings', 'Delicious Chicken Wings prepared fresh.', 102000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000096/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000097', '00000000-0000-4000-1111-000000000010', '00000000-0000-4000-2222-000000000020', 'BBQ Ribs', 'Delicious BBQ Ribs prepared fresh.', 109000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000097/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000097', '00000000-0000-4000-1111-000000000010', '55555555-5555-5555-5555-555555555555', 'BBQ Ribs', 'Delicious BBQ Ribs prepared fresh.', 109000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000097/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000098', '00000000-0000-4000-1111-000000000010', '00000000-0000-4000-2222-000000000020', 'Caesar Salad', 'Delicious Caesar Salad prepared fresh.', 85000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000098/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000098', '00000000-0000-4000-1111-000000000010', '55555555-5555-5555-5555-555555555555', 'Caesar Salad', 'Delicious Caesar Salad prepared fresh.', 85000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000098/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000099', '00000000-0000-4000-1111-000000000010', '00000000-0000-4000-2222-000000000020', 'Brownie', 'Delicious Brownie prepared fresh.', 37000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000099/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000099', '00000000-0000-4000-1111-000000000010', '11111111-1111-1111-1111-111111111111', 'Brownie', 'Delicious Brownie prepared fresh.', 37000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000099/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000100', '00000000-0000-4000-1111-000000000010', '00000000-0000-4000-2222-000000000020', 'Lemonade', 'Delicious Lemonade prepared fresh.', 125000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000100/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000100', '00000000-0000-4000-1111-000000000010', '55555555-5555-5555-5555-555555555555', 'Lemonade', 'Delicious Lemonade prepared fresh.', 125000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000100/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000101', '00000000-0000-4000-1111-000000000011', '00000000-0000-4000-2222-000000000021', 'Margherita Pizza', 'Delicious Margherita Pizza prepared fresh.', 36000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000101/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000101', '00000000-0000-4000-1111-000000000011', '55555555-5555-5555-5555-555555555555', 'Margherita Pizza', 'Delicious Margherita Pizza prepared fresh.', 36000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000101/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000102', '00000000-0000-4000-1111-000000000011', '00000000-0000-4000-2222-000000000021', 'Pepperoni Pizza', 'Delicious Pepperoni Pizza prepared fresh.', 101000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000102/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000102', '00000000-0000-4000-1111-000000000011', '44444444-4444-4444-4444-444444444444', 'Pepperoni Pizza', 'Delicious Pepperoni Pizza prepared fresh.', 101000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000102/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000103', '00000000-0000-4000-1111-000000000011', '00000000-0000-4000-2222-000000000021', 'Pasta Carbonara', 'Delicious Pasta Carbonara prepared fresh.', 124000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000103/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000103', '00000000-0000-4000-1111-000000000011', '22222222-2222-2222-2222-222222222222', 'Pasta Carbonara', 'Delicious Pasta Carbonara prepared fresh.', 124000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000103/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000104', '00000000-0000-4000-1111-000000000011', '00000000-0000-4000-2222-000000000021', 'Tiramisu', 'Delicious Tiramisu prepared fresh.', 37000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000104/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000104', '00000000-0000-4000-1111-000000000011', '44444444-4444-4444-4444-444444444444', 'Tiramisu', 'Delicious Tiramisu prepared fresh.', 37000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000104/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000105', '00000000-0000-4000-1111-000000000011', '00000000-0000-4000-2222-000000000021', 'Garlic Bread', 'Delicious Garlic Bread prepared fresh.', 53000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000105/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000105', '00000000-0000-4000-1111-000000000011', '33333333-3333-3333-3333-333333333333', 'Garlic Bread', 'Delicious Garlic Bread prepared fresh.', 53000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000105/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000106', '00000000-0000-4000-1111-000000000011', '00000000-0000-4000-2222-000000000021', 'Minestrone Soup', 'Delicious Minestrone Soup prepared fresh.', 39000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000106/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000106', '00000000-0000-4000-1111-000000000011', '55555555-5555-5555-5555-555555555555', 'Minestrone Soup', 'Delicious Minestrone Soup prepared fresh.', 39000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000106/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000107', '00000000-0000-4000-1111-000000000011', '00000000-0000-4000-2222-000000000022', 'Caprese Salad', 'Delicious Caprese Salad prepared fresh.', 78000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000107/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000107', '00000000-0000-4000-1111-000000000011', '11111111-1111-1111-1111-111111111111', 'Caprese Salad', 'Delicious Caprese Salad prepared fresh.', 78000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000107/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000108', '00000000-0000-4000-1111-000000000011', '00000000-0000-4000-2222-000000000022', 'Espresso', 'Delicious Espresso prepared fresh.', 34000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000108/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000108', '00000000-0000-4000-1111-000000000011', '11111111-1111-1111-1111-111111111111', 'Espresso', 'Delicious Espresso prepared fresh.', 34000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000108/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000109', '00000000-0000-4000-1111-000000000011', '00000000-0000-4000-2222-000000000022', 'Gelato', 'Delicious Gelato prepared fresh.', 91000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000109/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000109', '00000000-0000-4000-1111-000000000011', '22222222-2222-2222-2222-222222222222', 'Gelato', 'Delicious Gelato prepared fresh.', 91000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000109/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000110', '00000000-0000-4000-1111-000000000011', '00000000-0000-4000-2222-000000000022', 'Risotto', 'Delicious Risotto prepared fresh.', 122000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000110/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000110', '00000000-0000-4000-1111-000000000011', '44444444-4444-4444-4444-444444444444', 'Risotto', 'Delicious Risotto prepared fresh.', 122000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000110/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000111', '00000000-0000-4000-1111-000000000012', '00000000-0000-4000-2222-000000000023', 'Salmon Sashimi', 'Delicious Salmon Sashimi prepared fresh.', 111000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000111/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000111', '00000000-0000-4000-1111-000000000012', '11111111-1111-1111-1111-111111111111', 'Salmon Sashimi', 'Delicious Salmon Sashimi prepared fresh.', 111000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000111/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000112', '00000000-0000-4000-1111-000000000012', '00000000-0000-4000-2222-000000000023', 'Tuna Nigiri', 'Delicious Tuna Nigiri prepared fresh.', 79000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000112/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000112', '00000000-0000-4000-1111-000000000012', '44444444-4444-4444-4444-444444444444', 'Tuna Nigiri', 'Delicious Tuna Nigiri prepared fresh.', 79000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000112/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000113', '00000000-0000-4000-1111-000000000012', '00000000-0000-4000-2222-000000000023', 'California Roll', 'Delicious California Roll prepared fresh.', 114000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000113/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000113', '00000000-0000-4000-1111-000000000012', '11111111-1111-1111-1111-111111111111', 'California Roll', 'Delicious California Roll prepared fresh.', 114000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000113/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000114', '00000000-0000-4000-1111-000000000012', '00000000-0000-4000-2222-000000000023', 'Miso Soup', 'Delicious Miso Soup prepared fresh.', 97000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000114/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000114', '00000000-0000-4000-1111-000000000012', '55555555-5555-5555-5555-555555555555', 'Miso Soup', 'Delicious Miso Soup prepared fresh.', 97000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000114/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000115', '00000000-0000-4000-1111-000000000012', '00000000-0000-4000-2222-000000000023', 'Edamame', 'Delicious Edamame prepared fresh.', 89000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000115/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000115', '00000000-0000-4000-1111-000000000012', '55555555-5555-5555-5555-555555555555', 'Edamame', 'Delicious Edamame prepared fresh.', 89000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000115/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000116', '00000000-0000-4000-1111-000000000012', '00000000-0000-4000-2222-000000000023', 'Tempura', 'Delicious Tempura prepared fresh.', 33000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000116/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000116', '00000000-0000-4000-1111-000000000012', '11111111-1111-1111-1111-111111111111', 'Tempura', 'Delicious Tempura prepared fresh.', 33000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000116/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000117', '00000000-0000-4000-1111-000000000012', '00000000-0000-4000-2222-000000000024', 'Teriyaki Chicken', 'Delicious Teriyaki Chicken prepared fresh.', 45000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000117/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000117', '00000000-0000-4000-1111-000000000012', '11111111-1111-1111-1111-111111111111', 'Teriyaki Chicken', 'Delicious Teriyaki Chicken prepared fresh.', 45000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000117/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000118', '00000000-0000-4000-1111-000000000012', '00000000-0000-4000-2222-000000000024', 'Green Tea', 'Delicious Green Tea prepared fresh.', 85000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000118/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000118', '00000000-0000-4000-1111-000000000012', '22222222-2222-2222-2222-222222222222', 'Green Tea', 'Delicious Green Tea prepared fresh.', 85000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000118/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000119', '00000000-0000-4000-1111-000000000012', '00000000-0000-4000-2222-000000000024', 'Mochi', 'Delicious Mochi prepared fresh.', 97000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000119/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000119', '00000000-0000-4000-1111-000000000012', '33333333-3333-3333-3333-333333333333', 'Mochi', 'Delicious Mochi prepared fresh.', 97000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000119/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000120', '00000000-0000-4000-1111-000000000012', '00000000-0000-4000-2222-000000000024', 'Udon', 'Delicious Udon prepared fresh.', 129000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000120/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000120', '00000000-0000-4000-1111-000000000012', '44444444-4444-4444-4444-444444444444', 'Udon', 'Delicious Udon prepared fresh.', 129000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000120/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000121', '00000000-0000-4000-1111-000000000013', '00000000-0000-4000-2222-000000000025', 'Signature Dish', 'Delicious Signature Dish prepared fresh.', 95000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000121/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000121', '00000000-0000-4000-1111-000000000013', '33333333-3333-3333-3333-333333333333', 'Signature Dish', 'Delicious Signature Dish prepared fresh.', 95000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000121/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000122', '00000000-0000-4000-1111-000000000013', '00000000-0000-4000-2222-000000000025', 'Spicy Noodles', 'Delicious Spicy Noodles prepared fresh.', 79000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000122/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000122', '00000000-0000-4000-1111-000000000013', '33333333-3333-3333-3333-333333333333', 'Spicy Noodles', 'Delicious Spicy Noodles prepared fresh.', 79000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000122/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000123', '00000000-0000-4000-1111-000000000013', '00000000-0000-4000-2222-000000000025', 'Spring Rolls', 'Delicious Spring Rolls prepared fresh.', 90000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000123/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000123', '00000000-0000-4000-1111-000000000013', '11111111-1111-1111-1111-111111111111', 'Spring Rolls', 'Delicious Spring Rolls prepared fresh.', 90000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000123/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000124', '00000000-0000-4000-1111-000000000013', '00000000-0000-4000-2222-000000000025', 'Grilled Pork', 'Delicious Grilled Pork prepared fresh.', 112000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000124/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000124', '00000000-0000-4000-1111-000000000013', '22222222-2222-2222-2222-222222222222', 'Grilled Pork', 'Delicious Grilled Pork prepared fresh.', 112000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000124/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000125', '00000000-0000-4000-1111-000000000013', '00000000-0000-4000-2222-000000000025', 'Fried Rice', 'Delicious Fried Rice prepared fresh.', 54000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000125/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000125', '00000000-0000-4000-1111-000000000013', '44444444-4444-4444-4444-444444444444', 'Fried Rice', 'Delicious Fried Rice prepared fresh.', 54000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000125/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000126', '00000000-0000-4000-1111-000000000013', '00000000-0000-4000-2222-000000000025', 'Papaya Salad', 'Delicious Papaya Salad prepared fresh.', 111000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000126/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000126', '00000000-0000-4000-1111-000000000013', '33333333-3333-3333-3333-333333333333', 'Papaya Salad', 'Delicious Papaya Salad prepared fresh.', 111000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000126/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000127', '00000000-0000-4000-1111-000000000013', '00000000-0000-4000-2222-000000000026', 'Mango Smoothie', 'Delicious Mango Smoothie prepared fresh.', 95000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000127/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000127', '00000000-0000-4000-1111-000000000013', '44444444-4444-4444-4444-444444444444', 'Mango Smoothie', 'Delicious Mango Smoothie prepared fresh.', 95000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000127/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000128', '00000000-0000-4000-1111-000000000013', '00000000-0000-4000-2222-000000000026', 'Iced Coffee', 'Delicious Iced Coffee prepared fresh.', 98000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000128/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000128', '00000000-0000-4000-1111-000000000013', '33333333-3333-3333-3333-333333333333', 'Iced Coffee', 'Delicious Iced Coffee prepared fresh.', 98000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000128/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000129', '00000000-0000-4000-1111-000000000013', '00000000-0000-4000-2222-000000000026', 'Coconut Water', 'Delicious Coconut Water prepared fresh.', 112000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000129/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000129', '00000000-0000-4000-1111-000000000013', '55555555-5555-5555-5555-555555555555', 'Coconut Water', 'Delicious Coconut Water prepared fresh.', 112000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000129/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000130', '00000000-0000-4000-1111-000000000013', '00000000-0000-4000-2222-000000000026', 'Pudding', 'Delicious Pudding prepared fresh.', 107000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000130/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000130', '00000000-0000-4000-1111-000000000013', '22222222-2222-2222-2222-222222222222', 'Pudding', 'Delicious Pudding prepared fresh.', 107000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000130/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000131', '00000000-0000-4000-1111-000000000014', '00000000-0000-4000-2222-000000000027', 'Classic Burger', 'Delicious Classic Burger prepared fresh.', 116000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000131/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000131', '00000000-0000-4000-1111-000000000014', '33333333-3333-3333-3333-333333333333', 'Classic Burger', 'Delicious Classic Burger prepared fresh.', 116000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000131/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000132', '00000000-0000-4000-1111-000000000014', '00000000-0000-4000-2222-000000000027', 'Cheeseburger', 'Delicious Cheeseburger prepared fresh.', 50000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000132/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000132', '00000000-0000-4000-1111-000000000014', '11111111-1111-1111-1111-111111111111', 'Cheeseburger', 'Delicious Cheeseburger prepared fresh.', 50000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000132/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000133', '00000000-0000-4000-1111-000000000014', '00000000-0000-4000-2222-000000000027', 'French Fries', 'Delicious French Fries prepared fresh.', 70000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000133/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000133', '00000000-0000-4000-1111-000000000014', '33333333-3333-3333-3333-333333333333', 'French Fries', 'Delicious French Fries prepared fresh.', 70000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000133/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000134', '00000000-0000-4000-1111-000000000014', '00000000-0000-4000-2222-000000000027', 'Onion Rings', 'Delicious Onion Rings prepared fresh.', 129000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000134/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000134', '00000000-0000-4000-1111-000000000014', '11111111-1111-1111-1111-111111111111', 'Onion Rings', 'Delicious Onion Rings prepared fresh.', 129000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000134/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000135', '00000000-0000-4000-1111-000000000014', '00000000-0000-4000-2222-000000000027', 'Milkshake', 'Delicious Milkshake prepared fresh.', 53000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000135/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000135', '00000000-0000-4000-1111-000000000014', '22222222-2222-2222-2222-222222222222', 'Milkshake', 'Delicious Milkshake prepared fresh.', 53000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000135/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000136', '00000000-0000-4000-1111-000000000014', '00000000-0000-4000-2222-000000000027', 'Chicken Wings', 'Delicious Chicken Wings prepared fresh.', 115000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000136/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000136', '00000000-0000-4000-1111-000000000014', '22222222-2222-2222-2222-222222222222', 'Chicken Wings', 'Delicious Chicken Wings prepared fresh.', 115000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000136/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000137', '00000000-0000-4000-1111-000000000014', '00000000-0000-4000-2222-000000000028', 'BBQ Ribs', 'Delicious BBQ Ribs prepared fresh.', 99000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000137/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000137', '00000000-0000-4000-1111-000000000014', '55555555-5555-5555-5555-555555555555', 'BBQ Ribs', 'Delicious BBQ Ribs prepared fresh.', 99000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000137/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000138', '00000000-0000-4000-1111-000000000014', '00000000-0000-4000-2222-000000000028', 'Caesar Salad', 'Delicious Caesar Salad prepared fresh.', 32000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000138/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000138', '00000000-0000-4000-1111-000000000014', '33333333-3333-3333-3333-333333333333', 'Caesar Salad', 'Delicious Caesar Salad prepared fresh.', 32000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000138/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000139', '00000000-0000-4000-1111-000000000014', '00000000-0000-4000-2222-000000000028', 'Brownie', 'Delicious Brownie prepared fresh.', 71000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000139/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000139', '00000000-0000-4000-1111-000000000014', '44444444-4444-4444-4444-444444444444', 'Brownie', 'Delicious Brownie prepared fresh.', 71000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000139/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000140', '00000000-0000-4000-1111-000000000014', '00000000-0000-4000-2222-000000000028', 'Lemonade', 'Delicious Lemonade prepared fresh.', 65000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000140/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000140', '00000000-0000-4000-1111-000000000014', '44444444-4444-4444-4444-444444444444', 'Lemonade', 'Delicious Lemonade prepared fresh.', 65000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000140/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000141', '00000000-0000-4000-1111-000000000015', '00000000-0000-4000-2222-000000000029', 'Margherita Pizza', 'Delicious Margherita Pizza prepared fresh.', 61000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000141/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000141', '00000000-0000-4000-1111-000000000015', '33333333-3333-3333-3333-333333333333', 'Margherita Pizza', 'Delicious Margherita Pizza prepared fresh.', 61000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000141/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000142', '00000000-0000-4000-1111-000000000015', '00000000-0000-4000-2222-000000000029', 'Pepperoni Pizza', 'Delicious Pepperoni Pizza prepared fresh.', 52000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000142/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000142', '00000000-0000-4000-1111-000000000015', '44444444-4444-4444-4444-444444444444', 'Pepperoni Pizza', 'Delicious Pepperoni Pizza prepared fresh.', 52000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000142/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000143', '00000000-0000-4000-1111-000000000015', '00000000-0000-4000-2222-000000000029', 'Pasta Carbonara', 'Delicious Pasta Carbonara prepared fresh.', 46000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000143/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000143', '00000000-0000-4000-1111-000000000015', '44444444-4444-4444-4444-444444444444', 'Pasta Carbonara', 'Delicious Pasta Carbonara prepared fresh.', 46000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000143/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000144', '00000000-0000-4000-1111-000000000015', '00000000-0000-4000-2222-000000000029', 'Tiramisu', 'Delicious Tiramisu prepared fresh.', 52000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000144/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000144', '00000000-0000-4000-1111-000000000015', '11111111-1111-1111-1111-111111111111', 'Tiramisu', 'Delicious Tiramisu prepared fresh.', 52000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000144/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000145', '00000000-0000-4000-1111-000000000015', '00000000-0000-4000-2222-000000000029', 'Garlic Bread', 'Delicious Garlic Bread prepared fresh.', 71000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000145/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000145', '00000000-0000-4000-1111-000000000015', '55555555-5555-5555-5555-555555555555', 'Garlic Bread', 'Delicious Garlic Bread prepared fresh.', 71000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000145/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000146', '00000000-0000-4000-1111-000000000015', '00000000-0000-4000-2222-000000000029', 'Minestrone Soup', 'Delicious Minestrone Soup prepared fresh.', 58000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000146/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000146', '00000000-0000-4000-1111-000000000015', '33333333-3333-3333-3333-333333333333', 'Minestrone Soup', 'Delicious Minestrone Soup prepared fresh.', 58000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000146/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000147', '00000000-0000-4000-1111-000000000015', '00000000-0000-4000-2222-000000000030', 'Caprese Salad', 'Delicious Caprese Salad prepared fresh.', 96000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000147/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000147', '00000000-0000-4000-1111-000000000015', '22222222-2222-2222-2222-222222222222', 'Caprese Salad', 'Delicious Caprese Salad prepared fresh.', 96000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000147/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000148', '00000000-0000-4000-1111-000000000015', '00000000-0000-4000-2222-000000000030', 'Espresso', 'Delicious Espresso prepared fresh.', 63000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000148/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000148', '00000000-0000-4000-1111-000000000015', '11111111-1111-1111-1111-111111111111', 'Espresso', 'Delicious Espresso prepared fresh.', 63000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000148/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000149', '00000000-0000-4000-1111-000000000015', '00000000-0000-4000-2222-000000000030', 'Gelato', 'Delicious Gelato prepared fresh.', 118000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000149/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000149', '00000000-0000-4000-1111-000000000015', '33333333-3333-3333-3333-333333333333', 'Gelato', 'Delicious Gelato prepared fresh.', 118000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000149/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000150', '00000000-0000-4000-1111-000000000015', '00000000-0000-4000-2222-000000000030', 'Risotto', 'Delicious Risotto prepared fresh.', 97000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000150/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000150', '00000000-0000-4000-1111-000000000015', '22222222-2222-2222-2222-222222222222', 'Risotto', 'Delicious Risotto prepared fresh.', 97000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000150/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000151', '00000000-0000-4000-1111-000000000016', '00000000-0000-4000-2222-000000000031', 'Salmon Sashimi', 'Delicious Salmon Sashimi prepared fresh.', 94000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000151/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000151', '00000000-0000-4000-1111-000000000016', '22222222-2222-2222-2222-222222222222', 'Salmon Sashimi', 'Delicious Salmon Sashimi prepared fresh.', 94000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000151/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000152', '00000000-0000-4000-1111-000000000016', '00000000-0000-4000-2222-000000000031', 'Tuna Nigiri', 'Delicious Tuna Nigiri prepared fresh.', 125000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000152/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000152', '00000000-0000-4000-1111-000000000016', '55555555-5555-5555-5555-555555555555', 'Tuna Nigiri', 'Delicious Tuna Nigiri prepared fresh.', 125000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000152/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000153', '00000000-0000-4000-1111-000000000016', '00000000-0000-4000-2222-000000000031', 'California Roll', 'Delicious California Roll prepared fresh.', 117000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000153/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000153', '00000000-0000-4000-1111-000000000016', '55555555-5555-5555-5555-555555555555', 'California Roll', 'Delicious California Roll prepared fresh.', 117000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000153/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000154', '00000000-0000-4000-1111-000000000016', '00000000-0000-4000-2222-000000000031', 'Miso Soup', 'Delicious Miso Soup prepared fresh.', 98000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000154/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000154', '00000000-0000-4000-1111-000000000016', '22222222-2222-2222-2222-222222222222', 'Miso Soup', 'Delicious Miso Soup prepared fresh.', 98000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000154/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000155', '00000000-0000-4000-1111-000000000016', '00000000-0000-4000-2222-000000000031', 'Edamame', 'Delicious Edamame prepared fresh.', 37000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000155/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000155', '00000000-0000-4000-1111-000000000016', '33333333-3333-3333-3333-333333333333', 'Edamame', 'Delicious Edamame prepared fresh.', 37000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000155/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000156', '00000000-0000-4000-1111-000000000016', '00000000-0000-4000-2222-000000000031', 'Tempura', 'Delicious Tempura prepared fresh.', 30000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000156/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000156', '00000000-0000-4000-1111-000000000016', '22222222-2222-2222-2222-222222222222', 'Tempura', 'Delicious Tempura prepared fresh.', 30000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000156/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000157', '00000000-0000-4000-1111-000000000016', '00000000-0000-4000-2222-000000000032', 'Teriyaki Chicken', 'Delicious Teriyaki Chicken prepared fresh.', 97000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000157/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000157', '00000000-0000-4000-1111-000000000016', '11111111-1111-1111-1111-111111111111', 'Teriyaki Chicken', 'Delicious Teriyaki Chicken prepared fresh.', 97000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000157/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000158', '00000000-0000-4000-1111-000000000016', '00000000-0000-4000-2222-000000000032', 'Green Tea', 'Delicious Green Tea prepared fresh.', 69000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000158/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000158', '00000000-0000-4000-1111-000000000016', '11111111-1111-1111-1111-111111111111', 'Green Tea', 'Delicious Green Tea prepared fresh.', 69000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000158/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000159', '00000000-0000-4000-1111-000000000016', '00000000-0000-4000-2222-000000000032', 'Mochi', 'Delicious Mochi prepared fresh.', 84000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000159/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000159', '00000000-0000-4000-1111-000000000016', '22222222-2222-2222-2222-222222222222', 'Mochi', 'Delicious Mochi prepared fresh.', 84000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000159/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000160', '00000000-0000-4000-1111-000000000016', '00000000-0000-4000-2222-000000000032', 'Udon', 'Delicious Udon prepared fresh.', 96000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000160/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000160', '00000000-0000-4000-1111-000000000016', '22222222-2222-2222-2222-222222222222', 'Udon', 'Delicious Udon prepared fresh.', 96000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000160/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000161', '00000000-0000-4000-1111-000000000017', '00000000-0000-4000-2222-000000000033', 'Signature Dish', 'Delicious Signature Dish prepared fresh.', 70000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000161/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000161', '00000000-0000-4000-1111-000000000017', '55555555-5555-5555-5555-555555555555', 'Signature Dish', 'Delicious Signature Dish prepared fresh.', 70000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000161/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000162', '00000000-0000-4000-1111-000000000017', '00000000-0000-4000-2222-000000000033', 'Spicy Noodles', 'Delicious Spicy Noodles prepared fresh.', 125000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000162/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000162', '00000000-0000-4000-1111-000000000017', '55555555-5555-5555-5555-555555555555', 'Spicy Noodles', 'Delicious Spicy Noodles prepared fresh.', 125000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000162/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000163', '00000000-0000-4000-1111-000000000017', '00000000-0000-4000-2222-000000000033', 'Spring Rolls', 'Delicious Spring Rolls prepared fresh.', 101000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000163/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000163', '00000000-0000-4000-1111-000000000017', '33333333-3333-3333-3333-333333333333', 'Spring Rolls', 'Delicious Spring Rolls prepared fresh.', 101000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000163/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000164', '00000000-0000-4000-1111-000000000017', '00000000-0000-4000-2222-000000000033', 'Grilled Pork', 'Delicious Grilled Pork prepared fresh.', 68000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000164/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000164', '00000000-0000-4000-1111-000000000017', '33333333-3333-3333-3333-333333333333', 'Grilled Pork', 'Delicious Grilled Pork prepared fresh.', 68000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000164/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000165', '00000000-0000-4000-1111-000000000017', '00000000-0000-4000-2222-000000000033', 'Fried Rice', 'Delicious Fried Rice prepared fresh.', 114000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000165/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000165', '00000000-0000-4000-1111-000000000017', '33333333-3333-3333-3333-333333333333', 'Fried Rice', 'Delicious Fried Rice prepared fresh.', 114000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000165/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000166', '00000000-0000-4000-1111-000000000017', '00000000-0000-4000-2222-000000000033', 'Papaya Salad', 'Delicious Papaya Salad prepared fresh.', 63000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000166/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000166', '00000000-0000-4000-1111-000000000017', '11111111-1111-1111-1111-111111111111', 'Papaya Salad', 'Delicious Papaya Salad prepared fresh.', 63000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000166/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000167', '00000000-0000-4000-1111-000000000017', '00000000-0000-4000-2222-000000000034', 'Mango Smoothie', 'Delicious Mango Smoothie prepared fresh.', 125000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000167/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000167', '00000000-0000-4000-1111-000000000017', '22222222-2222-2222-2222-222222222222', 'Mango Smoothie', 'Delicious Mango Smoothie prepared fresh.', 125000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000167/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000168', '00000000-0000-4000-1111-000000000017', '00000000-0000-4000-2222-000000000034', 'Iced Coffee', 'Delicious Iced Coffee prepared fresh.', 111000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000168/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000168', '00000000-0000-4000-1111-000000000017', '33333333-3333-3333-3333-333333333333', 'Iced Coffee', 'Delicious Iced Coffee prepared fresh.', 111000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000168/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000169', '00000000-0000-4000-1111-000000000017', '00000000-0000-4000-2222-000000000034', 'Coconut Water', 'Delicious Coconut Water prepared fresh.', 73000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000169/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000169', '00000000-0000-4000-1111-000000000017', '11111111-1111-1111-1111-111111111111', 'Coconut Water', 'Delicious Coconut Water prepared fresh.', 73000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000169/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000170', '00000000-0000-4000-1111-000000000017', '00000000-0000-4000-2222-000000000034', 'Pudding', 'Delicious Pudding prepared fresh.', 47000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000170/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000170', '00000000-0000-4000-1111-000000000017', '11111111-1111-1111-1111-111111111111', 'Pudding', 'Delicious Pudding prepared fresh.', 47000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000170/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000171', '00000000-0000-4000-1111-000000000018', '00000000-0000-4000-2222-000000000035', 'Classic Burger', 'Delicious Classic Burger prepared fresh.', 76000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000171/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000171', '00000000-0000-4000-1111-000000000018', '44444444-4444-4444-4444-444444444444', 'Classic Burger', 'Delicious Classic Burger prepared fresh.', 76000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000171/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000172', '00000000-0000-4000-1111-000000000018', '00000000-0000-4000-2222-000000000035', 'Cheeseburger', 'Delicious Cheeseburger prepared fresh.', 92000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000172/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000172', '00000000-0000-4000-1111-000000000018', '22222222-2222-2222-2222-222222222222', 'Cheeseburger', 'Delicious Cheeseburger prepared fresh.', 92000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000172/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000173', '00000000-0000-4000-1111-000000000018', '00000000-0000-4000-2222-000000000035', 'French Fries', 'Delicious French Fries prepared fresh.', 54000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000173/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000173', '00000000-0000-4000-1111-000000000018', '44444444-4444-4444-4444-444444444444', 'French Fries', 'Delicious French Fries prepared fresh.', 54000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000173/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000174', '00000000-0000-4000-1111-000000000018', '00000000-0000-4000-2222-000000000035', 'Onion Rings', 'Delicious Onion Rings prepared fresh.', 45000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000174/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000174', '00000000-0000-4000-1111-000000000018', '55555555-5555-5555-5555-555555555555', 'Onion Rings', 'Delicious Onion Rings prepared fresh.', 45000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000174/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000175', '00000000-0000-4000-1111-000000000018', '00000000-0000-4000-2222-000000000035', 'Milkshake', 'Delicious Milkshake prepared fresh.', 86000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000175/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000175', '00000000-0000-4000-1111-000000000018', '33333333-3333-3333-3333-333333333333', 'Milkshake', 'Delicious Milkshake prepared fresh.', 86000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000175/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000176', '00000000-0000-4000-1111-000000000018', '00000000-0000-4000-2222-000000000035', 'Chicken Wings', 'Delicious Chicken Wings prepared fresh.', 47000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000176/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000176', '00000000-0000-4000-1111-000000000018', '11111111-1111-1111-1111-111111111111', 'Chicken Wings', 'Delicious Chicken Wings prepared fresh.', 47000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000176/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000177', '00000000-0000-4000-1111-000000000018', '00000000-0000-4000-2222-000000000036', 'BBQ Ribs', 'Delicious BBQ Ribs prepared fresh.', 55000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000177/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000177', '00000000-0000-4000-1111-000000000018', '11111111-1111-1111-1111-111111111111', 'BBQ Ribs', 'Delicious BBQ Ribs prepared fresh.', 55000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000177/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000178', '00000000-0000-4000-1111-000000000018', '00000000-0000-4000-2222-000000000036', 'Caesar Salad', 'Delicious Caesar Salad prepared fresh.', 74000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000178/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000178', '00000000-0000-4000-1111-000000000018', '33333333-3333-3333-3333-333333333333', 'Caesar Salad', 'Delicious Caesar Salad prepared fresh.', 74000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000178/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000179', '00000000-0000-4000-1111-000000000018', '00000000-0000-4000-2222-000000000036', 'Brownie', 'Delicious Brownie prepared fresh.', 82000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000179/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000179', '00000000-0000-4000-1111-000000000018', '33333333-3333-3333-3333-333333333333', 'Brownie', 'Delicious Brownie prepared fresh.', 82000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000179/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000180', '00000000-0000-4000-1111-000000000018', '00000000-0000-4000-2222-000000000036', 'Lemonade', 'Delicious Lemonade prepared fresh.', 57000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000180/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000180', '00000000-0000-4000-1111-000000000018', '11111111-1111-1111-1111-111111111111', 'Lemonade', 'Delicious Lemonade prepared fresh.', 57000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000180/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000181', '00000000-0000-4000-1111-000000000019', '00000000-0000-4000-2222-000000000037', 'Margherita Pizza', 'Delicious Margherita Pizza prepared fresh.', 89000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000181/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000181', '00000000-0000-4000-1111-000000000019', '11111111-1111-1111-1111-111111111111', 'Margherita Pizza', 'Delicious Margherita Pizza prepared fresh.', 89000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000181/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000182', '00000000-0000-4000-1111-000000000019', '00000000-0000-4000-2222-000000000037', 'Pepperoni Pizza', 'Delicious Pepperoni Pizza prepared fresh.', 56000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000182/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000182', '00000000-0000-4000-1111-000000000019', '44444444-4444-4444-4444-444444444444', 'Pepperoni Pizza', 'Delicious Pepperoni Pizza prepared fresh.', 56000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000182/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000183', '00000000-0000-4000-1111-000000000019', '00000000-0000-4000-2222-000000000037', 'Pasta Carbonara', 'Delicious Pasta Carbonara prepared fresh.', 111000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000183/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000183', '00000000-0000-4000-1111-000000000019', '33333333-3333-3333-3333-333333333333', 'Pasta Carbonara', 'Delicious Pasta Carbonara prepared fresh.', 111000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000183/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000184', '00000000-0000-4000-1111-000000000019', '00000000-0000-4000-2222-000000000037', 'Tiramisu', 'Delicious Tiramisu prepared fresh.', 121000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000184/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000184', '00000000-0000-4000-1111-000000000019', '55555555-5555-5555-5555-555555555555', 'Tiramisu', 'Delicious Tiramisu prepared fresh.', 121000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000184/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000185', '00000000-0000-4000-1111-000000000019', '00000000-0000-4000-2222-000000000037', 'Garlic Bread', 'Delicious Garlic Bread prepared fresh.', 109000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000185/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000185', '00000000-0000-4000-1111-000000000019', '33333333-3333-3333-3333-333333333333', 'Garlic Bread', 'Delicious Garlic Bread prepared fresh.', 109000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000185/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000186', '00000000-0000-4000-1111-000000000019', '00000000-0000-4000-2222-000000000037', 'Minestrone Soup', 'Delicious Minestrone Soup prepared fresh.', 53000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000186/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000186', '00000000-0000-4000-1111-000000000019', '22222222-2222-2222-2222-222222222222', 'Minestrone Soup', 'Delicious Minestrone Soup prepared fresh.', 53000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000186/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000187', '00000000-0000-4000-1111-000000000019', '00000000-0000-4000-2222-000000000038', 'Caprese Salad', 'Delicious Caprese Salad prepared fresh.', 84000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000187/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000187', '00000000-0000-4000-1111-000000000019', '44444444-4444-4444-4444-444444444444', 'Caprese Salad', 'Delicious Caprese Salad prepared fresh.', 84000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000187/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000188', '00000000-0000-4000-1111-000000000019', '00000000-0000-4000-2222-000000000038', 'Espresso', 'Delicious Espresso prepared fresh.', 44000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000188/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000188', '00000000-0000-4000-1111-000000000019', '11111111-1111-1111-1111-111111111111', 'Espresso', 'Delicious Espresso prepared fresh.', 44000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000188/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000189', '00000000-0000-4000-1111-000000000019', '00000000-0000-4000-2222-000000000038', 'Gelato', 'Delicious Gelato prepared fresh.', 101000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000189/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000189', '00000000-0000-4000-1111-000000000019', '22222222-2222-2222-2222-222222222222', 'Gelato', 'Delicious Gelato prepared fresh.', 101000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000189/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000190', '00000000-0000-4000-1111-000000000019', '00000000-0000-4000-2222-000000000038', 'Risotto', 'Delicious Risotto prepared fresh.', 85000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000190/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000190', '00000000-0000-4000-1111-000000000019', '44444444-4444-4444-4444-444444444444', 'Risotto', 'Delicious Risotto prepared fresh.', 85000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000190/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000191', '00000000-0000-4000-1111-000000000020', '00000000-0000-4000-2222-000000000039', 'Salmon Sashimi', 'Delicious Salmon Sashimi prepared fresh.', 36000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000191/300/300', true, 15, 1)
+VALUES ('00000000-0000-4000-3333-000000000191', '00000000-0000-4000-1111-000000000020', '22222222-2222-2222-2222-222222222222', 'Salmon Sashimi', 'Delicious Salmon Sashimi prepared fresh.', 36000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000191/300/300', true, 15, 1)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000192', '00000000-0000-4000-1111-000000000020', '00000000-0000-4000-2222-000000000039', 'Tuna Nigiri', 'Delicious Tuna Nigiri prepared fresh.', 73000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000192/300/300', true, 15, 2)
+VALUES ('00000000-0000-4000-3333-000000000192', '00000000-0000-4000-1111-000000000020', '11111111-1111-1111-1111-111111111111', 'Tuna Nigiri', 'Delicious Tuna Nigiri prepared fresh.', 73000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000192/300/300', true, 15, 2)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000193', '00000000-0000-4000-1111-000000000020', '00000000-0000-4000-2222-000000000039', 'California Roll', 'Delicious California Roll prepared fresh.', 75000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000193/300/300', true, 15, 3)
+VALUES ('00000000-0000-4000-3333-000000000193', '00000000-0000-4000-1111-000000000020', '44444444-4444-4444-4444-444444444444', 'California Roll', 'Delicious California Roll prepared fresh.', 75000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000193/300/300', true, 15, 3)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000194', '00000000-0000-4000-1111-000000000020', '00000000-0000-4000-2222-000000000039', 'Miso Soup', 'Delicious Miso Soup prepared fresh.', 109000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000194/300/300', true, 15, 4)
+VALUES ('00000000-0000-4000-3333-000000000194', '00000000-0000-4000-1111-000000000020', '22222222-2222-2222-2222-222222222222', 'Miso Soup', 'Delicious Miso Soup prepared fresh.', 109000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000194/300/300', true, 15, 4)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000195', '00000000-0000-4000-1111-000000000020', '00000000-0000-4000-2222-000000000039', 'Edamame', 'Delicious Edamame prepared fresh.', 88000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000195/300/300', true, 15, 5)
+VALUES ('00000000-0000-4000-3333-000000000195', '00000000-0000-4000-1111-000000000020', '55555555-5555-5555-5555-555555555555', 'Edamame', 'Delicious Edamame prepared fresh.', 88000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000195/300/300', true, 15, 5)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000196', '00000000-0000-4000-1111-000000000020', '00000000-0000-4000-2222-000000000039', 'Tempura', 'Delicious Tempura prepared fresh.', 59000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000196/300/300', true, 15, 6)
+VALUES ('00000000-0000-4000-3333-000000000196', '00000000-0000-4000-1111-000000000020', '44444444-4444-4444-4444-444444444444', 'Tempura', 'Delicious Tempura prepared fresh.', 59000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000196/300/300', true, 15, 6)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000197', '00000000-0000-4000-1111-000000000020', '00000000-0000-4000-2222-000000000040', 'Teriyaki Chicken', 'Delicious Teriyaki Chicken prepared fresh.', 74000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000197/300/300', true, 15, 7)
+VALUES ('00000000-0000-4000-3333-000000000197', '00000000-0000-4000-1111-000000000020', '11111111-1111-1111-1111-111111111111', 'Teriyaki Chicken', 'Delicious Teriyaki Chicken prepared fresh.', 74000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000197/300/300', true, 15, 7)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000198', '00000000-0000-4000-1111-000000000020', '00000000-0000-4000-2222-000000000040', 'Green Tea', 'Delicious Green Tea prepared fresh.', 71000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000198/300/300', true, 15, 8)
+VALUES ('00000000-0000-4000-3333-000000000198', '00000000-0000-4000-1111-000000000020', '22222222-2222-2222-2222-222222222222', 'Green Tea', 'Delicious Green Tea prepared fresh.', 71000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000198/300/300', true, 15, 8)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000199', '00000000-0000-4000-1111-000000000020', '00000000-0000-4000-2222-000000000040', 'Mochi', 'Delicious Mochi prepared fresh.', 58000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000199/300/300', true, 15, 9)
+VALUES ('00000000-0000-4000-3333-000000000199', '00000000-0000-4000-1111-000000000020', '33333333-3333-3333-3333-333333333333', 'Mochi', 'Delicious Mochi prepared fresh.', 58000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000199/300/300', true, 15, 9)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO menu_items (id, restaurant_id, category_id, name, description, price, image_url, is_available, preparation_time, display_order)
-VALUES ('00000000-0000-4000-3333-000000000200', '00000000-0000-4000-1111-000000000020', '00000000-0000-4000-2222-000000000040', 'Udon', 'Delicious Udon prepared fresh.', 82000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000200/300/300', true, 15, 10)
+VALUES ('00000000-0000-4000-3333-000000000200', '00000000-0000-4000-1111-000000000020', '11111111-1111-1111-1111-111111111111', 'Udon', 'Delicious Udon prepared fresh.', 82000, 'https://picsum.photos/seed/00000000-0000-4000-3333-000000000200/300/300', true, 15, 10)
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
+INSERT INTO inventory_stock (stock_item_id, total_quantity, reserved_quantity) SELECT id::varchar, 100, 0 FROM menu_items ON CONFLICT DO NOTHING;

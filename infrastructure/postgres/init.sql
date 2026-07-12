@@ -74,18 +74,23 @@ CREATE INDEX IF NOT EXISTS idx_restaurants_name_trgm ON restaurants USING gin(na
 -- ─────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS categories (
   id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  restaurant_id UUID NOT NULL REFERENCES restaurants(id) ON DELETE CASCADE,
-  name          VARCHAR(100) NOT NULL,
+  name          VARCHAR(100) NOT NULL UNIQUE,
   description   TEXT,
   image_url     VARCHAR(500),
   display_order INTEGER DEFAULT 0,
   is_active     BOOLEAN NOT NULL DEFAULT true,
   created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  UNIQUE(restaurant_id, name)
+  updated_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_categories_restaurant ON categories(restaurant_id);
+-- Seed some default global categories
+INSERT INTO categories (id, name, display_order) VALUES
+  ('11111111-1111-1111-1111-111111111111', 'Món Cơm', 1),
+  ('22222222-2222-2222-2222-222222222222', 'Phở/Bún', 2),
+  ('33333333-3333-3333-3333-333333333333', 'Món chính', 3),
+  ('44444444-4444-4444-4444-444444444444', 'Đồ ăn vặt', 4),
+  ('55555555-5555-5555-5555-555555555555', 'Đồ uống', 5)
+ON CONFLICT DO NOTHING;
 
 -- ─────────────────────────────────────────────
 -- MENU ITEMS

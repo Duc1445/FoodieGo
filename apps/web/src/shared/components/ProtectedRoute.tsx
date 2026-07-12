@@ -44,7 +44,9 @@ export function ProtectedRoute({
     }
 
     if (allowedRoles && !allowedRoles.includes(session.role)) {
-      setRedirectPath('/unauthorized');
+      clearAuthStorage();
+      logout();
+      setRedirectPath('/login');
       setIsValidating(false);
       return;
     }

@@ -1,17 +1,27 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Input } from '@foodiego/ui';
 import { MapPin, Phone } from 'lucide-react';
+import { useLocationStore } from '../../../shared/stores/useLocationStore';
 
 interface AddressFormProps {
   onChange: (address: string, phone: string) => void;
 }
 
 export function AddressForm({ onChange }: AddressFormProps) {
-  const [address, setAddress] = useState('');
+  const globalLocation = useLocationStore((state) => state.address);
+  const [address, setAddress] = useState(globalLocation || '');
   const [phone, setPhone] = useState('');
 
-  const addressRef = useRef('');
+  const addressRef = useRef(globalLocation || '');
   const phoneRef = useRef('');
+
+  useEffect(() => {
+    if (globalLocation) {
+      setAddress(globalLocation);
+      addressRef.current = globalLocation;
+      onChange(globalLocation, phoneRef.current);
+    }
+  }, [globalLocation]);
 
   return (
     <div className="space-y-4">

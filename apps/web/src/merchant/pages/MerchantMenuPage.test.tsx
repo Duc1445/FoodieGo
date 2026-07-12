@@ -11,6 +11,7 @@ vi.mock('../../shared/services/merchant.api', () => ({
   createMenuItem: vi.fn(),
   updateMenuItem: vi.fn(),
   deleteMenuItem: vi.fn(),
+  MERCHANT_MENU_QUERY_KEY: ['merchant-menu'],
 }));
 
 describe('MerchantMenuPage', () => {
@@ -140,10 +141,6 @@ describe('MerchantMenuPage', () => {
   });
 
   it('can delete an item', async () => {
-    // Mock window.confirm
-    const confirmSpy = vi.spyOn(window, 'confirm');
-    confirmSpy.mockImplementation(() => true);
-
     vi.mocked(getMerchantMenu).mockResolvedValue(mockItems);
     vi.mocked(deleteMenuItem).mockResolvedValue({} as any);
 
@@ -155,13 +152,18 @@ describe('MerchantMenuPage', () => {
 
     await screen.findByText('Burger');
     
+    // Click delete on the item
     await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
     
+    // Wait for dialog
+    await screen.findByText('Confirm Deletion');
+    
+    // Click confirm in the dialog
+    const deleteButtons = screen.getAllByRole('button', { name: 'Delete' });
+    await userEvent.click(deleteButtons[deleteButtons.length - 1]);
+    
     await waitFor(() => {
-      expect(confirmSpy).toHaveBeenCalled();
       expect(deleteMenuItem).toHaveBeenCalledWith('item-1');
     });
-
-    confirmSpy.mockRestore();
   });
 });

@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuthStore } from '../../../shared/stores/useAuthStore';
 import { AuthAPI } from '../../../shared/services/auth.api';
 import { Button } from '@foodiego/ui';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { getDashboardPath } from '../../../shared/auth/session';
 
 export function Register() {
   const [email, setEmail] = useState('');
@@ -15,7 +13,6 @@ export function Register() {
   const [fullName, setFullName] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const login = useAuthStore(state => state.login);
   const navigate = useNavigate();
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -40,17 +37,16 @@ export function Register() {
     setIsLoading(true);
 
     try {
-      const data = await AuthAPI.register({ 
+      await AuthAPI.register({ 
         email, 
         password, 
         full_name: fullName || 'Merchant',
         role: 'merchant',
         restaurant_name: restaurantName 
       });
-      localStorage.setItem('foodiego-auth-token', data.token);
-      login(data.user, data.token);
-      toast.success('Registration successful! Welcome to the Merchant Portal.');
-      navigate(getDashboardPath('merchant'), { replace: true });
+      // Merchants need to be approved by admin, so do not login.
+      toast.success('Registration successful! Please wait for admin approval.');
+      navigate('/merchant/login', { replace: true });
     } catch (err: any) {
       const msg = err.response?.data?.message || err.response?.data?.errors?.[0]?.msg || 'Registration failed. Please try again.';
       setError(msg);

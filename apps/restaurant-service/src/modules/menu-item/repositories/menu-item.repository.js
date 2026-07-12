@@ -15,9 +15,9 @@ export class MenuItemRepository {
         m.image_url,
         m.is_available,
         m.display_order AS menu_item_order
-      FROM categories c
-      LEFT JOIN menu_items m ON c.id = m.category_id AND m.is_available = true
-      WHERE c.restaurant_id = $1 AND c.is_active = true
+      FROM menu_items m
+      LEFT JOIN categories c ON m.category_id = c.id
+      WHERE m.restaurant_id = $1 AND m.is_active = true
       ORDER BY c.display_order ASC, m.display_order ASC
     `;
     const { rows } = await pool.query(query, [restaurantId]);
@@ -67,9 +67,9 @@ export class MenuItemRepository {
 
   async findById(id) {
     const query = `
-      SELECT m.*, c.restaurant_id, c.name as category_name
+      SELECT m.*, c.name as category_name
       FROM menu_items m
-      JOIN categories c ON m.category_id = c.id
+      LEFT JOIN categories c ON m.category_id = c.id
       WHERE m.id = $1 AND m.is_active = true
     `;
     const { rows } = await pool.query(query, [id]);

@@ -85,6 +85,7 @@ app.use(
 app.use('/api/v1/orders', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
 app.use('/api/v1/cart', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
 app.use('/api/v1/delivery', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
+app.use('/api/v1/payments', createProxyMiddleware(proxyOptions(process.env.PAYMENT_SERVICE_URL)));
 
 // Mock Analytics Endpoint for Sprint B1
 app.post('/api/analytics/events', (req, res) => {

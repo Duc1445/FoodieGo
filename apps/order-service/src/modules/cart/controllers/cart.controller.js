@@ -17,7 +17,8 @@ export class CartController {
 
   async addItem(req, res, next) {
     try {
-      const userId = req.user.id;
+      const userId = req.user?.id;
+      console.log('--- ADD ITEM: userId ---', userId, req.user);
       const traceId = req.headers['x-trace-id'] || 'trace-mock';
       const { menu_item_id, quantity } = req.body;
       const cart = await cartService.addItem(userId, menu_item_id, quantity, traceId);

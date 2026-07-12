@@ -49,7 +49,7 @@ const UnauthorizedPage = () => (
   <div className="flex flex-col items-center justify-center min-h-screen gap-4">
     <h1 className="text-4xl font-bold text-red-500">403</h1>
     <p className="text-lg text-muted-foreground">You are not authorized to access this page.</p>
-    <a href="/" className="text-primary underline">Go to Home</a>
+    <a href="/login" className="text-primary underline">Go to Login</a>
   </div>
 );
 
@@ -57,7 +57,7 @@ const router = createBrowserRouter([
   { path: '/unauthorized', element: <UnauthorizedPage /> },
   {
     path: '/',
-    element: <Suspense fallback={<PageLoader />}><CustomerLayout /></Suspense>,
+    element: <ProtectedRoute allowedRoles={['customer']}><Suspense fallback={<PageLoader />}><CustomerLayout /></Suspense></ProtectedRoute>,
     errorElement: <ErrorBoundary />,
     children: [
       { index: true, element: <Suspense fallback={<PageLoader />}><LandingPage /></Suspense> },

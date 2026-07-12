@@ -17,10 +17,13 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-function LocationMarker({ position, setPosition }: { position: [number, number], setPosition: (p: [number, number]) => void }) {
+function LocationMarker({ position, setPosition, onPositionChange }: { position: [number, number], setPosition: (p: [number, number]) => void, onPositionChange?: (lat: number, lng: number) => void }) {
   useMapEvents({
     click(e) {
-      setPosition([e.latlng.lat, e.latlng.lng]);
+      const newLat = e.latlng.lat;
+      const newLng = e.latlng.lng;
+      setPosition([newLat, newLng]);
+      if (onPositionChange) onPositionChange(newLat, newLng);
     },
   });
 
@@ -65,6 +68,10 @@ export function LocationSelector() {
         const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`);
         const data = await response.json();
         setSearchResults(data);
+        if (data && data.length > 0) {
+          const firstResult = data[0];
+          setPosition([parseFloat(firstResult.lat), parseFloat(firstResult.lon)]);
+        }
       } catch (err) {
         console.error('Error fetching address:', err);
       }
@@ -108,6 +115,16 @@ export function LocationSelector() {
         },
         (err) => console.error(err)
       );
+    }
+  };
+
+  const handleMapClick = async (lat: number, lng: number) => {
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+      const data = await response.json();
+      setDetailedAddress(data.display_name || '');
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -159,7 +176,7 @@ export function LocationSelector() {
                 attribution='&copy; OpenStreetMap'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              <LocationMarker position={position} setPosition={setPosition} />
+              <LocationMarker position={position} setPosition={setPosition} onPositionChange={handleMapClick} />
             </MapContainer>
           </div>
           

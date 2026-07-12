@@ -84,6 +84,7 @@ export function LandingPage() {
         const distance = calculateDistance(lat, lng, r.latitude, r.longitude);
         return { ...r, distance };
       })
+      .filter(r => r.distance <= 10) // Only show within 10km radius
       .sort((a, b) => a.distance - b.distance);
   }, [restaurants, lat, lng]);
 
@@ -180,7 +181,7 @@ export function LandingPage() {
                     <div className="flex justify-between items-start">
                       <CardTitle className="text-xl">{restaurant.name}</CardTitle>
                       <div className="flex items-center bg-primary/10 text-primary px-2 py-1 rounded-md text-sm font-semibold">
-                        ★ {restaurant.rating.toFixed(1)}
+                        ★ {Number(restaurant.rating || 0).toFixed(1)}
                       </div>
                     </div>
                     <CardDescription className="line-clamp-1">{restaurant.description}</CardDescription>

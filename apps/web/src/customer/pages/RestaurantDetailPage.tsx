@@ -97,10 +97,12 @@ export function RestaurantDetailPage() {
             </Badge>
             <h1 className="text-4xl font-bold mb-2">{restaurant.name}</h1>
             <div className="flex flex-wrap items-center gap-4 text-sm opacity-90 mt-2">
-              <span className="flex items-center bg-black/30 px-2 py-1 rounded-md backdrop-blur-sm">
-                <Star className="w-4 h-4 mr-1 text-yellow-400 fill-current" /> 
-                {restaurant.rating ? restaurant.rating.toFixed(1) : "New"}
-              </span>
+              <div className="flex items-center space-x-1 text-primary bg-primary/10 px-3 py-1.5 rounded-md font-semibold">
+                <Star className="w-5 h-5 fill-current" />
+                <span>
+                {restaurant.rating ? Number(restaurant.rating).toFixed(1) : "New"}
+                </span>
+              </div>
               <span className="flex items-center"><MapPin className="w-4 h-4 mr-1" /> {restaurant.address || "District 1, HCMC"}</span>
               <span className="flex items-center"><Clock className="w-4 h-4 mr-1" /> {restaurant.opening_time} - {restaurant.closing_time}</span>
               <span className="flex items-center"><Info className="w-4 h-4 mr-1" /> Fee: ₫{deliveryFee.toLocaleString()} • ETA: 15-30 mins</span>

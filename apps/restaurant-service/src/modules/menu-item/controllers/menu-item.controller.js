@@ -31,13 +31,10 @@ export class MenuItemController {
     throw new AuthorizationError('Unauthorized role');
   }
 
-  // Validate category belongs to restaurant
-  async _validateCategory(categoryId, restaurantId) {
-    const { rows } = await pool.query(
-      'SELECT id FROM categories WHERE id = $1 AND restaurant_id = $2',
-      [categoryId, restaurantId],
-    );
-    if (rows.length === 0) throw new DomainError('Invalid category_id for this restaurant');
+  // Validate global category exists
+  async _validateCategory(categoryId) {
+    const { rows } = await pool.query('SELECT id FROM categories WHERE id = $1', [categoryId]);
+    if (rows.length === 0) throw new DomainError('Invalid category_id');
   }
 
   async getByRestaurantId(req, res, next) {
@@ -94,7 +91,7 @@ export class MenuItemController {
   async create(req, res, next) {
     try {
       const restaurantId = await this._getAuthorizedRestaurantId(req, req.body.restaurant_id);
-      await this._validateCategory(req.body.category_id, restaurantId);
+      await this._validateCategory(req.body.category_id);
 
       const newItem = await service.createMenuItem({ ...req.body, restaurant_id: restaurantId });
       res.status(201);
@@ -122,7 +119,7 @@ export class MenuItemController {
       }
 
       if (req.body.category_id) {
-        await this._validateCategory(req.body.category_id, restaurantId);
+        await this._validateCategory(req.body.category_id);
       }
 
       const updatedItem = await service.updateMenuItem(id, req.body, restaurantId);

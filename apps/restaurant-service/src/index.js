@@ -12,7 +12,12 @@ import { MetricsRegistry } from '@foodiego/metrics';
 import { createLogger as createPlatformLogger, requestLogger } from '@foodiego/logging';
 
 // Core imports (backward compatibility — correlationId is now handled by requestLogger)
-import { createLogger, correlationIdMiddleware, errorHandlerMiddleware, config } from '@foodiego/core';
+import {
+  createLogger,
+  correlationIdMiddleware,
+  errorHandlerMiddleware,
+  config,
+} from '@foodiego/core';
 
 dotenv.config();
 
@@ -30,8 +35,8 @@ app.use(express.json());
 app.use(correlationIdMiddleware);
 
 // ─── Observability Middleware ──────────────────────────────────────────────
-app.use(requestLogger(logger));       // Structured logging with auto traceId
-app.use(metrics.httpMiddleware());    // Prometheus metrics (standardized)
+app.use(requestLogger(logger)); // Structured logging with auto traceId
+app.use(metrics.httpMiddleware()); // Prometheus metrics (standardized)
 
 // ─── Routes ────────────────────────────────────────────────────────────────
 import categoryRoutes from './modules/category/routes/category.routes.js';
@@ -47,7 +52,7 @@ app.get('/metrics', async (_req, res) => {
 
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/restaurants', restaurantRoutes);
-app.use('/api/v1/menus/items', menuItemRoutes);
+app.use('/api/v1/menus', menuItemRoutes);
 
 // ─── Error Handler ─────────────────────────────────────────────────────────
 app.use((err, req, res, _next) => {

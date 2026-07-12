@@ -13,12 +13,21 @@ export const findUserById = async (id) => {
   return result.rows[0] || null;
 };
 
-export const createUser = async ({ email, password, full_name, phone, address, role }) => {
+export const createUser = async ({
+  email,
+  password,
+  full_name,
+  phone,
+  address,
+  role,
+  is_active,
+}) => {
+  const isActiveValue = is_active !== undefined ? is_active : true;
   const result = await pool.query(
-    `INSERT INTO users (email, password, full_name, phone, address, role)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING id, email, full_name, phone, address, role, created_at`,
-    [email, password, full_name, phone || null, address || null, role || 'customer'],
+    `INSERT INTO users (email, password, full_name, phone, address, role, is_active)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
+     RETURNING id, email, full_name, phone, address, role, is_active, created_at`,
+    [email, password, full_name, phone || null, address || null, role || 'customer', isActiveValue],
   );
   return result.rows[0];
 };

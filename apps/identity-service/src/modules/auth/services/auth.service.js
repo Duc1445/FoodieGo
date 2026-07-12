@@ -1,5 +1,10 @@
 import bcrypt from 'bcryptjs';
-import { findUserByEmail, findUserById, createUser, updateUser } from '../../user/repositories/user.repository.js';
+import {
+  findUserByEmail,
+  findUserById,
+  createUser,
+  updateUser,
+} from '../../user/repositories/user.repository.js';
 import { generateToken } from '../../../config/jwt.js';
 
 export const register = async ({ email, password, full_name, phone, address, role }) => {
@@ -11,7 +16,16 @@ export const register = async ({ email, password, full_name, phone, address, rol
   }
 
   const hashed = await bcrypt.hash(password, 10);
-  const user = await createUser({ email, password: hashed, full_name, phone, address, role });
+  const isActive = role === 'merchant' ? false : true;
+  const user = await createUser({
+    email,
+    password: hashed,
+    full_name,
+    phone,
+    address,
+    role,
+    is_active: isActive,
+  });
 
   const token = generateToken({ id: user.id, role: user.role });
   return { user, token };

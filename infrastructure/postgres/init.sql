@@ -201,7 +201,7 @@ CREATE TABLE IF NOT EXISTS orders (
   total               DECIMAL(12,2) NOT NULL,
   currency            VARCHAR(3) DEFAULT 'USD',
   payment_method      VARCHAR(50),
-  address_id          UUID,
+  address_id          UUID REFERENCES addresses(id) ON DELETE SET NULL,
   idempotency_key     VARCHAR(255) UNIQUE,
   created_at          TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at          TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -378,3 +378,4 @@ CREATE TABLE IF NOT EXISTS mock_gateway_jobs (
 
 CREATE INDEX IF NOT EXISTS idx_payments_order_id ON payments(order_id);
 CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);
+

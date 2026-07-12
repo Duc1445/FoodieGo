@@ -29,4 +29,10 @@ Examples:
 4. Ensure your code passes all linting (`npm run lint`) and tests before creating a PR.
 5. Create a Pull Request against `develop`.
 
+## Testing Guidelines
+
+When writing frontend unit tests that use `QueryClientProvider` (React Query), you must follow these critical patterns to avoid hanging the CI runner and memory leaks:
+1. **Always clean up after each test**: Add `afterEach(() => queryClient.clear());` in the test file to ensure queries don't leak between tests.
+2. **Disable refetch intervals**: Ensure `refetchInterval` is set to `false` in tests or mocked appropriately. Orphaned intervals will keep the test process alive, leading to Vitest hanging and being force-killed by `teardownTimeout`.
+
 Thank you!

@@ -7,6 +7,13 @@ import * as deliveryController from '../controllers/delivery.controller.js';
 const router = Router();
 
 router.get(
+  '/',
+  authenticate,
+  authorize('shipper', 'admin'), // Assuming shippers and admins can list deliveries
+  deliveryController.listDeliveries
+);
+
+router.get(
   '/order/:orderId',
   authenticate,
   param('orderId').isUUID().withMessage('orderId must be a valid UUID'),

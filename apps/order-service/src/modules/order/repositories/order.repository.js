@@ -95,4 +95,103 @@ export class OrderRepository {
       client.release();
     }
   }
+
+  // --- SAGA EVALUATOR METHODS ---
+
+  async findByIdForUpdate(trx, orderId) {
+    const result = await trx.query(
+      `SELECT id, status, is_payment_authorized, is_inventory_reserved, is_cancelled 
+       FROM orders WHERE id = $1 FOR UPDATE`,
+      [orderId]
+    );
+    return result.rows[0] || null;
+  }
+
+  async setPaymentAuthorized(trx, orderId) {
+    await trx.query(
+      `UPDATE orders SET is_payment_authorized = true, updated_at = NOW() WHERE id = $1`,
+      [orderId]
+    );
+  }
+
+  async setInventoryReserved(trx, orderId) {
+    await trx.query(
+      `UPDATE orders SET is_inventory_reserved = true, updated_at = NOW() WHERE id = $1`,
+      [orderId]
+    );
+  }
+
+  async setCancelled(trx, orderId) {
+    await trx.query(
+      `UPDATE orders SET is_cancelled = true, updated_at = NOW() WHERE id = $1`,
+      [orderId]
+    );
+  }
+
+  /**
+   * Atomics state transition for Saga Evaluator.
+   * Returns true if this transaction was the one to successfully move to CONFIRMED.
+   */
+  async tryConfirmOrder(trx, orderId) {
+    const result = await trx.query(
+      `UPDATE orders 
+       SET status = 'CONFIRMED', updated_at = NOW()
+       WHERE id = $1 
+         AND status = 'PENDING'
+         AND is_payment_authorized = true
+         AND is_inventory_reserved = true
+         AND is_cancelled = false
+       RETURNING id`,
+      [orderId]
+    );
+    return result.rowCount === 1;
+  }
+
+  async getAllOrders({ status, page = 1, limit = 50 } = {}) {
+    const offset = (page - 1) * limit;
+    let query = `
+      SELECT id, user_id as "userId", restaurant_id as "restaurantId", status, total, created_at as "createdAt", updated_at as "updatedAt"
+      FROM orders
+    `;
+    const params = [];
+    let paramCount = 0;
+
+    if (status) {
+      paramCount++;
+      query += ` WHERE status = $${paramCount}`;
+      params.push(status);
+    }
+
+    query += ` ORDER BY created_at DESC LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}`;
+    params.push(limit, offset);
+
+    const { rows } = await pool.query(query, params);
+    return rows;
+  }
+
+  async findById(orderId) {
+    const { rows } = await pool.query(
+      'SELECT id, user_id as "userId", restaurant_id as "restaurantId", status, subtotal, delivery_fee as "deliveryFee", tax, discount, total, created_at as "createdAt", updated_at as "updatedAt" FROM orders WHERE id = $1',
+      [orderId]
+    );
+    return rows[0] || null;
+  }
+
+  async getAdminStats() {
+    const { rows } = await pool.query(`
+      SELECT 
+        (SELECT COUNT(*) FROM users) as total_users,
+        (SELECT COUNT(*) FROM restaurants) as total_restaurants,
+        (SELECT COUNT(*) FROM orders) as total_orders,
+        (SELECT COUNT(*) FROM orders WHERE status NOT IN ('DELIVERED', 'CANCELLED')) as active_orders,
+        (SELECT COUNT(*) FROM users WHERE role = 'merchant' AND merchant_status = 'PENDING') as pending_merchants
+    `);
+    return rows[0] || {
+      total_users: 0,
+      total_restaurants: 0,
+      total_orders: 0,
+      active_orders: 0,
+      pending_merchants: 0
+    };
+  }
 }

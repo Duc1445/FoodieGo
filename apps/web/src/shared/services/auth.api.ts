@@ -4,7 +4,7 @@ import { clearAuthStorage } from '../auth/session';
 export interface LoginRequest {
   email: string;
   password: string;
-  role?: 'customer' | 'merchant' | 'admin';
+  role?: 'customer' | 'merchant' | 'admin' | 'shipper';
 }
 
 export interface RegisterRequest {
@@ -12,7 +12,7 @@ export interface RegisterRequest {
   password: string;
   full_name?: string;
   phone?: string;
-  role?: 'customer' | 'merchant' | 'admin';
+  role?: 'customer' | 'merchant' | 'admin' | 'shipper';
   restaurant_name?: string;
 }
 
@@ -21,7 +21,7 @@ export interface AuthResponse {
   user: {
     id: string;
     email: string;
-    role: 'customer' | 'merchant' | 'admin';
+    role: 'customer' | 'merchant' | 'admin' | 'shipper';
     name?: string;
     full_name?: string;
     phone?: string | null;

@@ -22,6 +22,19 @@ export class InventoryRepository {
   }
 
   /**
+   * Idempotency Check using Inbox table.
+   * Returns true if event is NEW and was successfully inserted.
+   * Returns false if event already exists (duplicate).
+   */
+  async checkAndInsertInbox(eventId, eventType, client = this.pool) {
+    const result = await client.query(
+      `INSERT INTO inbox_messages (event_id, event_type) VALUES ($1, $2) ON CONFLICT (event_id) DO NOTHING RETURNING event_id`,
+      [eventId, eventType]
+    );
+    return result.rowCount > 0;
+  }
+
+  /**
    * Performs an optimistic locking update on the stock table.
    * If the version does not match, throws an Error.
    */

@@ -6,6 +6,8 @@ import { Card, Badge, Skeleton, Button } from '@foodiego/ui';
 import { Star, MapPin, Clock, ArrowLeft, AlertCircle, RefreshCw, Info } from 'lucide-react';
 import { Image } from '../../shared/components/Image';
 import { PRICING } from '../../shared/constants/pricing';
+import { ReviewList } from '../components/ReviewList';
+import { StarRating } from '../components/StarRating';
 
 export function RestaurantDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -182,6 +184,20 @@ export function RestaurantDetailPage() {
             </div>
           ))
         )}
+
+        {/* Reviews Section */}
+        <div className="mt-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">Reviews</h2>
+            <div className="flex items-center gap-2">
+              <StarRating rating={Math.round(restaurant.rating || 0)} readonly size={20} />
+              <span className="text-sm text-muted-foreground">
+                ({restaurant.total_reviews || 0} reviews)
+              </span>
+            </div>
+          </div>
+          <ReviewList restaurantId={restaurant.id} />
+        </div>
       </div>
     </div>
   );

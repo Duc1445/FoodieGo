@@ -30,7 +30,7 @@ class PaymentRequestedConsumer extends EventConsumer {
   }
 }
 
-class OrderCancelledConsumer extends EventConsumer {
+export class OrderCancelledConsumer extends EventConsumer {
   constructor(paymentService) {
     super();
     this.paymentService = paymentService;
@@ -40,11 +40,15 @@ class OrderCancelledConsumer extends EventConsumer {
     return 'OrderCancelled';
   }
 
-  async handle(event) {
+  async handle(event, trx) {
+    logger.debug({ orderId: event.payload.orderId }, 'OrderCancelledConsumer received event');
     logger.info({ orderId: event.payload.orderId }, 'Processing OrderCancelled');
     const { orderId, reason, traceId } = event.payload;
+    const consumerName = this.constructor.name;
+    const eventId = event.eventId || event.id;
+
     try {
-      await this.paymentService.refundPayment(orderId, reason, traceId);
+      await this.paymentService.refundPayment(orderId, reason, traceId, trx, consumerName, eventId);
     } catch (err) {
       logger.error({ orderId, err: err.message }, 'Failed to refund payment for cancelled order');
       throw err; // Trigger retry

@@ -3,8 +3,7 @@ import 'dotenv/config';
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
-import { MetricsRegistry } from '@foodiego/metrics';
-import { createLogger, requestLogger } from '@foodiego/logging';
+import { requestLogger } from '@foodiego/logging';
 
 // Routes
 import cartRoutes from './modules/cart/routes/cart.routes.js';
@@ -12,13 +11,13 @@ import checkoutRoutes from './modules/checkout/routes/checkout.routes.js';
 import orderRoutes from './modules/order/routes/order.routes.js';
 import deliveryRoutes from './modules/delivery/routes/delivery.routes.js';
 import promotionRoutes from './routes/promotion.routes.js';
+import adminRoutes from './routes/admin.routes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3003;
 
-// ─── Platform SDKs ─────────────────────────────────────────────────────────
-export const logger = createLogger('order-service');
-export const metrics = new MetricsRegistry('order-service');
+import { logger } from './config/logger.js';
+import { metrics } from './config/metrics.js';
 // ─── Middleware ─────────────────────────────────────────────────────────────
 app.use(helmet());
 app.use(cors());
@@ -43,6 +42,7 @@ app.use('/api/v1/cart', cartRoutes);
 app.use('/api/v1/orders', ordersRouter);
 app.use('/api/v1/delivery', deliveryRoutes);
 app.use('/api/v1/promotions', promotionRoutes);
+app.use('/api/v1', adminRoutes);
 
 // ─── Error Handler ─────────────────────────────────────────────────────────
 app.use((err, req, res, _next) => {
@@ -53,12 +53,25 @@ app.use((err, req, res, _next) => {
 // ─── Start ──────────────────────────────────────────────────────────────────
 import { startConsumers } from './workers/consumer.worker.js';
 import { startDispatcher } from './workers/dispatcher.worker.js';
+import { runTimeoutSweep } from './workers/saga-timeout.worker.js';
+import { eventValidator } from '@foodiego/contracts';
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, async () => {
     logger.info({ port: PORT }, 'Order Service started');
+    
+    // Initialize Schema Validator
+    eventValidator.init();
+    
     await startDispatcher();
     await startConsumers();
+
+    // Start Saga Timeout Sweep periodically
+    setInterval(() => {
+      runTimeoutSweep().catch(err => {
+        logger.error('Unhandled error in Saga Timeout Worker', err);
+      });
+    }, 60000); // Check every minute
   });
 }
 

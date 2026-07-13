@@ -32,4 +32,12 @@ export class IPaymentGateway {
    * @returns {Promise<{ status: string, errorReason?: string }>}
    */
   async refund(params) { throw new Error('Not implemented'); }
+
+  /**
+   * @param {Object} params
+   * @param {string} params.paymentId
+   * @param {string} params.gatewayTxId
+   * @returns {Promise<{ status: string, gatewayTxId: string, errorReason?: string }>}
+   */
+  async getPayment(params) { throw new Error('Not implemented'); }
 }

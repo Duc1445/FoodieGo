@@ -22,6 +22,9 @@ export default {
     }
   },
   moduleNameMapper: {
+    '^@foodiego/tracing$': '<rootDir>/packages/otel/src',
+    '^@foodiego/platform-sdk$': '<rootDir>/packages/platform-sdk/index.js',
+    '^@foodiego/contracts/(.*)$': '<rootDir>/packages/contracts/$1',
     '^@foodiego/(.*)$': '<rootDir>/packages/$1/src'
   }
 };

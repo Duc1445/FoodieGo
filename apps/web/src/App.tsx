@@ -12,6 +12,7 @@ const CustomerLayout = lazy(() => import('./customer/layouts/CustomerLayout').th
 const AuthLayout = lazy(() => import('./customer/layouts/AuthLayout').then(module => ({ default: module.AuthLayout })));
 const MerchantLayout = lazy(() => import('./merchant/layouts/MerchantLayout').then(module => ({ default: module.MerchantLayout })));
 const AdminLayout = lazy(() => import('./admin/layouts/AdminLayout').then(module => ({ default: module.AdminLayout })));
+const DriverLayout = lazy(() => import('./driver/layouts/DriverLayout').then(module => ({ default: module.DriverLayout })));
 
 const LandingPage = lazy(() => import('./customer/pages/LandingPage').then(module => ({ default: module.LandingPage })));
 const SearchPage = lazy(() => import('./customer/pages/SearchPage').then(module => ({ default: module.SearchPage })));
@@ -32,7 +33,12 @@ const MerchantLogin = lazy(() => import('./merchant/pages/auth/Login').then(modu
 const MerchantRegister = lazy(() => import('./merchant/pages/auth/Register').then(module => ({ default: module.Register })));
 
 const AdminDashboardPage = lazy(() => import('./admin/pages/AdminDashboardPage').then(module => ({ default: module.AdminDashboardPage })));
+const MerchantApprovalPage = lazy(() => import('./admin/pages/MerchantApprovalPage').then(module => ({ default: module.MerchantApprovalPage })));
 const AdminLogin = lazy(() => import('./admin/pages/auth/Login').then(module => ({ default: module.Login })));
+
+const DriverDashboardPage = lazy(() => import('./driver/pages/DriverDashboardPage').then(module => ({ default: module.DriverDashboardPage })));
+const DriverLogin = lazy(() => import('./driver/pages/auth/Login').then(module => ({ default: module.Login })));
+const DriverRegister = lazy(() => import('./driver/pages/auth/Register').then(module => ({ default: module.Register })));
 
 const queryClient = new QueryClient();
 
@@ -105,12 +111,33 @@ const router = createBrowserRouter([
     path: '/admin',
     element: <RoleGuard role="admin"><Suspense fallback={<PageLoader />}><AdminLayout /></Suspense></RoleGuard>,
     errorElement: <ErrorBoundary />,
-    children: [{ index: true, element: <Suspense fallback={<PageLoader />}><AdminDashboardPage /></Suspense> }],
+    children: [
+      { index: true, element: <Suspense fallback={<PageLoader />}><AdminDashboardPage /></Suspense> },
+      { path: 'approvals', element: <Suspense fallback={<PageLoader />}><MerchantApprovalPage /></Suspense> },
+    ],
   },
   {
     path: '/admin/login',
     element: <Suspense fallback={<PageLoader />}><AuthLayout /></Suspense>,
     children: [{ index: true, element: <Suspense fallback={<PageLoader />}><AdminLogin /></Suspense> }],
+  },
+  {
+    path: '/driver',
+    element: <RoleGuard role="shipper"><Suspense fallback={<PageLoader />}><DriverLayout /></Suspense></RoleGuard>,
+    errorElement: <ErrorBoundary />,
+    children: [
+      { index: true, element: <Suspense fallback={<PageLoader />}><DriverDashboardPage /></Suspense> },
+    ],
+  },
+  {
+    path: '/driver/login',
+    element: <Suspense fallback={<PageLoader />}><AuthLayout /></Suspense>,
+    children: [{ index: true, element: <Suspense fallback={<PageLoader />}><DriverLogin /></Suspense> }],
+  },
+  {
+    path: '/driver/register',
+    element: <Suspense fallback={<PageLoader />}><AuthLayout /></Suspense>,
+    children: [{ index: true, element: <Suspense fallback={<PageLoader />}><DriverRegister /></Suspense> }],
   },
 ]);
 

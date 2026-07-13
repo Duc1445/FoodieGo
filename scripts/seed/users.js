@@ -12,8 +12,8 @@ async function seedUsers() {
     await pool.query(`
       INSERT INTO users (id, email, password, full_name, role) 
       VALUES 
-      ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'admin@foodiego.com', '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS', 'Admin', 'admin'),
-      ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', 'customer@foodiego.com', '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS', 'Test Customer', 'customer')
+      ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'admin@foodiego.com', '$2a$10$SrFRl2SFXzHJxrXOY6g/guncKxn4Btrhg467T7kJtrvu7DOiOtqHy', 'Admin', 'admin'),
+      ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', 'customer@foodiego.com', '$2a$10$SrFRl2SFXzHJxrXOY6g/guncKxn4Btrhg467T7kJtrvu7DOiOtqHy', 'Test Customer', 'customer')
       ON CONFLICT (email) DO NOTHING;
     `);
     console.log('[Seed] Users seeded successfully!');

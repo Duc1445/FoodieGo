@@ -41,7 +41,9 @@ app.use(metrics.httpMiddleware()); // Prometheus metrics (standardized)
 // ─── Routes ────────────────────────────────────────────────────────────────
 import categoryRoutes from './modules/category/routes/category.routes.js';
 import restaurantRoutes from './modules/restaurant/routes/restaurant.routes.js';
+import adminRestaurantRoutes from './modules/restaurant/routes/admin.routes.js';
 import menuItemRoutes from './modules/menu-item/routes/menu-item.routes.js';
+import reviewRoutes from './modules/review/routes/review.routes.js';
 import healthRoutes from './modules/health/health.routes.js';
 
 app.use('/', healthRoutes); // Mount at root for k8s /health, /ready, /live
@@ -52,7 +54,9 @@ app.get('/metrics', async (_req, res) => {
 
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/restaurants', restaurantRoutes);
+app.use('/api/v1', adminRestaurantRoutes);
 app.use('/api/v1/menus', menuItemRoutes);
+app.use('/api/v1/reviews', reviewRoutes);
 
 // ─── Error Handler ─────────────────────────────────────────────────────────
 app.use((err, req, res, _next) => {

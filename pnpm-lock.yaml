@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      pg:
+        specifier: ^8.22.0
+        version: 8.22.0
     devDependencies:
       '@commitlint/cli':
         specifier: ^21.2.0
@@ -206,6 +210,9 @@ importers:
 
   apps/inventory-service:
     dependencies:
+      '@foodiego/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@foodiego/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -258,6 +265,9 @@ importers:
 
   apps/order-service:
     dependencies:
+      '@foodiego/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@foodiego/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -573,7 +583,7 @@ importers:
         version: 8.63.0(eslint@8.57.1)(typescript@6.0.3)
       '@vitejs/plugin-react':
         specifier: ^6.0.3
-        version: 6.0.3(vite@8.1.3(@types/node@24.13.3)(jiti@1.21.7)(yaml@2.9.0))
+        version: 6.0.3(vite@8.1.3(@types/node@24.13.3)(jiti@2.6.1)(yaml@2.9.0))
       autoprefixer:
         specifier: ^10.4.19
         version: 10.5.2(postcss@8.5.16)
@@ -600,10 +610,10 @@ importers:
         version: 6.0.3
       vite:
         specifier: ^8.1.1
-        version: 8.1.3(@types/node@24.13.3)(jiti@1.21.7)(yaml@2.9.0)
+        version: 8.1.3(@types/node@24.13.3)(jiti@2.6.1)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.10
-        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.1.3(@types/node@24.13.3)(jiti@1.21.7)(yaml@2.9.0))
+        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.1.3(@types/node@24.13.3)(jiti@2.6.1)(yaml@2.9.0))
 
   packages/api-sdk:
     dependencies:
@@ -617,7 +627,17 @@ importers:
 
   packages/config: {}
 
-  packages/contracts: {}
+  packages/contracts:
+    dependencies:
+      ajv:
+        specifier: ^8.20.0
+        version: 8.20.0
+      ajv-formats:
+        specifier: ^3.0.1
+        version: 3.0.1(ajv@8.20.0)
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@26.1.0)
 
   packages/core:
     dependencies:
@@ -705,6 +725,9 @@ importers:
       amqplib:
         specifier: ^0.10.3
         version: 0.10.9
+      p-limit:
+        specifier: ^7.3.0
+        version: 7.3.0
 
   packages/retry: {}
 
@@ -4268,6 +4291,10 @@ packages:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
     engines: {node: '>=10'}
 
+  p-limit@7.3.0:
+    resolution: {integrity: sha512-7cIXg/Z0M5WZRblrsOla88S4wAK+zOQQWeBYfV3qJuJXMr+LnbYjaadrFaS0JILfEDPVqHyKnZ1Z/1d6J9VVUw==}
+    engines: {node: '>=20'}
+
   p-locate@4.1.0:
     resolution: {integrity: sha512-R79ZZ/0wAxKGu3oYMlz8jy/kbhsNrS7SKZ7PxEHBgJ5+F2mtFW2fK2cOtBh1cHYkQsbzFV7I+EoRKe6Yt0oK7A==}
     engines: {node: '>=8'}
@@ -5419,6 +5446,10 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+
+  yocto-queue@1.2.2:
+    resolution: {integrity: sha512-4LCcse/U2MHZ63HAJVE+v71o7yOdIe4cZ70Wpf8D/IyjDKYQLV5GD46B+hSTjJsvV5PztjvHoU580EftxjDZFQ==}
+    engines: {node: '>=12.20'}
 
   zod-validation-error@4.0.2:
     resolution: {integrity: sha512-Q6/nZLe6jxuU80qb/4uJ4t5v2VEZ44lzQjPDhYJNztRQ4wyWc6VF3D3Kb/fAuPetZQnhS3hnajCf9CsWesghLQ==}
@@ -7407,10 +7438,10 @@ snapshots:
 
   '@ungap/structured-clone@1.3.2': {}
 
-  '@vitejs/plugin-react@6.0.3(vite@8.1.3(@types/node@24.13.3)(jiti@1.21.7)(yaml@2.9.0))':
+  '@vitejs/plugin-react@6.0.3(vite@8.1.3(@types/node@24.13.3)(jiti@2.6.1)(yaml@2.9.0))':
     dependencies:
       '@rolldown/pluginutils': 1.0.1
-      vite: 8.1.3(@types/node@24.13.3)(jiti@1.21.7)(yaml@2.9.0)
+      vite: 8.1.3(@types/node@24.13.3)(jiti@2.6.1)(yaml@2.9.0)
 
   '@vitest/expect@4.1.10':
     dependencies:
@@ -7421,13 +7452,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.0
 
-  '@vitest/mocker@4.1.10(vite@8.1.3(@types/node@24.13.3)(jiti@1.21.7)(yaml@2.9.0))':
+  '@vitest/mocker@4.1.10(vite@8.1.3(@types/node@24.13.3)(jiti@2.6.1)(yaml@2.9.0))':
     dependencies:
       '@vitest/spy': 4.1.10
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.1.3(@types/node@24.13.3)(jiti@1.21.7)(yaml@2.9.0)
+      vite: 8.1.3(@types/node@24.13.3)(jiti@2.6.1)(yaml@2.9.0)
 
   '@vitest/pretty-format@4.1.10':
     dependencies:
@@ -9461,6 +9492,10 @@ snapshots:
     dependencies:
       yocto-queue: 0.1.0
 
+  p-limit@7.3.0:
+    dependencies:
+      yocto-queue: 1.2.2
+
   p-locate@4.1.0:
     dependencies:
       p-limit: 2.3.0
@@ -10433,7 +10468,7 @@ snapshots:
       d3-time: 3.1.0
       d3-timer: 3.0.1
 
-  vite@8.1.3(@types/node@24.13.3)(jiti@1.21.7)(yaml@2.9.0):
+  vite@8.1.3(@types/node@24.13.3)(jiti@2.6.1)(yaml@2.9.0):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.5
@@ -10443,13 +10478,13 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.13.3
       fsevents: 2.3.3
-      jiti: 1.21.7
+      jiti: 2.6.1
       yaml: 2.9.0
 
-  vitest@4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.1.3(@types/node@24.13.3)(jiti@1.21.7)(yaml@2.9.0)):
+  vitest@4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.1.3(@types/node@24.13.3)(jiti@2.6.1)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.10
-      '@vitest/mocker': 4.1.10(vite@8.1.3(@types/node@24.13.3)(jiti@1.21.7)(yaml@2.9.0))
+      '@vitest/mocker': 4.1.10(vite@8.1.3(@types/node@24.13.3)(jiti@2.6.1)(yaml@2.9.0))
       '@vitest/pretty-format': 4.1.10
       '@vitest/runner': 4.1.10
       '@vitest/snapshot': 4.1.10
@@ -10466,7 +10501,7 @@ snapshots:
       tinyexec: 1.2.4
       tinyglobby: 0.2.17
       tinyrainbow: 3.1.0
-      vite: 8.1.3(@types/node@24.13.3)(jiti@1.21.7)(yaml@2.9.0)
+      vite: 8.1.3(@types/node@24.13.3)(jiti@2.6.1)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
@@ -10579,6 +10614,8 @@ snapshots:
       yargs-parser: 22.0.0
 
   yocto-queue@0.1.0: {}
+
+  yocto-queue@1.2.2: {}
 
   zod-validation-error@4.0.2(zod@4.4.3):
     dependencies:

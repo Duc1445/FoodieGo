@@ -1,0 +1,7 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://foodiego.com/schemas/common/timestamp.schema.json",
+  "type": "string",
+  "format": "date-time",
+  "description": "An ISO-8601 formatted UTC timestamp"
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://foodiego.com/schemas/v1/payment-completed.schema.json",
+  "title": "PaymentCompleted",
+  "type": "object",
+  "allOf": [
+    { "$ref": "../common/event-metadata.schema.json" }
+  ],
+  "properties": {
+    "schemaVersion": { "const": "v1" },
+    "eventType": { "const": "PaymentCompleted" },
+    "aggregateType": { "const": "Payment" },
+    "aggregateId": { "type": "string" },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "transactionId": {
+          "type": "string",
+          "description": "Provider's transaction ID (e.g. Stripe Charge ID)"
+        },
+        "amount": { "$ref": "../common/money.schema.json" },
+        "provider": {
+          "type": "string",
+          "enum": ["STRIPE", "VNPAY"]
+        }
+      },
+      "required": ["transactionId", "amount", "provider"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["eventType", "aggregateType", "aggregateId", "payload"]
+}

@@ -107,6 +107,18 @@ export class MockGateway extends IPaymentGateway {
     };
   }
 
+  async getPayment(params) {
+    const { paymentId, gatewayTxId } = params;
+    logger.info({ paymentId, gatewayTxId }, 'MockGateway fetching payment status');
+
+    // For mock gateway, we'll just simulate getting a successful status
+    // In a real gateway, this would fetch from Stripe/VNPay API.
+    return {
+      status: 'AUTHORIZED',
+      gatewayTxId: gatewayTxId || `mock_tx_${crypto.randomBytes(8).toString('hex')}`,
+    };
+  }
+
   /**
    * Helper to generate a webhook payload with signature for testing.
    * In a real system, the external Gateway (e.g. Stripe) would do this.

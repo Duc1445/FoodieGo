@@ -7,16 +7,18 @@ export class OrderStateMachine {
     this.state = initialState;
     this.validTransitions = {
       [OrderStatus.CREATED]: [OrderStatus.PENDING_RESERVATION, OrderStatus.CANCELLED],
-      [OrderStatus.PENDING_RESERVATION]: [OrderStatus.READY_FOR_PAYMENT, OrderStatus.CANCELLED],
-      [OrderStatus.READY_FOR_PAYMENT]: [OrderStatus.PAID, OrderStatus.CANCELLED],
-      [OrderStatus.PAID]: [OrderStatus.CONFIRMED, OrderStatus.REFUNDED],
+      [OrderStatus.PENDING_RESERVATION]: [OrderStatus.RESERVED, OrderStatus.FAILED, OrderStatus.CANCELLED],
+      [OrderStatus.RESERVED]: [OrderStatus.READY_FOR_PAYMENT, OrderStatus.CANCELLED],
+      [OrderStatus.READY_FOR_PAYMENT]: [OrderStatus.PAID, OrderStatus.FAILED, OrderStatus.CANCELLED],
+      [OrderStatus.PAID]: [OrderStatus.CONFIRMED, OrderStatus.CANCELLED],
       [OrderStatus.CONFIRMED]: [OrderStatus.PREPARING, OrderStatus.CANCELLED],
       [OrderStatus.PREPARING]: [OrderStatus.READY, OrderStatus.CANCELLED],
       [OrderStatus.READY]: [OrderStatus.DELIVERING],
       [OrderStatus.DELIVERING]: [OrderStatus.COMPLETED],
       [OrderStatus.COMPLETED]: [],
-      [OrderStatus.CANCELLED]: [],
+      [OrderStatus.CANCELLED]: [OrderStatus.REFUNDED],
       [OrderStatus.REFUNDED]: [],
+      [OrderStatus.FAILED]: [],
     };
   }
 

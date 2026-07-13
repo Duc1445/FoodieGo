@@ -53,6 +53,9 @@ export class MetricsRegistry {
     this._initCacheMetrics();
     this._initDispatcherMetrics();
     this._initPaymentMetrics();
+
+    // Track seen invalid label keys so we only warn once per key per process lifetime
+    this._seenInvalidLabels = new Set();
   }
 
   // ═══════════════════════════════════════════
@@ -95,6 +98,66 @@ export class MetricsRegistry {
       help: 'Total payment retry attempts',
       registers: [this.registry],
     });
+    // ─── Refund Metrics ───
+    this.paymentRefundRequestsTotal = new client.Counter({
+      name: 'payment_refund_requests_total',
+      help: 'Total payment refund requests initiated',
+      registers: [this.registry],
+    });
+    this.paymentRefundSuccessTotal = new client.Counter({
+      name: 'payment_refund_success_total',
+      help: 'Total successful payment refunds',
+      registers: [this.registry],
+    });
+    this.paymentRefundFailedTotal = new client.Counter({
+      name: 'payment_refund_failed_total',
+      help: 'Total failed payment refunds',
+      registers: [this.registry],
+    });
+
+    // ─── Reconciliation Metrics ───
+    this.paymentReconciliationTotal = new client.Counter({
+      name: 'payment_reconciliation_total',
+      help: 'Total reconciliation attempts per payment',
+      labelNames: ['status', 'outcome'], // e.g., status=REFUND_PENDING, outcome=resolved/escalated/retried
+      registers: [this.registry],
+    });
+    this.paymentReconciliationEscalatedTotal = new client.Counter({
+      name: 'payment_reconciliation_escalated_total',
+      help: 'Total manual review escalations triggered by worker',
+      registers: [this.registry],
+    });
+
+    // ─── Latency Histograms ───
+    // Low Cardinality Guard: NEVER use paymentId, orderId, or providerTransactionId as labels.
+    this.paymentGatewayRequestDuration = new client.Histogram({
+      name: 'payment_gateway_request_duration_seconds',
+      help: 'Gateway HTTP call latency (from before gateway.refund() to after response). Includes serialization.',
+      labelNames: ['gateway', 'operation', 'status'], // e.g., stripe, refund, success
+      // Buckets: fine-grained at fast end, coarse at slow end for gateway calls (typical SLO: P99 < 2s for refund)
+      buckets: [0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 30],
+      registers: [this.registry],
+    });
+    this.paymentWebhookProcessingDuration = new client.Histogram({
+      name: 'payment_webhook_processing_duration_seconds',
+      help: 'Total webhook handler latency (from raw body parse to 200 OK response). SLO: P99 < 500ms.',
+      // Buckets: fine-grained since SLO is tight (500ms P99)
+      buckets: [0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5],
+      registers: [this.registry],
+    });
+    this.paymentOutboxPublishDuration = new client.Histogram({
+      name: 'payment_outbox_publish_duration_seconds',
+      help: 'Dispatcher AMQP publish latency per event (from channel.publish() call to broker ack). SLO: P99 < 5s.',
+      buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 5],
+      registers: [this.registry],
+    });
+    this.paymentReconciliationDuration = new client.Histogram({
+      name: 'payment_reconciliation_duration_seconds',
+      help: 'Worker reconciliation batch latency (from poll start to all payments processed). SLO: P95 < 30m.',
+      // Coarser buckets — this is a background batch, measured in seconds-to-minutes
+      buckets: [0.1, 0.5, 1, 5, 15, 30, 60, 120, 300, 600],
+      registers: [this.registry],
+    });
   }
 
   increment(metricName, labels = {}) {
@@ -115,8 +178,50 @@ export class MetricsRegistry {
         return this.paymentTimeoutTotal.inc(labels);
       case 'payment_retry_total':
         return this.paymentRetryTotal.inc(labels);
+      case 'payment_refund_requests_total':
+        return this.paymentRefundRequestsTotal.inc(labels);
+      case 'payment_refund_success_total':
+        return this.paymentRefundSuccessTotal.inc(labels);
+      case 'payment_refund_failed_total':
+        return this.paymentRefundFailedTotal.inc(labels);
+      case 'payment_reconciliation_total':
+        return this.paymentReconciliationTotal.inc(labels);
+      case 'payment_reconciliation_escalated_total':
+        return this.paymentReconciliationEscalatedTotal.inc(labels);
       default:
         console.warn(`[Metrics] Unknown increment: ${metricName}`);
+    }
+  }
+
+  observe(metricName, value, labels = {}) {
+    if (!this.enabled) return;
+
+    // Low Cardinality Guard: drop high-cardinality labels that would cause Prometheus cardinality explosion.
+    // In development: warn once per unique label key (to catch dev mistakes).
+    // In production: drop silently to avoid spamming logs on hot paths.
+    const isDev = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test';
+    const dangerousLabels = ['paymentId', 'orderId', 'providerTransactionId', 'traceId', 'spanId'];
+    for (const key of Object.keys(labels)) {
+      if (dangerousLabels.includes(key)) {
+        if (isDev && !this._seenInvalidLabels.has(key)) {
+          this._seenInvalidLabels.add(key);
+          console.warn(`[Metrics] High cardinality label detected and dropped: "${key}". Fix the call site — this warning fires only once per process.`);
+        }
+        delete labels[key];
+      }
+    }
+
+    switch (metricName) {
+      case 'payment_gateway_request_duration_seconds':
+        return this.paymentGatewayRequestDuration.observe(labels, value);
+      case 'payment_webhook_processing_duration_seconds':
+        return this.paymentWebhookProcessingDuration.observe(labels, value);
+      case 'payment_outbox_publish_duration_seconds':
+        return this.paymentOutboxPublishDuration.observe(labels, value);
+      case 'payment_reconciliation_duration_seconds':
+        return this.paymentReconciliationDuration.observe(labels, value);
+      default:
+        if (isDev) console.warn(`[Metrics] Unknown observe: ${metricName}`);
     }
   }
 

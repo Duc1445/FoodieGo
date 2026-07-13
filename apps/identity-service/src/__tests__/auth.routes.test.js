@@ -24,10 +24,10 @@ describe('Auth Routes', () => {
     jest.clearAllMocks();
   });
 
-  describe('POST /api/auth/register', () => {
+  describe('POST /api/v1/auth/register', () => {
     it('should return 400 if email is invalid', async () => {
       const res = await request(app)
-        .post('/api/auth/register')
+        .post('/api/v1/auth/register')
         .send({ email: 'notanemail', password: '123456', full_name: 'Test' });
 
       expect(res.status).toBe(400);
@@ -36,7 +36,7 @@ describe('Auth Routes', () => {
 
     it('should return 400 if password is too short', async () => {
       const res = await request(app)
-        .post('/api/auth/register')
+        .post('/api/v1/auth/register')
         .send({ email: 'test@example.com', password: '123', full_name: 'Test' });
 
       expect(res.status).toBe(400);
@@ -45,7 +45,7 @@ describe('Auth Routes', () => {
 
     it('should return 400 if full_name is missing', async () => {
       const res = await request(app)
-        .post('/api/auth/register')
+        .post('/api/v1/auth/register')
         .send({ email: 'test@example.com', password: '123456' });
 
       expect(res.status).toBe(400);
@@ -66,7 +66,7 @@ describe('Auth Routes', () => {
       });
 
       const res = await request(app)
-        .post('/api/auth/register')
+        .post('/api/v1/auth/register')
         .send({
           email: 'test@example.com',
           password: 'password123',
@@ -82,7 +82,7 @@ describe('Auth Routes', () => {
       pool.query.mockResolvedValueOnce({ rows: [{ id: 'existing' }] });
 
       const res = await request(app)
-        .post('/api/auth/register')
+        .post('/api/v1/auth/register')
         .send({
           email: 'existing@example.com',
           password: 'password123',
@@ -93,10 +93,10 @@ describe('Auth Routes', () => {
     });
   });
 
-  describe('POST /api/auth/login', () => {
+  describe('POST /api/v1/auth/login', () => {
     it('should return 400 if email is missing', async () => {
       const res = await request(app)
-        .post('/api/auth/login')
+        .post('/api/v1/auth/login')
         .send({ password: '123456' });
 
       expect(res.status).toBe(400);
@@ -106,16 +106,16 @@ describe('Auth Routes', () => {
       pool.query.mockResolvedValueOnce({ rows: [] });
 
       const res = await request(app)
-        .post('/api/auth/login')
+        .post('/api/v1/auth/login')
         .send({ email: 'nonexistent@example.com', password: 'password123' });
 
       expect(res.status).toBe(401);
     });
   });
 
-  describe('GET /api/auth/profile', () => {
+  describe('GET /api/v1/auth/profile', () => {
     it('should return 401 without token', async () => {
-      const res = await request(app).get('/api/auth/profile');
+      const res = await request(app).get('/api/v1/auth/profile');
       expect(res.status).toBe(401);
     });
 
@@ -131,7 +131,7 @@ describe('Auth Routes', () => {
       });
 
       const res = await request(app)
-        .get('/api/auth/profile')
+        .get('/api/v1/auth/profile')
         .set('Authorization', `Bearer ${token}`);
 
       expect(res.status).toBe(200);
@@ -140,7 +140,7 @@ describe('Auth Routes', () => {
     });
   });
 
-  describe('PUT /api/auth/profile', () => {
+  describe('PUT /api/v1/auth/profile', () => {
     it('should update profile', async () => {
       const token = generateToken({ id: 'uuid-1', role: 'customer' });
       pool.query.mockResolvedValueOnce({
@@ -154,7 +154,7 @@ describe('Auth Routes', () => {
       });
 
       const res = await request(app)
-        .put('/api/auth/profile')
+        .put('/api/v1/auth/profile')
         .set('Authorization', `Bearer ${token}`)
         .send({ full_name: 'Updated', phone: '0123456789' });
 

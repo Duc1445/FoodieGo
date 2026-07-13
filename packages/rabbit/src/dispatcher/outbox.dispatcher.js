@@ -1,5 +1,6 @@
 import { EventPublisher } from '../publisher/event.publisher.js';
 import { context, propagation, trace } from '@opentelemetry/api';
+import pLimit from 'p-limit';
 
 export class OutboxDispatcher {
   /**
@@ -115,11 +116,14 @@ export class OutboxDispatcher {
       return 0; // Idle
     }
 
-    // 2. Publish to Broker (Publisher Confirms will wait here)
+    // 2. Publish to Broker with limited concurrency
     const successfulEventIds = [];
     const failedEventIds = [];
+    
+    // Concurrency limit of 10
+    const limit = pLimit(10);
 
-    for (const row of lockedEvents) {
+    await Promise.all(lockedEvents.map((row) => limit(async () => {
       try {
         // Construct standard EventEnvelope format from DB row
         const envelope = {
@@ -129,6 +133,7 @@ export class OutboxDispatcher {
           occurredAt: row.occurred_at,
           traceId: row.metadata?.traceId,
           correlationId: row.metadata?.correlationId,
+          causationId: row.metadata?.causationId,
           aggregateId: row.aggregate_id,
           aggregateType: row.aggregate_type,
           payload: row.payload,
@@ -162,7 +167,7 @@ export class OutboxDispatcher {
         console.error(`[OutboxDispatcher] Failed to publish event ${row.event_id}:`, pubErr);
         failedEventIds.push(row.event_id);
       }
-    }
+    })));
 
     // 3. Mark Completed/Failed
     try {

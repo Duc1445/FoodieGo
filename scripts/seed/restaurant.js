@@ -18,8 +18,8 @@ async function seedRestaurant() {
 
     // Seed Category
     await pool.query(`
-      INSERT INTO categories (id, restaurant_id, name, description) 
-      VALUES ('c2eebc99-9c0b-4ef8-bb6d-6bb9bd380a33', 'b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', 'Pizzas', 'Delicious Pizzas') 
+      INSERT INTO categories (id, name, description) 
+      VALUES ('c2eebc99-9c0b-4ef8-bb6d-6bb9bd380a33', 'Pizzas', 'Delicious Pizzas') 
       ON CONFLICT DO NOTHING;
     `);
 

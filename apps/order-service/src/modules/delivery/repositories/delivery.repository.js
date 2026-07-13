@@ -37,3 +37,37 @@ export const updateStatus = async (deliveryId, status) => {
   );
   return rows[0];
 };
+
+export const listDeliveries = async ({ status, orderId, driverId, limit = 10, offset = 0, sort = 'created_at' }) => {
+  // Only created_at is supported for sorting based on requirements
+  const orderDirection = sort.startsWith('-') ? 'DESC' : 'ASC';
+  
+  let query = `SELECT * FROM delivery WHERE 1=1`;
+  const values = [];
+  
+  if (status) {
+    values.push(status);
+    query += ` AND status = $${values.length}`;
+  }
+  
+  if (orderId) {
+    values.push(orderId);
+    query += ` AND order_id = $${values.length}`;
+  }
+  
+  if (driverId) {
+    values.push(driverId);
+    query += ` AND shipper_id = $${values.length}`;
+  }
+  
+  query += ` ORDER BY created_at ${orderDirection}`;
+  
+  values.push(limit);
+  query += ` LIMIT $${values.length}`;
+  
+  values.push(offset);
+  query += ` OFFSET $${values.length}`;
+  
+  const { rows } = await pool.query(query, values);
+  return rows;
+};

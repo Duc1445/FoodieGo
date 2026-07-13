@@ -7,8 +7,10 @@ import { CheckoutAPI } from '../../shared/services/checkout.api';
 import { calculateDeliveryFee, calculateTotal } from '../../shared/constants/pricing';
 
 import { AddressSelector } from '../components/checkout/AddressSelector';
+import { VoucherSelector } from '../components/VoucherSelector';
 import { useAuthStore } from '../../shared/stores/useAuthStore';
 import { AuthAPI } from '../../shared/services/auth.api';
+import type { ValidationResult } from '../../shared/services/promotion.api';
 
 const PAYMENT_METHODS = {
   CASH: 'cash',
@@ -31,7 +33,6 @@ export function CheckoutPage() {
   const { items, summary, version, actions } = useCartStore();
   const { totalPrice: subtotal } = summary;
   const deliveryFee = calculateDeliveryFee(subtotal);
-  const totalAmount = calculateTotal(subtotal, deliveryFee);
 
   const [formData, setFormData] = useState<CheckoutFormData>({
     addressId: null,
@@ -40,8 +41,14 @@ export function CheckoutPage() {
     notes: '',
     paymentMethod: PAYMENT_METHODS.CASH,
   });
+  const [appliedVoucher, setAppliedVoucher] = useState<ValidationResult | undefined>();
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Calculate discount from applied voucher
+  const discountAmount = appliedVoucher?.valid ? appliedVoucher.discountAmount || 0 : 0;
+  const totalAfterDiscount = subtotal - discountAmount;
+  const finalTotal = calculateTotal(totalAfterDiscount, deliveryFee);
 
   /**
    * Idempotency key: generated once on mount.
@@ -199,12 +206,18 @@ export function CheckoutPage() {
                 </div>
               </div>
 
+              <VoucherSelector
+                orderValue={subtotal}
+                onVoucherApplied={setAppliedVoucher}
+                appliedVoucher={appliedVoucher}
+              />
+
               <Button
                 type="submit"
                 className="w-full mt-6 h-12 text-lg"
                 disabled={!canCheckout}
               >
-                {isSubmitting ? 'Placing Order...' : `Place Order — ₫${totalAmount.toLocaleString()}`}
+                {isSubmitting ? 'Placing Order...' : `Place Order — ₫${finalTotal.toLocaleString()}`}
               </Button>
 
               {version === null && (
@@ -232,6 +245,12 @@ export function CheckoutPage() {
                 <span className="text-muted-foreground">Subtotal</span>
                 <span>₫{subtotal.toLocaleString()}</span>
               </div>
+              {discountAmount > 0 && (
+                <div className="flex justify-between text-sm text-green-600">
+                  <span>Discount</span>
+                  <span>-₫{discountAmount.toLocaleString()}</span>
+                </div>
+              )}
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Delivery</span>
                 <span>₫{deliveryFee.toLocaleString()}</span>
@@ -239,7 +258,7 @@ export function CheckoutPage() {
             </div>
             <div className="flex justify-between font-bold text-lg">
               <span>Total</span>
-              <span className="text-primary">₫{totalAmount.toLocaleString()}</span>
+              <span className="text-primary">₫{finalTotal.toLocaleString()}</span>
             </div>
           </Card>
         </div>

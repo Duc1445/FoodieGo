@@ -7,5 +7,6 @@ ON CONFLICT (email) DO NOTHING;
 
 -- Link the test merchant to an existing restaurant in the seed data
 INSERT INTO user_restaurants (user_id, restaurant_id, role)
-VALUES ('c54ccd81-f944-40cb-a07d-add324dfa6d9', '00000000-0000-4000-1111-000000000001', 'owner')
+SELECT id, '00000000-0000-4000-1111-000000000001', 'owner'
+FROM users WHERE email = 'merchant@foodiego.com'
 ON CONFLICT (user_id, restaurant_id) DO NOTHING;

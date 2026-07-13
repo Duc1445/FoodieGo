@@ -1,6 +1,6 @@
 import { jwtDecode } from 'jwt-decode';
 
-export type AuthRole = 'customer' | 'merchant' | 'admin';
+export type AuthRole = 'customer' | 'merchant' | 'admin' | 'shipper';
 
 export interface AuthTokenPayload {
   id: string;
@@ -17,9 +17,17 @@ export type AuthValidationResult =
 export const AUTH_TOKEN_KEY = 'foodiego-auth-token';
 export const AUTH_PERSIST_KEY = 'foodiego-auth';
 
-export const getLoginPath = (role: AuthRole) => (role === 'customer' ? '/login' : `/${role}/login`);
+export const getLoginPath = (role: AuthRole) => {
+  if (role === 'customer') return '/login';
+  if (role === 'shipper') return '/driver/login';
+  return `/${role}/login`;
+};
 
-export const getDashboardPath = (role: AuthRole) => (role === 'customer' ? '/' : `/${role}`);
+export const getDashboardPath = (role: AuthRole) => {
+  if (role === 'customer') return '/';
+  if (role === 'shipper') return '/driver';
+  return `/${role}`;
+};
 
 export const clearAuthStorage = () => {
   localStorage.removeItem(AUTH_TOKEN_KEY);

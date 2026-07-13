@@ -16,7 +16,8 @@ export class WebhookController {
     }
 
     const doWork = async () => {
-      return await withSpan('Webhook Receive', async (span) => {
+      return await withSpan('Webhook', async (span) => {
+        const startWebhook = process.hrtime.bigint();
         try {
           const rawBody = req.body.toString('utf8');
           const signature = req.headers['x-signature'];
@@ -79,7 +80,7 @@ export class WebhookController {
           const payloadHash = crypto.createHash('sha256').update(rawBody).digest('hex');
 
           // 4. Persist to Inbox
-          return await withSpan('Persist Inbox', async (persistSpan) => {
+          return await withSpan('Inbox', async (persistSpan) => {
             const isNew = await this.repository.persistWebhookInbox(
               webhookId,
               'MOCK_GATEWAY',
@@ -100,6 +101,8 @@ export class WebhookController {
 
             // 5. Acknowledge Receipt
             span.setStatus({ code: 1, message: 'OK' });
+            const endWebhook = process.hrtime.bigint();
+            metrics.observe('payment_webhook_processing_duration_seconds', Number(endWebhook - startWebhook) / 1e9);
             return res.status(200).send('OK');
           });
         } catch (err) {

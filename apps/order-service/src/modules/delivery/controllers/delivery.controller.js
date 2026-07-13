@@ -29,3 +29,24 @@ export const updateDeliveryStatus = async (req, res, next) => {
     next(err);
   }
 };
+
+export const listDeliveries = async (req, res, next) => {
+  try {
+    const { status, orderId, driverId, page, limit, sort } = req.query;
+    const limitInt = limit ? parseInt(limit, 10) : 10;
+    const pageInt = page ? parseInt(page, 10) : 1;
+    
+    const deliveries = await deliveryService.listDeliveries({
+      status,
+      orderId,
+      driverId,
+      page: pageInt,
+      limit: limitInt,
+      sort
+    });
+    
+    res.json({ success: true, data: deliveries });
+  } catch (err) {
+    next(err);
+  }
+};

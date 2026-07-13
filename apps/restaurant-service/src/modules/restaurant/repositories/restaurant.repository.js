@@ -24,4 +24,29 @@ export class RestaurantRepository {
     if (rows.length === 0) return null;
     return new RestaurantEntity(rows[0]);
   }
+
+  async getAllRestaurants({ page = 1, limit = 50 } = {}) {
+    const offset = (page - 1) * limit;
+    const query = `
+      SELECT id, name, description, address, phone, owner_id, is_active, rating, total_reviews, created_at, updated_at
+      FROM restaurants
+      ORDER BY created_at DESC
+      LIMIT $1 OFFSET $2
+    `;
+    const { rows } = await pool.query(query, [limit, offset]);
+    return rows;
+  }
+
+  async toggleRestaurantStatus(id) {
+    const { rows } = await pool.query(
+      `UPDATE restaurants 
+       SET is_active = NOT is_active, updated_at = NOW()
+       WHERE id = $1
+       RETURNING id, name, is_active, rating, total_reviews, owner_id, created_at, updated_at`,
+      [id]
+    );
+    return rows[0] || null;
+  }
 }
+
+export const restaurantRepository = new RestaurantRepository();

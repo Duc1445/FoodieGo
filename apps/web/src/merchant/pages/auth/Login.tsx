@@ -27,7 +27,15 @@ export function Login() {
       toast.success('Welcome back, Merchant!');
       navigate(getDashboardPath('merchant'), { replace: true });
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Login failed. Please check your credentials.';
+      const data = err.response?.data;
+      let msg = data?.message || 'Login failed. Please check your credentials.';
+
+      if (data?.code === 'MERCHANT_PENDING') {
+        msg = 'Your application is currently under review by our admin team. Please check back later.';
+      } else if (data?.code === 'MERCHANT_REJECTED') {
+        msg = `Your application was rejected. Reason: ${data?.reason || 'No reason provided.'}`;
+      }
+
       setError(msg);
       toast.error(msg);
     } finally {

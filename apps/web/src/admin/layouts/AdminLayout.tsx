@@ -1,7 +1,7 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../shared/stores/useAuthStore';
 import { Button } from '@foodiego/ui';
-import { Shield, Users, Store, Settings, LogOut } from 'lucide-react';
+import { Shield, Users, Store, Settings, LogOut, CheckSquare } from 'lucide-react';
 
 export function AdminLayout() {
   const { user, logout } = useAuthStore();
@@ -30,6 +30,9 @@ export function AdminLayout() {
           </Link>
           <Link to="/admin/restaurants" className="flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-slate-800 hover:text-white transition-colors">
             <Store className="w-4 h-4 mr-3" /> Restaurants
+          </Link>
+          <Link to="/admin/approvals" className="flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-slate-800 hover:text-white transition-colors">
+            <CheckSquare className="w-4 h-4 mr-3" /> Approvals
           </Link>
           <Link to="/admin/settings" className="flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-slate-800 hover:text-white transition-colors">
             <Settings className="w-4 h-4 mr-3" /> Settings

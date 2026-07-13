@@ -10,6 +10,7 @@ export const EventTypes = {
   ORDER_PENDING_RESERVATION: 'OrderPendingReservation',
   ORDER_CONFIRMED: 'OrderConfirmed',
   ORDER_CANCELLED: 'OrderCancelled',
+  ORDER_FAILED: 'OrderFailed',
 
   // Cart Domain
   CART_CREATED: 'CartCreated',
@@ -28,11 +29,16 @@ export const EventTypes = {
   INVENTORY_RESERVATION_FAILED: 'InventoryReservationFailed',
   INVENTORY_RELEASED: 'InventoryReleased',
   INVENTORY_EXPIRED: 'InventoryExpired',
+  RELEASE_INVENTORY_COMMAND: 'ReleaseInventoryCommand',
 
   // Payment Domain
   PAYMENT_REQUESTED: 'PaymentRequested',
   PAYMENT_AUTHORIZED: 'PaymentAuthorized',
+  PAYMENT_CAPTURED: 'PaymentCaptured',
   PAYMENT_FAILED: 'PaymentFailed',
+  PAYMENT_REFUND_REQUESTED: 'PaymentRefundRequested',
+  PAYMENT_REFUNDED: 'PaymentRefunded',
+  PAYMENT_EXPIRED: 'PaymentExpired',
 };
 
 export class EventRegistry {

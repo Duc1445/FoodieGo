@@ -37,6 +37,25 @@ services:
       retries: 5
 
   # ─────────────────────────────────────────────
+  # MIGRATION RUNNER
+  # ─────────────────────────────────────────────
+  migration-runner:
+    image: node:20-alpine
+    container_name: foodiego-migration-runner
+    restart: "no"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-foodiego}:${POSTGRES_PASSWORD:-foodiego123}@postgres:5432/${POSTGRES_DB:-foodiego}
+    volumes:
+      - ./infrastructure/postgres/migrations:/migrations
+    working_dir: /migrations
+    command: sh -c "npm install && node migrate.js"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - foodiego-net
+
+  # ─────────────────────────────────────────────
   # CACHE
   # ─────────────────────────────────────────────
   redis:
@@ -244,6 +263,7 @@ services:
       IDENTITY_SERVICE_URL: http://identity-service:3001
       RESTAURANT_SERVICE_URL: http://restaurant-service:3002
       ORDER_SERVICE_URL: http://order-service:3003
+      PAYMENT_SERVICE_URL: http://payment-service:3005
       SERVICE_NAME: gateway
       OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
     ports:

@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://foodiego.com/schemas/v1/order-pending-reservation.schema.json",
+  "title": "OrderPendingReservation",
+  "type": "object",
+  "allOf": [
+    { "$ref": "../common/event-metadata.schema.json" }
+  ],
+  "properties": {
+    "schemaVersion": { "const": "v1" },
+    "eventType": { "const": "OrderPendingReservation" },
+    "aggregateType": { "const": "Order" },
+    "aggregateId": { "type": "string" },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "restaurantId": { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "menuItemId": { "type": "string" },
+              "quantity": { "type": "integer", "minimum": 1 }
+            },
+            "required": ["menuItemId", "quantity"],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        }
+      },
+      "required": ["restaurantId", "items"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["eventType", "aggregateType", "aggregateId", "payload"]
+}

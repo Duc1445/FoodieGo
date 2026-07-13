@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://foodiego.com/schemas/v1/order-cancelled.schema.json",
+  "title": "OrderCancelled",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../common/event-metadata.schema.json"
+    }
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "v1"
+    },
+    "eventType": {
+      "const": "OrderCancelled"
+    },
+    "aggregateType": {
+      "const": "Order"
+    },
+    "aggregateId": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "orderId",
+        "reason"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "eventType",
+    "aggregateType",
+    "aggregateId",
+    "payload"
+  ]
+}

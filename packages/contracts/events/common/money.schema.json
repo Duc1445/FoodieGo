@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://foodiego.com/schemas/common/money.schema.json",
+  "type": "object",
+  "properties": {
+    "amount": {
+      "type": "number",
+      "minimum": 0,
+      "description": "The monetary amount (usually in cents or standard currency unit)"
+    },
+    "currency": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3,
+      "description": "The 3-letter ISO 4217 currency code (e.g., USD, VND)"
+    }
+  },
+  "required": ["amount", "currency"],
+  "additionalProperties": false
+}

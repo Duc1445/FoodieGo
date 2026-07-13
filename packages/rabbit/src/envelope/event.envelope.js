@@ -1,6 +1,12 @@
 /**
  * Standard Event Envelope for all FoodieGo events.
  * Provides a consistent structure across the entire distributed system.
+ * 
+ * Versioning Policy:
+ * - Event schemas should ideally be backwards compatible (additive changes only).
+ * - If a breaking change is absolutely unavoidable, increment `eventVersion`.
+ * - Consumers MUST support processing older versions if they are still emitted,
+ *   or explicitly handle version migration logic within their handlers.
  */
 export class EventEnvelope {
   constructor({
@@ -8,8 +14,9 @@ export class EventEnvelope {
     eventType,
     eventVersion = 1,
     occurredAt,
-    traceId,
-    correlationId,
+    traceId,          // OpenTelemetry traceId (or traceparent)
+    correlationId,    // ID tying the entire Saga/Flow together
+    causationId,      // ID of the event that directly caused this event
     aggregateId,
     aggregateType,
     payload,
@@ -25,6 +32,7 @@ export class EventEnvelope {
     this.occurredAt = occurredAt || new Date().toISOString();
     this.traceId = traceId || 'unknown';
     this.correlationId = correlationId || 'unknown';
+    this.causationId = causationId || 'unknown';
     this.aggregateId = aggregateId;
     this.aggregateType = aggregateType;
     this.payload = payload;
@@ -39,6 +47,7 @@ export class EventEnvelope {
       occurredAt: this.occurredAt,
       traceId: this.traceId,
       correlationId: this.correlationId,
+      causationId: this.causationId,
       aggregateId: this.aggregateId,
       aggregateType: this.aggregateType,
       payload: this.payload,

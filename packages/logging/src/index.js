@@ -48,6 +48,10 @@ function otelMixin() {
 const PII_FIELDS = new Set([
   'password', 'secret', 'pin', 'token', 'refreshToken', 'refresh_token',
   'authorization', 'credit_card', 'creditCard', 'cvv', 'ssn', 'cccd',
+  // Gateway-specific secrets — must never appear in logs
+  'providerApiKey', 'provider_api_key', 'providerSecret', 'provider_secret',
+  'clientSecret', 'client_secret', 'accessToken', 'access_token',
+  'signature', 'hmac', 'bearerToken', 'bearer_token', 'apiKey', 'api_key',
 ]);
 
 const REDACT_FIELDS = new Set([

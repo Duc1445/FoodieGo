@@ -14,6 +14,7 @@ import { createLogger, requestLogger } from '@foodiego/logging';
 import { startConsumers } from './workers/consumer.worker.js';
 import { startExpirationWorker } from './workers/expiration.worker.js';
 import { startDispatcher } from './workers/dispatcher.worker.js';
+import { eventValidator } from '@foodiego/contracts';
 
 const app = express();
 const PORT = process.env.PORT || 3004;
@@ -47,6 +48,9 @@ app.use((err, req, res, _next) => {
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, async () => {
     logger.info({ port: PORT }, 'Inventory Service started');
+
+    // Init contracts validator
+    eventValidator.init();
 
     // Start background workers
     await startDispatcher();

@@ -65,6 +65,7 @@ import { startConsumers } from './workers/consumer.worker.js';
 import { startDispatcher } from './workers/dispatcher.worker.js';
 import { startMockGatewayWorker } from './workers/mock.gateway.worker.js';
 import { startWebhookWorker } from './workers/webhook.worker.js';
+import { startReconciliationWorker } from './workers/reconciliation.worker.js';
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, async () => {
@@ -73,6 +74,7 @@ if (process.env.NODE_ENV !== 'test') {
     await startConsumers();
     startMockGatewayWorker();
     startWebhookWorker(paymentService, paymentRepo);
+    startReconciliationWorker(paymentService, paymentRepo);
   });
 }
 

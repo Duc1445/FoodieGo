@@ -2,15 +2,19 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { OrderAPI } from '../../shared/services/order.api';
 import { RestaurantAPI } from '../../shared/services/restaurant.api';
+import { ReviewAPI } from '../../shared/services/review.api';
 import { Card, CardHeader, CardTitle, CardContent, Badge, Skeleton, Button } from '@foodiego/ui';
-import { Package, ArrowLeft, RefreshCw, AlertCircle } from 'lucide-react';
+import { Package, ArrowLeft, RefreshCw, AlertCircle, Star } from 'lucide-react';
 import { EmptyState } from '../../shared/components/EmptyState';
 import { OrderTimeline } from '../components/OrderTimeline';
+import { ReviewForm } from '../components/ReviewForm';
 import { OrderStatus } from '@foodiego/platform-sdk/src/order-status';
+import { useState } from 'react';
 
 export function OrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [showReviewForm, setShowReviewForm] = useState(false);
 
   const {
     data: order,
@@ -31,6 +35,12 @@ export function OrderDetailPage() {
     queryFn: () => RestaurantAPI.getRestaurantById(order!.restaurantId),
     enabled: !!order?.restaurantId,
     staleTime: 1000 * 60 * 5
+  });
+
+  const { data: existingReview } = useQuery({
+    queryKey: ['review', 'order', id],
+    queryFn: () => ReviewAPI.getReviewByOrderId(id!),
+    enabled: !!id && order?.status === 'COMPLETED',
   });
 
   const isLoading = isLoadingOrder || isLoadingRestaurant;
@@ -235,6 +245,67 @@ export function OrderDetailPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Review Section - Only show for completed orders */}
+        {order.status === 'COMPLETED' && !existingReview && (
+          <div className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Star className="w-5 h-5 text-yellow-500" />
+                  Rate Your Experience
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {showReviewForm ? (
+                  <ReviewForm
+                    restaurantId={order.restaurantId}
+                    orderId={order.id}
+                    onSuccess={() => setShowReviewForm(false)}
+                  />
+                ) : (
+                  <Button onClick={() => setShowReviewForm(true)} className="w-full">
+                    Write a Review
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Existing Review Display */}
+        {existingReview && (
+          <div className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Star className="w-5 h-5 text-yellow-500" />
+                  Your Review
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="flex">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        size={16}
+                        className={`${
+                          star <= existingReview.rating
+                            ? 'fill-yellow-400 text-yellow-400'
+                            : 'fill-gray-200 text-gray-200'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+                {existingReview.comment && (
+                  <p className="text-sm text-muted-foreground">{existingReview.comment}</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -11,96 +11,6 @@ const cartService = new CartService();
 const restaurantGateway = new RestaurantGateway();
 const pricingService = new PricingService();
 
-// TODO (post-demo 16/7): refactor to event-driven saga with inventory-service.
-// Current implementation is synchronous for demo reliability.
-// The full saga flow (OrderPendingReservation → InventoryReserved → PaymentRequested → PaymentAuthorized)
-// is preserved in consumer.worker.js but bypassed here until Inventory Service is implemented.
-
-/**
- * Checks and reserves inventory synchronously within a database client.
- * Uses inventory_stock table with optimistic locking (version bump).
- *
- * Returns true if reservation succeeded.
- * Throws ValidationError if any item is out of stock.
- *
- * TODO (post-demo 16/7): replace with async saga via InventoryService.
- */
-async function checkAndReserveInventory(client, items) {
-  for (const item of items) {
-    const sku = item.menuItemId; // Use menu_item_id as SKU
-
-    // Attempt to lock and reduce available stock atomically
-    const res = await client.query(
-      `SELECT stock_item_id, total_quantity, reserved_quantity, version
-       FROM inventory_stock
-       WHERE stock_item_id = $1
-       FOR UPDATE`,
-      [sku],
-    );
-
-    if (res.rows.length === 0) {
-      // No inventory record found — assume unlimited stock for menu items without stock tracking
-      // TODO (post-demo 16/7): enforce strict inventory checks once Inventory Service seeds stock data
-      continue;
-    }
-
-    const stock = res.rows[0];
-    const available = stock.total_quantity - stock.reserved_quantity;
-
-    if (available < item.quantity) {
-      throw new ValidationError(
-        `Item "${item.itemName}" is out of stock (available: ${available}, requested: ${item.quantity})`,
-      );
-    }
-
-    // Reserve stock (increment reserved_quantity) with optimistic locking
-    const updateRes = await client.query(
-      `UPDATE inventory_stock
-       SET reserved_quantity = reserved_quantity + $1,
-           version = version + 1,
-           updated_at = NOW()
-       WHERE stock_item_id = $2 AND version = $3
-       RETURNING version`,
-      [item.quantity, sku, stock.version],
-    );
-
-    if (updateRes.rowCount === 0) {
-      throw new ConflictError(`Inventory conflict for item "${item.itemName}". Please retry.`);
-    }
-  }
-}
-
-/**
- * Releases previously reserved inventory (on order cancellation).
- * Safe to call even if inventory record does not exist (no-op).
- *
- * TODO (post-demo 16/7): replace with OrderCancelled event consumed by Inventory Service.
- */
-export async function releaseInventory(items) {
-  if (!items || items.length === 0) return;
-
-  const client = await pool.connect();
-  try {
-    await client.query('BEGIN');
-    for (const item of items) {
-      const sku = item.menu_item_id || item.menuItemId;
-      await client.query(
-        `UPDATE inventory_stock
-         SET reserved_quantity = GREATEST(0, reserved_quantity - $1),
-             version = version + 1,
-             updated_at = NOW()
-         WHERE stock_item_id = $2`,
-        [item.quantity, sku],
-      );
-    }
-    await client.query('COMMIT');
-  } catch (err) {
-    await client.query('ROLLBACK');
-    throw err;
-  } finally {
-    client.release();
-  }
-}
 
 export class CheckoutService {
   async processCheckout(userId, payload, traceId) {
@@ -149,8 +59,8 @@ export class CheckoutService {
     );
 
     // 6. Determine initial order status
-    // All orders must start as CREATED and go through PENDING_RESERVATION → saga.
-    const initialStatus = OrderStatus.CREATED;
+    // All orders must start as PENDING_RESERVATION and await Inventory.
+    const initialStatus = OrderStatus.PENDING_RESERVATION;
 
     const orderData = {
       userId,
@@ -173,15 +83,14 @@ export class CheckoutService {
       orderItemsSnapshot,
       {
         eventType: 'OrderPendingReservation',
-        eventVersion: 1,
         payload: {
-          orderId: undefined, // will be set inside the repo
+          restaurantId: cart.restaurant_id,
           items: orderItemsSnapshot.map((item) => ({
-            sku: item.menuItemId, // using menu item id as sku
+            menuItemId: item.menuItemId,
             quantity: item.quantity,
           })),
-          traceId,
         },
+        correlationId: idempotencyKey, // Using idempotency key as initial correlation ID
       },
       payload,
     );

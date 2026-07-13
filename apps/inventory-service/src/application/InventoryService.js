@@ -11,67 +11,36 @@ export class InventoryService {
   /**
    * Handle OrderPendingReservation event
    */
-  async handleOrderPendingReservation(payload, traceId) {
+  async handleOrderPendingReservation(payload, correlationId, traceId) {
     const { orderId, items } = payload;
     const client = await pool.connect();
 
     try {
       await client.query('BEGIN');
 
+      const mappedItems = items.map(item => ({
+        sku: item.menuItemId,
+        quantity: item.quantity
+      }));
+
       const reservation = new Reservation({
         orderId,
-        items,
+        items: mappedItems,
       });
 
-      const failedSkus = [];
       const ttl = parseInt(process.env.RESERVATION_TTL || '900', 10);
+      reservation.markAsReserved(ttl);
 
-      // Attempt to reserve all items
-      for (const item of items) {
+      // Perform real inventory deduction with optimistic locking
+      for (const item of mappedItems) {
         const stock = await this.repo.getStockBySku(item.sku, client);
         if (!stock) {
-          failedSkus.push(item.sku);
-          continue;
+          throw new Error(`Stock not found for SKU ${item.sku}`);
         }
-
-        if (!stock.canReserve(item.quantity)) {
-          failedSkus.push(item.sku);
-          continue;
-        }
-
-        stock.reserve(item.quantity);
-
-        try {
-          await this.repo.updateStock(stock, client);
-        } catch (error) {
-          // Optimistic locking failure counts as failed reservation for this transaction
-          failedSkus.push(item.sku);
-        }
+        stock.reserve(item.quantity); // Throws if insufficient stock
+        await this.repo.updateStock(stock, client); // Throws if optimistic lock fails
       }
 
-      if (failedSkus.length > 0) {
-        // Validation failed, rollback any stock updates and publish failure
-        await client.query('ROLLBACK');
-        await client.query('BEGIN'); // Start new transaction for outbox event
-
-        await this.repo.saveOutboxEvent(
-          {
-            eventType: 'InventoryReservationFailed',
-            eventVersion: 1,
-            aggregateType: 'Order',
-            aggregateId: orderId,
-            payload: { orderId, reason: 'Insufficient stock or locking conflict', failedSkus },
-            metadata: { traceId },
-          },
-          client,
-        );
-
-        await client.query('COMMIT');
-        return false;
-      }
-
-      // Success: save reservation and publish InventoryReserved
-      reservation.markAsReserved(ttl);
       await this.repo.createReservation(reservation, client);
 
       await this.repo.saveOutboxEvent(
@@ -86,7 +55,7 @@ export class InventoryService {
             status: reservation.status,
             expiresAt: reservation.expiresAt,
           },
-          metadata: { traceId },
+          metadata: { traceId, correlationId },
         },
         client,
       );
@@ -95,6 +64,38 @@ export class InventoryService {
       return true;
     } catch (error) {
       await client.query('ROLLBACK');
+      
+      // If business rule violation (e.g. out of stock), we should publish InventoryReservationFailed
+      // and NOT throw so that the event is ACKed.
+      const isBusinessViolation = error.message.includes('Insufficient stock') || error.message.includes('Stock not found');
+      if (isBusinessViolation) {
+        const failClient = await pool.connect();
+        try {
+          await failClient.query('BEGIN');
+          await this.repo.saveOutboxEvent(
+            {
+              eventType: 'InventoryReservationFailed',
+              eventVersion: 1,
+              aggregateType: 'Order',
+              aggregateId: orderId,
+              payload: {
+                orderId,
+                reason: error.message
+              },
+              metadata: { traceId, correlationId },
+            },
+            failClient,
+          );
+          await failClient.query('COMMIT');
+          return true; // Successfully handled the failure via compensation event
+        } catch (failErr) {
+          await failClient.query('ROLLBACK');
+          throw failErr;
+        } finally {
+          failClient.release();
+        }
+      }
+      
       throw error;
     } finally {
       client.release();

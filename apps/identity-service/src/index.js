@@ -6,6 +6,9 @@ import morgan from 'morgan';
 import { register, collectDefaultMetrics, Counter, Histogram } from 'prom-client';
 import authRoutes from './modules/auth/routes/auth.routes.js';
 
+import addressRoutes from './modules/address/routes/address.routes.js';
+import adminRoutes from './modules/user/routes/admin.routes.js';
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -56,11 +59,10 @@ app.get('/metrics', async (_req, res) => {
 });
 
 app.use('/api/v1/auth', authRoutes);
-import employeeRoutes from './routes/employee.routes.js';
-import addressRoutes from './modules/address/routes/address.routes.js';
 
-app.use('/api/v1/employees', employeeRoutes);
+
 app.use('/api/v1/users', addressRoutes);
+app.use('/api/v1/users/admin', adminRoutes);
 
 // ─── Error Handler ─────────────────────────────────────────────────────────
 app.use((err, _req, res, _next) => {

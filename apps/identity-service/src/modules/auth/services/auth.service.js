@@ -16,7 +16,7 @@ export const register = async ({ email, password, full_name, phone, address, rol
   }
 
   const hashed = await bcrypt.hash(password, 10);
-  const isActive = role === 'merchant' ? false : true;
+  const merchantStatus = role === 'merchant' ? 'PENDING' : 'APPROVED';
   const user = await createUser({
     email,
     password: hashed,
@@ -24,7 +24,8 @@ export const register = async ({ email, password, full_name, phone, address, rol
     phone,
     address,
     role,
-    is_active: isActive,
+    is_active: true, // accounts are always active initially, approval is handled via merchant_status
+    merchant_status: merchantStatus,
   });
 
   const token = generateToken({ id: user.id, role: user.role });
@@ -50,6 +51,22 @@ export const login = async ({ email, password }) => {
     const err = new Error('Account is deactivated');
     err.statusCode = 403;
     throw err;
+  }
+
+  if (user.role === 'merchant') {
+    if (user.merchant_status === 'PENDING') {
+      const err = new Error('Merchant account is pending approval');
+      err.statusCode = 403;
+      err.code = 'MERCHANT_PENDING';
+      throw err;
+    }
+    if (user.merchant_status === 'REJECTED') {
+      const err = new Error('Merchant account was rejected');
+      err.statusCode = 403;
+      err.code = 'MERCHANT_REJECTED';
+      err.reason = user.rejection_reason || 'No reason provided';
+      throw err;
+    }
   }
 
   const token = generateToken({ id: user.id, role: user.role });

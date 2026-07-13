@@ -2,6 +2,7 @@ import { EventConsumer, RabbitMQAdapter } from '@foodiego/rabbit';
 import pool from '../config/database.js';
 import { InventoryService } from '../application/InventoryService.js';
 import { logger } from '../context.js';
+import { eventValidator } from '@foodiego/contracts';
 
 class OrderPendingReservationConsumer extends EventConsumer {
   constructor(inventoryService) {
@@ -14,8 +15,14 @@ class OrderPendingReservationConsumer extends EventConsumer {
   }
 
   async handle(event) {
-    logger.info({ orderId: event.payload.orderId }, 'Processing OrderPendingReservation');
-    await this.inventoryService.handleOrderPendingReservation(event.payload, event.traceId);
+    logger.info({ eventId: event.eventId, orderId: event.payload?.orderId }, 'Processing OrderPendingReservation');
+    
+    // 1. Validate Schema. If invalid, throws SchemaValidationError 
+    // -> caught by adapter -> ACK + DLQ immediately
+    eventValidator.validate(event);
+
+    // 2. Process Business Logic
+    await this.inventoryService.handleOrderPendingReservation(event.payload, event.correlationId, event.metadata?.traceId);
   }
 }
 

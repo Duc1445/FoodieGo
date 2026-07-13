@@ -1,3 +1,4 @@
+import pool from '../config/database.js';
 import { logger, metrics } from '../context.js';
 import { withSpan, extractTraceContext, runWithContext } from '@foodiego/tracing';
 
@@ -22,29 +23,42 @@ export async function startWebhookWorker(paymentService, paymentRepository) {
 
               const payload = webhook.payload;
 
-              if (payload.event !== 'payment.updated') {
-                logger.info(
-                  { eventId: webhook.event_id, eventType: payload.event },
-                  'Dropping unknown webhook event',
+              const trx = await pool.connect();
+              try {
+                await trx.query('BEGIN');
+
+                if (payload.event !== 'payment.updated') {
+                  logger.info(
+                    { eventId: webhook.event_id, eventType: payload.event },
+                    'Dropping unknown webhook event',
+                  );
+                  await paymentRepository.markWebhookProcessed(trx, webhook.event_id);
+                  await trx.query('COMMIT');
+                  span.setStatus({ code: 1, message: 'Dropped unknown event' });
+                  return;
+                }
+
+                const status = payload.data.status;
+
+                await paymentService.processVerifiedWebhook(
+                  webhook.event_id,
+                  webhook.provider,
+                  payload.data.tx_id,
+                  status,
+                  payload,
+                  webhook.traceparent,
+                  trx,
                 );
-                await paymentRepository.markWebhookProcessed(webhook.event_id);
-                span.setStatus({ code: 1, message: 'Dropped unknown event' });
-                return;
+
+                await paymentRepository.markWebhookProcessed(trx, webhook.event_id);
+                await trx.query('COMMIT');
+                span.setStatus({ code: 1, message: 'Processed successfully' });
+              } catch (err) {
+                await trx.query('ROLLBACK');
+                throw err;
+              } finally {
+                trx.release();
               }
-
-              const status = payload.data.status;
-
-              await paymentService.processVerifiedWebhook(
-                webhook.event_id,
-                webhook.provider,
-                payload.data.tx_id,
-                status,
-                payload,
-                webhook.traceparent,
-              );
-
-              await paymentRepository.markWebhookProcessed(webhook.event_id);
-              span.setStatus({ code: 1, message: 'Processed successfully' });
             } catch (err) {
               logger.error(
                 { eventId: webhook.event_id, err: err.message },

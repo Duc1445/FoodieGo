@@ -87,6 +87,14 @@ export class PaymentAggregate {
     });
   }
 
+  markRefundPending(reason) {
+    this.stateMachine.transitionTo(PaymentStatus.REFUND_PENDING);
+    this._addEvent('PaymentRefundRequestedDomainEvent', {
+      amount: this.amount,
+      reason,
+    });
+  }
+
   fail(reason) {
     this.stateMachine.transitionTo(PaymentStatus.FAILED);
     this.errorReason = reason;

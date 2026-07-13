@@ -305,6 +305,15 @@ VALUES (
   'merchant'
 ) ON CONFLICT (email) DO NOTHING;
 
+-- Shipper account (password: Admin@123)
+INSERT INTO users (email, password, full_name, role)
+VALUES (
+  'shipper@foodiego.com',
+  '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS',
+  'FoodieGo Shipper',
+  'shipper'
+) ON CONFLICT (email) DO NOTHING;
+
 -- ─────────────────────────────────────────────
 -- INVENTORY SERVICE
 -- ─────────────────────────────────────────────

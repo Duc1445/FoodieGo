@@ -118,10 +118,22 @@ export class RabbitMQAdapter extends EventPublisher {
   /**
    * Routes a failed message to a delayed retry queue or DLQ.
    */
-  async _handleFailure(msg, eventPayload, currentAttempt, errMessage, pool, consumerName) {
+  async _handleFailure(msg, eventPayload, currentAttempt, err, pool, consumerName) {
+    const errMessage = err instanceof Error ? err.message : String(err);
     const evType = eventPayload.eventType || eventPayload.type;
     const evId = eventPayload.eventId || eventPayload.id;
-    const actionData = this.retryManager.getRetryAction(evType, currentAttempt);
+    let actionData = this.retryManager.getRetryAction(evType, currentAttempt);
+
+    // Enforce strict Transient vs Permanent error retry logic
+    const isPermanentError = 
+      err?.name === 'SchemaValidationError' ||
+      err?.name === 'UnknownEventError' ||
+      errMessage.includes('violates foreign key constraint');
+
+    if (isPermanentError) {
+      console.error(`[RabbitMQ] Permanent error detected (${err?.name || 'ConstraintViolation'}). Routing to DLQ immediately.`);
+      actionData = { action: 'DLQ' };
+    }
 
     if (actionData.action === 'DROP') {
       console.warn(`[RabbitMQ] Dropping event ${evId} after ${currentAttempt - 1} retries.`);
@@ -140,6 +152,11 @@ export class RabbitMQAdapter extends EventPublisher {
           VALUES ($1, $2, $3, $4, $5, $6)
         `,
           [evId, evType, consumerName, eventPayload, errMessage, currentAttempt],
+        );
+        
+        await client.query(
+          `UPDATE inbox_events SET status = 'DLQ' WHERE event_id = $1 AND consumer_name = $2`,
+          [evId, consumerName],
         );
       } catch (dbErr) {
         console.error('[RabbitMQ] Failed to insert into dead_letter_events:', dbErr);
@@ -250,7 +267,7 @@ export class RabbitMQAdapter extends EventPublisher {
       const inboxCheck = await client.query(
         `
           INSERT INTO inbox_events (event_id, consumer_name, status, attempt)
-          VALUES ($1, $2, 'PENDING', $3)
+          VALUES ($1, $2, 'PROCESSING', $3)
           ON CONFLICT (event_id, consumer_name) DO NOTHING
           RETURNING *;
         `,
@@ -259,50 +276,56 @@ export class RabbitMQAdapter extends EventPublisher {
 
       if (inboxCheck.rowCount === 0) {
         const existing = await client.query(
-          'SELECT status, attempt FROM inbox_events WHERE event_id = $1 AND consumer_name = $2',
+          'SELECT status, attempt FROM inbox_events WHERE event_id = $1 AND consumer_name = $2 FOR UPDATE NOWAIT',
           [eventId, consumerName],
         );
-        if (existing.rows[0]?.status === 'COMPLETED') {
+        if (existing.rows[0]?.status === 'SUCCESS' || existing.rows[0]?.status === 'DLQ') {
           this.channel.ack(msg);
           return;
         }
-        // If it's PENDING and attempt < currentAttempt, update attempt.
+        // If it's PROCESSING or FAILED and attempt < currentAttempt, update attempt.
         await client.query(
-          `UPDATE inbox_events SET attempt = $1 WHERE event_id = $2 AND consumer_name = $3`,
+          `UPDATE inbox_events SET attempt = $1, status = 'PROCESSING' WHERE event_id = $2 AND consumer_name = $3`,
           [currentAttempt, eventId, consumerName],
         );
       }
 
-      await consumer.handle(eventPayload);
+      await client.query('BEGIN');
+      await consumer.handle(eventPayload, client);
 
       const processingDuration = Date.now() - startTime;
       await client.query(
         `
           UPDATE inbox_events 
-          SET status = 'COMPLETED', processed_at = NOW(), processing_duration = $1, error = NULL
+          SET status = 'SUCCESS', processed_at = NOW(), processing_duration = $1, error = NULL
           WHERE event_id = $2 AND consumer_name = $3
         `,
         [processingDuration, eventId, consumerName],
       );
+      
+      await client.query('COMMIT');
 
       span.setStatus({ code: SpanStatusCode.OK });
       this.channel.ack(msg);
     } catch (err) {
+      await client.query('ROLLBACK');
+      
       span.setStatus({ code: SpanStatusCode.ERROR, message: err.message });
       span.recordException(err);
       console.error(`[RabbitMQ] Consumer ${consumerName} failed:`, err.message);
 
+      // Save FAILED state outside the rolled back transaction
       await client.query(
         `
           UPDATE inbox_events 
-          SET error = $1
+          SET status = 'FAILED', error = $1
           WHERE event_id = $2 AND consumer_name = $3
         `,
         [err.message, eventId, consumerName],
       );
 
       // Delegate to Platform Retry Manager
-      await this._handleFailure(msg, eventPayload, currentAttempt, err.message, pool, consumerName);
+      await this._handleFailure(msg, eventPayload, currentAttempt, err, pool, consumerName);
     } finally {
       client.release();
     }

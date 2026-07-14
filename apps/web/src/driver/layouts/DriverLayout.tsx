@@ -5,13 +5,13 @@ import { Button } from '@foodiego/ui';
 import { Truck, MapPin, ClipboardList, Settings, LogOut } from 'lucide-react';
 
 export function DriverLayout() {
-  const user = useAuthStore((state) => state.getUser('shipper'));
+  const user = useAuthStore((state) => state.getUser('driver'));
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleLogout = () => {
-    logout('shipper');
+    logout('driver');
     navigate('/driver/login');
   };
 

@@ -10,14 +10,14 @@ export const createTicket = async ({
   order_id,
   restaurant_id,
   merchant_id,
-  shipper_id,
+  driver_id,
   issue_type,
   description,
   priority,
 }) => {
   const { rows } = await pool.query(
     `INSERT INTO support_tickets
-      (ticket_number, customer_id, order_id, restaurant_id, merchant_id, shipper_id, issue_type, description, priority)
+      (ticket_number, customer_id, order_id, restaurant_id, merchant_id, driver_id, issue_type, description, priority)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
      RETURNING *`,
     [
@@ -26,7 +26,7 @@ export const createTicket = async ({
       order_id || null,
       restaurant_id || null,
       merchant_id || null,
-      shipper_id || null,
+      driver_id || null,
       issue_type,
       description,
       priority || 'MEDIUM',
@@ -91,13 +91,13 @@ export const findTicketById = async (id) => {
        c.full_name  AS customer_name, c.email AS customer_email,
        r.name       AS restaurant_name,
        o.status     AS order_status, o.total AS order_total, o.subtotal AS order_subtotal,
-       sh.full_name AS shipper_name, sh.email AS shipper_email,
+       sh.full_name AS driver_name, sh.email AS driver_email,
        aa.full_name AS assigned_admin_name
      FROM support_tickets t
      LEFT JOIN users c    ON t.customer_id = c.id
      LEFT JOIN restaurants r ON t.restaurant_id = r.id
      LEFT JOIN orders o   ON t.order_id = o.id
-     LEFT JOIN users sh   ON t.shipper_id = sh.id
+     LEFT JOIN users sh   ON t.driver_id = sh.id
      LEFT JOIN users aa   ON t.assigned_admin = aa.id
      WHERE t.id = $1`,
     [id],

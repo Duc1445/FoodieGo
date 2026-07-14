@@ -7,7 +7,7 @@ export interface User {
   full_name?: string;
   phone?: string;
   address?: string;
-  role: 'customer' | 'merchant' | 'admin' | 'shipper';
+  role: 'customer' | 'merchant' | 'admin' | 'driver';
   approval_status?: 'PENDING' | 'APPROVED' | 'REJECTED';
   rejection_reason?: string;
   business_name?: string;
@@ -51,12 +51,12 @@ export interface AdminStats {
   total_users: number;
   total_customers: number;
   total_merchants: number;
-  total_shippers: number;
+  total_drivers: number;
   total_admins: number;
   pending_merchants: number;
   approved_merchants: number;
-  pending_shippers: number;
-  approved_shippers: number;
+  pending_drivers: number;
+  approved_drivers: number;
   rejected_applications: number;
   
   total_orders: number;
@@ -78,7 +78,7 @@ export interface SupportTicket {
   order_id?: string;
   restaurant_id?: string;
   merchant_id?: string;
-  shipper_id?: string;
+  driver_id?: string;
   issue_type: string;
   description: string;
   status: 'OPEN' | 'IN_PROGRESS' | 'WAITING_USER' | 'RESOLVED' | 'CLOSED';
@@ -149,7 +149,7 @@ export const AdminAPI = {
   },
 
   // Approval Management
-  getPendingUsers: async (role?: 'merchant' | 'shipper'): Promise<User[]> => {
+  getPendingUsers: async (role?: 'merchant' | 'driver'): Promise<User[]> => {
     const url = role ? `/admin/users/pending?role=${role}` : `/admin/users/pending`;
     const res = await api.get<{ success: boolean; data: User[] }>(url);
     return res.data.data;

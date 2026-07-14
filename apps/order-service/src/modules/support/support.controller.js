@@ -2,7 +2,7 @@ import * as supportRepo from './support.repository.js';
 
 export const createTicketHandler = async (req, res, next) => {
   try {
-    const { order_id, restaurant_id, merchant_id, shipper_id, issue_type, description, priority } =
+    const { order_id, restaurant_id, merchant_id, driver_id, issue_type, description, priority } =
       req.body;
     const customer_id = req.user?.id || req.body.customer_id;
 
@@ -34,7 +34,7 @@ export const createTicketHandler = async (req, res, next) => {
       order_id,
       restaurant_id,
       merchant_id,
-      shipper_id,
+      driver_id,
       issue_type,
       description,
       priority,

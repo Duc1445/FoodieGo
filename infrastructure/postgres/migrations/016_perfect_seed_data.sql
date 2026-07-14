@@ -73,36 +73,36 @@ BEGIN
   END LOOP;
 END $$;
 
--- Insert 10 Approved Shippers
+-- Insert 10 Approved Drivers
 DO $$
 DECLARE i INTEGER;
 BEGIN
   FOR i IN 1..10 LOOP
     INSERT INTO users (id, email, password, full_name, role, approval_status, is_active, identity_card, driver_license, vehicle_type, vehicle_plate)
     VALUES 
-    (gen_random_uuid(), 'shipper_appr' || i || '@foodiego.com', '$2a$10$mrHKsWQHs8RoHTWCpY5kJOcWzrw0t/2s35OxPosBHBT0qY4Fiq7Gm', 'Approved Shipper ' || i, 'shipper', 'APPROVED', true, 'ID-APPR-' || i, 'DL-APPR-' || i, 'Motorbike', 'PL-APPR-' || i);
+    (gen_random_uuid(), 'driver_appr' || i || '@foodiego.com', '$2a$10$mrHKsWQHs8RoHTWCpY5kJOcWzrw0t/2s35OxPosBHBT0qY4Fiq7Gm', 'Approved Driver ' || i, 'driver', 'APPROVED', true, 'ID-APPR-' || i, 'DL-APPR-' || i, 'Motorbike', 'PL-APPR-' || i);
   END LOOP;
 END $$;
 
--- Insert 3 Pending Shippers
+-- Insert 3 Pending Drivers
 DO $$
 DECLARE i INTEGER;
 BEGIN
   FOR i IN 1..3 LOOP
     INSERT INTO users (id, email, password, full_name, role, approval_status, is_active, identity_card, driver_license, vehicle_type, vehicle_plate)
     VALUES 
-    (gen_random_uuid(), 'shipper_pend' || i || '@foodiego.com', '$2a$10$mrHKsWQHs8RoHTWCpY5kJOcWzrw0t/2s35OxPosBHBT0qY4Fiq7Gm', 'Pending Shipper ' || i, 'shipper', 'PENDING', true, 'ID-PEND-' || i, 'DL-PEND-' || i, 'Motorbike', 'PL-PEND-' || i);
+    (gen_random_uuid(), 'driver_pend' || i || '@foodiego.com', '$2a$10$mrHKsWQHs8RoHTWCpY5kJOcWzrw0t/2s35OxPosBHBT0qY4Fiq7Gm', 'Pending Driver ' || i, 'driver', 'PENDING', true, 'ID-PEND-' || i, 'DL-PEND-' || i, 'Motorbike', 'PL-PEND-' || i);
   END LOOP;
 END $$;
 
--- Insert 2 Rejected Shippers
+-- Insert 2 Rejected Drivers
 DO $$
 DECLARE i INTEGER;
 BEGIN
   FOR i IN 1..2 LOOP
     INSERT INTO users (id, email, password, full_name, role, approval_status, is_active, identity_card, driver_license, vehicle_type, vehicle_plate, rejection_reason)
     VALUES 
-    (gen_random_uuid(), 'shipper_rej' || i || '@foodiego.com', '$2a$10$mrHKsWQHs8RoHTWCpY5kJOcWzrw0t/2s35OxPosBHBT0qY4Fiq7Gm', 'Rejected Shipper ' || i, 'shipper', 'REJECTED', true, 'ID-REJ-' || i, 'DL-REJ-' || i, 'Motorbike', 'PL-REJ-' || i, 'Bad driving record');
+    (gen_random_uuid(), 'driver_rej' || i || '@foodiego.com', '$2a$10$mrHKsWQHs8RoHTWCpY5kJOcWzrw0t/2s35OxPosBHBT0qY4Fiq7Gm', 'Rejected Driver ' || i, 'driver', 'REJECTED', true, 'ID-REJ-' || i, 'DL-REJ-' || i, 'Motorbike', 'PL-REJ-' || i, 'Bad driving record');
   END LOOP;
 END $$;
 

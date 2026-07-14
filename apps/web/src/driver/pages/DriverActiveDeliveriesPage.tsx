@@ -7,10 +7,11 @@ import { toast } from 'sonner';
 import { CheckCircle, Truck, Package } from 'lucide-react';
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@foodiego/ui';
+import { EmptyState } from '../../shared/components/EmptyState';
 
 export function DriverActiveDeliveriesPage() {
   const queryClient = useQueryClient();
-  const user = useAuthStore((state) => state.getUser('shipper'));
+  const user = useAuthStore((state) => state.getUser('driver'));
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
   const { data: activeDeliveries, isLoading } = useQuery({
@@ -49,10 +50,14 @@ export function DriverActiveDeliveriesPage() {
         {isLoading ? (
           <Skeleton className="h-32 w-full rounded-lg" />
         ) : currentActive.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground border rounded-lg bg-card">
-            <Package className="w-12 h-12 mx-auto mb-4 opacity-20" />
-            <p className="text-lg font-medium">No active deliveries</p>
-            <p className="text-sm">Go to Available Orders to accept one.</p>
+          <div className="bg-card border rounded-lg">
+            <EmptyState 
+              icon={Package}
+              title="No active deliveries"
+              description="You do not have any active deliveries. Go to Available Orders to accept one."
+              actionLabel="View Available Orders"
+              onAction={() => window.location.href = '/driver/available'}
+            />
           </div>
         ) : (
           currentActive.map((delivery) => {

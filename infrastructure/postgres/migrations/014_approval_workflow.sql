@@ -5,7 +5,7 @@
 -- 1. Rename `merchant_status` to `approval_status`
 ALTER TABLE users RENAME COLUMN merchant_status TO approval_status;
 
--- 2. Add new columns for Merchants & Shippers
+-- 2. Add new columns for Merchants & Drivers
 ALTER TABLE users 
   ADD COLUMN IF NOT EXISTS business_name VARCHAR(255),
   ADD COLUMN IF NOT EXISTS business_license VARCHAR(255),

@@ -28,7 +28,7 @@ export function Register() {
         password, 
         full_name, 
         phone, 
-        role: 'shipper',
+        role: 'driver',
         driver_license,
         vehicle_type,
         vehicle_plate

@@ -1,7 +1,7 @@
 export const config = {
   env: process.env.NODE_ENV || 'development',
   server: {
-    port: parseInt(process.env.PORT, 10) || 3000,
+    port: process.env.PORT ? parseInt(process.env.PORT, 10) : undefined,
   },
   database: {
     url: process.env.DATABASE_URL,

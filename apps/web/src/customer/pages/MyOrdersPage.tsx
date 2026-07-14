@@ -130,6 +130,8 @@ export function MyOrdersPage() {
           icon={Package}
           title="No orders found"
           description="You haven't placed any orders yet. Once you do, they will appear here."
+          actionLabel="Browse Restaurants"
+          onAction={() => window.location.href = '/'}
         />
       </div>
     );

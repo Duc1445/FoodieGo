@@ -33,11 +33,11 @@ INSERT INTO users (id, email, password, full_name, phone, role) VALUES
 ('f0000003-0000-0000-0000-000000000020', 'customer20@foodiego.com', '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS', 'Do Thi T', '0910000020', 'customer')
 ON CONFLICT (email) DO NOTHING;
 
--- 3 Shippers
+-- 3 Drivers
 INSERT INTO users (id, email, password, full_name, phone, role) VALUES
-('f0000000-0000-0000-0000-000000000001', 'shipper1@foodiego.com', '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS', 'Shipper One', '0920000001', 'shipper'),
-('f0000000-0000-0000-0000-000000000002', 'shipper2@foodiego.com', '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS', 'Shipper Two', '0920000002', 'shipper'),
-('f0000000-0000-0000-0000-000000000003', 'shipper3@foodiego.com', '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS', 'Shipper Three', '0920000003', 'shipper')
+('f0000000-0000-0000-0000-000000000001', 'driver1@foodiego.com', '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS', 'Driver One', '0920000001', 'driver'),
+('f0000000-0000-0000-0000-000000000002', 'driver2@foodiego.com', '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS', 'Driver Two', '0920000002', 'driver'),
+('f0000000-0000-0000-0000-000000000003', 'driver3@foodiego.com', '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS', 'Driver Three', '0920000003', 'driver')
 ON CONFLICT (email) DO NOTHING;
 
 -- 6 Merchants (one per district)

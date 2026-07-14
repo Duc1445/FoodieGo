@@ -8,7 +8,7 @@ import { Settings, Save } from 'lucide-react';
 
 export function DriverProfilePage() {
   const queryClient = useQueryClient();
-  const user = useAuthStore((state) => state.getUser('shipper'));
+  const user = useAuthStore((state) => state.getUser('driver'));
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ['profile', user?.id],

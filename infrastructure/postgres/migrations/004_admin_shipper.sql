@@ -1,4 +1,4 @@
--- Migration 004: Sprint 0 (Shipper FK) + Sprint 1 (Admin Merchant Approval)
+-- Migration 004: Sprint 0 (Driver FK) + Sprint 1 (Admin Merchant Approval)
 
 -- 1. Sprint 0: Idempotent Address FK for Orders
 --

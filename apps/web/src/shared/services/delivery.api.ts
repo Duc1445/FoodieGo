@@ -5,7 +5,7 @@ import { api } from '../api/api';
 export interface Delivery {
   id: string;
   orderId: string;
-  shipperId?: string;
+  driverId?: string;
   status: 'waiting' | 'accepted' | 'delivering' | 'delivered';
   note?: string;
   createdAt: string;

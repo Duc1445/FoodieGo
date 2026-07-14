@@ -63,7 +63,7 @@ export function UserManager() {
               <option value="">All Roles</option>
               <option value="customer">Customers</option>
               <option value="merchant">Merchants</option>
-              <option value="shipper">Shippers</option>
+              <option value="driver">Drivers</option>
               <option value="admin">Admins</option>
             </select>
           </div>
@@ -97,7 +97,7 @@ function UserCard({ user, onDelete }: UserCardProps) {
   const roleColors = {
     customer: 'bg-blue-100 text-blue-800',
     merchant: 'bg-purple-100 text-purple-800',
-    shipper: 'bg-green-100 text-green-800',
+    driver: 'bg-green-100 text-green-800',
     admin: 'bg-red-100 text-red-800',
   };
 

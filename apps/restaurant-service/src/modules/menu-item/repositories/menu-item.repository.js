@@ -79,11 +79,12 @@ export class MenuItemRepository {
 
   async create(data) {
     const query = `
-      INSERT INTO menu_items (category_id, name, description, price, image_url, is_available, display_order, is_active)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, true)
+      INSERT INTO menu_items (restaurant_id, category_id, name, description, price, image_url, is_available, display_order, is_active)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, true)
       RETURNING *
     `;
     const params = [
+      data.restaurant_id,
       data.category_id,
       data.name,
       data.description || null,

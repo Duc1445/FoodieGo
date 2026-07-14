@@ -9,7 +9,7 @@ const router = Router();
 router.get(
   '/',
   authenticate,
-  authorize('shipper', 'admin'), // Assuming shippers and admins can list deliveries
+  authorize('driver', 'admin'), // Assuming drivers and admins can list deliveries
   deliveryController.listDeliveries
 );
 
@@ -24,7 +24,7 @@ router.get(
 router.patch(
   '/:id/accept',
   authenticate,
-  authorize('shipper'),
+  authorize('driver'),
   param('id').isUUID().withMessage('id must be a valid UUID'),
   validate,
   deliveryController.acceptDelivery
@@ -33,7 +33,7 @@ router.patch(
 router.patch(
   '/:id/status',
   authenticate,
-  authorize('shipper'),
+  authorize('driver'),
   param('id').isUUID().withMessage('id must be a valid UUID'),
   body('status')
     .isIn(['waiting', 'accepted', 'delivering', 'delivered'])

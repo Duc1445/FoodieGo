@@ -53,7 +53,7 @@ describe('MerchantDashboardPage', () => {
       </QueryClientProvider>
     );
 
-    const emptyText = await screen.findByText('No orders yet.');
+    const emptyText = await screen.findByText('No orders yet');
     expect(emptyText).toBeInTheDocument();
   });
 

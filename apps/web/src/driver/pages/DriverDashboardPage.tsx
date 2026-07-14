@@ -6,7 +6,7 @@ import { Truck, MapPin, CheckCircle, DollarSign, Package } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export function DriverDashboardPage() {
-  const user = useAuthStore((state) => state.getUser('shipper'));
+  const user = useAuthStore((state) => state.getUser('driver'));
 
   // Fetch all deliveries for this driver to calculate stats
   const { data: deliveries, isLoading: isLoadingStats } = useQuery({

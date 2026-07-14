@@ -4,12 +4,16 @@ import { useAuthStore } from '../../shared/stores/useAuthStore';
 import { Button } from '@foodiego/ui';
 import { Store, Utensils, ClipboardList, Settings, LogOut } from 'lucide-react';
 
+import { useQueryClient } from '@tanstack/react-query';
+
 export function MerchantLayout() {
   const user = useAuthStore((state) => state.getUser('merchant'));
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handleLogout = () => {
+    queryClient.clear();
     logout('merchant');
     navigate('/merchant/login');
   };

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "00000000-0000-4000-5001-000000000001",
+    "ticket_number": "TCK-0001",
+    "customer_id": "00000000-0000-4000-1111-000000000001",
+    "issue_type": "ORDER_ISSUE",
+    "description": "Không nhận được món",
+    "priority": "HIGH",
+    "status": "OPEN",
+    "created_at": "2026-07-14T08:05:19.944Z"
+  },
+  {
+    "id": "00000000-0000-4000-5001-000000000002",
+    "ticket_number": "TCK-0002",
+    "merchant_id": "00000000-0000-4000-2222-000000000002",
+    "issue_type": "APP_ISSUE",
+    "description": "Không cập nhật được menu",
+    "priority": "MEDIUM",
+    "status": "IN_PROGRESS",
+    "created_at": "2026-07-14T08:05:19.944Z"
+  },
+  {
+    "id": "00000000-0000-4000-5001-000000000003",
+    "ticket_number": "TCK-0003",
+    "driver_id": "00000000-0000-4000-3333-000000000001",
+    "issue_type": "ACCOUNT_ISSUE",
+    "description": "Không nhận được delivery",
+    "priority": "HIGH",
+    "status": "RESOLVED",
+    "created_at": "2026-07-14T08:05:19.944Z"
+  }
+]

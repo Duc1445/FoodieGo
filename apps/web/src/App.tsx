@@ -29,6 +29,7 @@ const CustomerRegister = lazy(() => import('./customer/pages/auth/Register').the
 
 const MerchantDashboardPage = lazy(() => import('./merchant/pages/MerchantDashboardPage').then(module => ({ default: module.MerchantDashboardPage })));
 const MerchantMenuPage = lazy(() => import('./merchant/pages/MerchantMenuPage').then(module => ({ default: module.MerchantMenuPage })));
+const MerchantOrdersPage = lazy(() => import('./merchant/pages/MerchantOrdersPage').then(module => ({ default: module.MerchantOrdersPage })));
 const MerchantLogin = lazy(() => import('./merchant/pages/auth/Login').then(module => ({ default: module.Login })));
 const MerchantRegister = lazy(() => import('./merchant/pages/auth/Register').then(module => ({ default: module.Register })));
 
@@ -103,6 +104,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Suspense fallback={<PageLoader />}><MerchantDashboardPage /></Suspense> },
       { path: 'menu', element: <Suspense fallback={<PageLoader />}><MerchantMenuPage /></Suspense> },
+      { path: 'orders', element: <Suspense fallback={<PageLoader />}><MerchantOrdersPage /></Suspense> },
     ],
   },
   {
@@ -136,7 +138,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/driver',
-    element: <RoleGuard role="shipper"><Suspense fallback={<PageLoader />}><DriverLayout /></Suspense></RoleGuard>,
+    element: <RoleGuard role="driver"><Suspense fallback={<PageLoader />}><DriverLayout /></Suspense></RoleGuard>,
     errorElement: <ErrorBoundary />,
     children: [
       { index: true, element: <Suspense fallback={<PageLoader />}><DriverDashboardPage /></Suspense> },
@@ -148,12 +150,12 @@ const router = createBrowserRouter([
   },
   {
     path: '/driver/login',
-    element: <Suspense fallback={<PageLoader />}><AuthLayout role="shipper" /></Suspense>,
+    element: <Suspense fallback={<PageLoader />}><AuthLayout role="driver" /></Suspense>,
     children: [{ index: true, element: <Suspense fallback={<PageLoader />}><DriverLogin /></Suspense> }],
   },
   {
     path: '/driver/register',
-    element: <Suspense fallback={<PageLoader />}><AuthLayout role="shipper" /></Suspense>,
+    element: <Suspense fallback={<PageLoader />}><AuthLayout role="driver" /></Suspense>,
     children: [{ index: true, element: <Suspense fallback={<PageLoader />}><DriverRegister /></Suspense> }],
   },
 ]);

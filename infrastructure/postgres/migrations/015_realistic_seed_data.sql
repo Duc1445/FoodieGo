@@ -1,5 +1,5 @@
 -- ─────────────────────────────────────────────
--- REALISTIC SEED DATA (Merchants, Shippers, Customers)
+-- REALISTIC SEED DATA (Merchants, Drivers, Customers)
 -- ─────────────────────────────────────────────
 
 DO $$
@@ -105,16 +105,16 @@ BEGIN
         ) ON CONFLICT (email) DO NOTHING;
     END LOOP;
 
-    -- 6. Create 10 Approved Shippers
+    -- 6. Create 10 Approved Drivers
     FOR i IN 1..10 LOOP
         INSERT INTO users (email, password, full_name, phone, address, role, is_active, approval_status, avatar_url, identity_card, driver_license, vehicle_type, vehicle_plate)
         VALUES (
-            'shipper_appr' || i || '@foodiego.com',
+            'driver_appr' || i || '@foodiego.com',
             '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS',
-            'Approved Shipper ' || i,
+            'Approved Driver ' || i,
             '09500000' || LPAD(i::text, 2, '0'),
-            i || ' Shipper Lane, District 4',
-            'shipper',
+            i || ' Driver Lane, District 4',
+            'driver',
             true,
             'APPROVED',
             'https://i.pravatar.cc/150?u=ship_appr' || i,
@@ -125,16 +125,16 @@ BEGIN
         ) ON CONFLICT (email) DO NOTHING;
     END LOOP;
 
-    -- 7. Create 3 Pending Shippers
+    -- 7. Create 3 Pending Drivers
     FOR i IN 1..3 LOOP
         INSERT INTO users (email, password, full_name, phone, address, role, is_active, approval_status, avatar_url, identity_card, driver_license, vehicle_type, vehicle_plate)
         VALUES (
-            'shipper_pend' || i || '@foodiego.com',
+            'driver_pend' || i || '@foodiego.com',
             '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS',
-            'Pending Shipper ' || i,
+            'Pending Driver ' || i,
             '09600000' || LPAD(i::text, 2, '0'),
             i || ' Pend Ship Way, District 5',
-            'shipper',
+            'driver',
             true,
             'PENDING',
             'https://i.pravatar.cc/150?u=ship_pend' || i,
@@ -145,16 +145,16 @@ BEGIN
         ) ON CONFLICT (email) DO NOTHING;
     END LOOP;
 
-    -- 8. Create 2 Rejected Shippers
+    -- 8. Create 2 Rejected Drivers
     FOR i IN 1..2 LOOP
         INSERT INTO users (email, password, full_name, phone, address, role, is_active, approval_status, avatar_url, identity_card, driver_license, vehicle_type, vehicle_plate, rejection_reason)
         VALUES (
-            'shipper_rej' || i || '@foodiego.com',
+            'driver_rej' || i || '@foodiego.com',
             '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS',
-            'Rejected Shipper ' || i,
+            'Rejected Driver ' || i,
             '09700000' || LPAD(i::text, 2, '0'),
             i || ' Rej Ship Street, District 6',
-            'shipper',
+            'driver',
             true,
             'REJECTED',
             'https://i.pravatar.cc/150?u=ship_rej' || i,
@@ -171,7 +171,7 @@ BEGIN
     SELECT id INTO admin_id FROM users WHERE email = 'admin@foodiego.com' LIMIT 1;
     SELECT id INTO cust_id FROM users WHERE role = 'customer' AND email = 'customer1@foodiego.com' LIMIT 1;
     SELECT id INTO merch_id FROM users WHERE role = 'merchant' AND email = 'merchant_appr1@foodiego.com' LIMIT 1;
-    SELECT id INTO ship_id FROM users WHERE role = 'shipper' AND email = 'shipper_appr1@foodiego.com' LIMIT 1;
+    SELECT id INTO ship_id FROM users WHERE role = 'driver' AND email = 'driver_appr1@foodiego.com' LIMIT 1;
 
     IF admin_id IS NOT NULL THEN
         -- Customer Tickets
@@ -202,9 +202,9 @@ BEGIN
             ) ON CONFLICT (ticket_number) DO NOTHING;
         END LOOP;
 
-        -- Shipper Tickets
+        -- Driver Tickets
         FOR i IN 1..5 LOOP
-            INSERT INTO support_tickets (ticket_number, shipper_id, issue_type, description, priority, status, assigned_admin)
+            INSERT INTO support_tickets (ticket_number, driver_id, issue_type, description, priority, status, assigned_admin)
             VALUES (
                 'TKT-SHIP-' || i,
                 ship_id,

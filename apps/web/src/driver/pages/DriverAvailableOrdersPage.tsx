@@ -4,6 +4,7 @@ import { DeliveryAPI, DRIVER_DELIVERIES_QUERY_KEY } from '../../shared/services/
 import { toast } from 'sonner';
 import { CheckCircle, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { EmptyState } from '../../shared/components/EmptyState';
 
 export function DriverAvailableOrdersPage() {
   const queryClient = useQueryClient();
@@ -46,11 +47,11 @@ export function DriverAvailableOrdersPage() {
               ))}
             </div>
           ) : !availableDeliveries || availableDeliveries.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <MapPin className="w-12 h-12 mx-auto mb-4 opacity-20" />
-              <p className="text-lg font-medium">No orders available</p>
-              <p className="text-sm">Wait for new orders to arrive</p>
-            </div>
+            <EmptyState 
+              icon={MapPin}
+              title="No orders available"
+              description="Wait for new orders to arrive."
+            />
           ) : (
             <div className="grid gap-4">
               {availableDeliveries.map((delivery) => (

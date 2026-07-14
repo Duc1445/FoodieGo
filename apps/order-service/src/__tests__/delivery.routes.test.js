@@ -20,8 +20,8 @@ describe('Delivery Routes', () => {
     { id: '123e4567-e89b-12d3-a456-426614174001', role: 'customer' },
     'fallback_secret',
   );
-  const shipperToken = jwt.sign(
-    { id: '123e4567-e89b-12d3-a456-426614174003', role: 'shipper' },
+  const driverToken = jwt.sign(
+    { id: '123e4567-e89b-12d3-a456-426614174003', role: 'driver' },
     'fallback_secret',
   );
   const orderId = '123e4567-e89b-12d3-a456-426614174004';
@@ -43,7 +43,7 @@ describe('Delivery Routes', () => {
     pool.query.mockResolvedValueOnce({ rows: [{ id: deliveryId, status: 'accepted' }] });
     const res = await request(app)
       .patch(`/api/v1/delivery/${deliveryId}/accept`)
-      .set('Authorization', `Bearer ${shipperToken}`);
+      .set('Authorization', `Bearer ${driverToken}`);
     expect(res.status).toBe(200);
   });
 
@@ -51,7 +51,7 @@ describe('Delivery Routes', () => {
     pool.query.mockResolvedValueOnce({ rows: [] });
     const res = await request(app)
       .patch(`/api/v1/delivery/${deliveryId}/accept`)
-      .set('Authorization', `Bearer ${shipperToken}`);
+      .set('Authorization', `Bearer ${driverToken}`);
     expect(res.status).toBe(404);
   });
 
@@ -59,7 +59,7 @@ describe('Delivery Routes', () => {
     pool.query.mockResolvedValueOnce({ rows: [{ id: deliveryId, status: 'delivering' }] });
     const res = await request(app)
       .patch(`/api/v1/delivery/${deliveryId}/status`)
-      .set('Authorization', `Bearer ${shipperToken}`)
+      .set('Authorization', `Bearer ${driverToken}`)
       .send({ status: 'delivering' });
     expect(res.status).toBe(200);
   });
@@ -68,7 +68,7 @@ describe('Delivery Routes', () => {
     pool.query.mockResolvedValueOnce({ rows: [] });
     const res = await request(app)
       .patch(`/api/v1/delivery/${deliveryId}/status`)
-      .set('Authorization', `Bearer ${shipperToken}`)
+      .set('Authorization', `Bearer ${driverToken}`)
       .send({ status: 'delivering' });
     expect(res.status).toBe(404);
   });

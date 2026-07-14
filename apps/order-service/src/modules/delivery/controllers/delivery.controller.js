@@ -1,10 +1,22 @@
 import * as deliveryService from '../services/delivery.service.js';
 
+const mapDeliveryToCamelCase = (d) => ({
+  id: d.id,
+  orderId: d.order_id,
+  driverId: d.driver_id,
+  status: d.status,
+  deliveryFee: d.delivery_fee,
+  total: d.total,
+  customerId: d.customer_id,
+  createdAt: d.created_at,
+  updatedAt: d.updated_at,
+});
+
 export const getDeliveryByOrder = async (req, res, next) => {
   try {
     const delivery = await deliveryService.findByOrderId(req.params.orderId);
     if (!delivery) return res.status(404).json({ success: false, message: 'Delivery not found' });
-    res.json({ success: true, data: delivery });
+    res.json({ success: true, data: mapDeliveryToCamelCase(delivery) });
   } catch (err) {
     next(err);
   }
@@ -12,9 +24,9 @@ export const getDeliveryByOrder = async (req, res, next) => {
 
 export const acceptDelivery = async (req, res, next) => {
   try {
-    const delivery = await deliveryService.assignShipper(req.params.id, req.user.id);
+    const delivery = await deliveryService.assignDriver(req.params.id, req.user.id);
     if (!delivery) return res.status(404).json({ success: false, message: 'Delivery not found' });
-    res.json({ success: true, message: 'Delivery accepted', data: delivery });
+    res.json({ success: true, message: 'Delivery accepted', data: mapDeliveryToCamelCase(delivery) });
   } catch (err) {
     next(err);
   }
@@ -24,7 +36,7 @@ export const updateDeliveryStatus = async (req, res, next) => {
   try {
     const delivery = await deliveryService.updateStatus(req.params.id, req.body.status);
     if (!delivery) return res.status(404).json({ success: false, message: 'Delivery not found' });
-    res.json({ success: true, message: 'Delivery status updated', data: delivery });
+    res.json({ success: true, message: 'Delivery status updated', data: mapDeliveryToCamelCase(delivery) });
   } catch (err) {
     next(err);
   }
@@ -45,7 +57,7 @@ export const listDeliveries = async (req, res, next) => {
       sort
     });
     
-    res.json({ success: true, data: deliveries });
+    res.json({ success: true, data: deliveries.map(mapDeliveryToCamelCase) });
   } catch (err) {
     next(err);
   }

@@ -15,12 +15,12 @@ export const findByOrderId = async (orderId) => {
   return rows[0] || null;
 };
 
-export const assignShipper = async (deliveryId, shipperId) => {
+export const assignDriver = async (deliveryId, driverId) => {
   const { rows } = await pool.query(
-    `UPDATE delivery SET shipper_id = $2, status = 'accepted', updated_at = NOW()
+    `UPDATE delivery SET driver_id = $2, status = 'accepted', updated_at = NOW()
      WHERE id = $1
      RETURNING *`,
-    [deliveryId, shipperId],
+    [deliveryId, driverId],
   );
   return rows[0];
 };
@@ -66,7 +66,7 @@ export const listDeliveries = async ({
 
   if (driverId) {
     values.push(driverId);
-    query += ` AND d.shipper_id = $${values.length}`;
+    query += ` AND d.driver_id = $${values.length}`;
   }
 
   query += ` ORDER BY d.created_at ${orderDirection}`;

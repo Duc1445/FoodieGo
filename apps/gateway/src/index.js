@@ -137,12 +137,12 @@ app.get('/api/v1/admin/dashboard', async (req, res) => {
       total_users: userStats.total_users ?? 0,
       total_customers: userStats.total_customers ?? 0,
       total_merchants: userStats.total_merchants ?? 0,
-      total_shippers: userStats.total_shippers ?? 0,
+      total_drivers: userStats.total_drivers ?? 0,
       total_admins: userStats.total_admins ?? 0,
       pending_merchants: userStats.pending_merchants ?? 0,
       approved_merchants: userStats.approved_merchants ?? 0,
-      pending_shippers: userStats.pending_shippers ?? 0,
-      approved_shippers: userStats.approved_shippers ?? 0,
+      pending_drivers: userStats.pending_drivers ?? 0,
+      approved_drivers: userStats.approved_drivers ?? 0,
       rejected_applications: userStats.rejected_applications ?? 0,
 
       // Orders (from order-service)

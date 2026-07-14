@@ -14,7 +14,7 @@ router.get(
   '/users',
   query('role')
     .optional()
-    .isIn(['customer', 'merchant', 'shipper', 'admin'])
+    .isIn(['customer', 'merchant', 'driver', 'admin'])
     .withMessage('Invalid role'),
   query('page').optional().isInt({ min: 1 }).withMessage('Invalid page number'),
   query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Invalid limit'),
@@ -32,7 +32,7 @@ router.delete(
 // Approval management
 router.get(
   '/users/pending',
-  query('role').optional().isIn(['merchant', 'shipper']).withMessage('Invalid role for pending'),
+  query('role').optional().isIn(['merchant', 'driver']).withMessage('Invalid role for pending'),
   validate,
   adminController.getPendingUsers,
 );

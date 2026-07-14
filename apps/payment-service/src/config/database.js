@@ -8,7 +8,7 @@ const { Pool } = pkg;
 const pool = new Pool({
   connectionString:
     process.env.DATABASE_URL ||
-    'postgresql://foodiego:foodiego_pass@localhost:5432/foodiego_payment',
+    'postgresql://postgres:postgres@localhost:5432/foodiego',
   max: 10, // maximum number of clients in the pool
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,

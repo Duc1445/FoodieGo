@@ -3,7 +3,7 @@ import { api } from '../api/api';
 export interface LoginRequest {
   email: string;
   password: string;
-  role?: 'customer' | 'merchant' | 'admin' | 'shipper';
+  role?: 'customer' | 'merchant' | 'admin' | 'driver';
 }
 
 export interface RegisterRequest {
@@ -11,7 +11,7 @@ export interface RegisterRequest {
   password: string;
   full_name?: string;
   phone?: string;
-  role?: 'customer' | 'merchant' | 'admin' | 'shipper';
+  role?: 'customer' | 'merchant' | 'admin' | 'driver';
   restaurant_name?: string;
 }
 
@@ -20,7 +20,7 @@ export interface AuthResponse {
   user: {
     id: string;
     email: string;
-    role: 'customer' | 'merchant' | 'admin' | 'shipper';
+    role: 'customer' | 'merchant' | 'admin' | 'driver';
     name?: string;
     full_name?: string;
     phone?: string | null;

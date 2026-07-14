@@ -21,11 +21,11 @@ export function Login() {
     setIsLoading(true);
 
     try {
-      const data = await AuthAPI.login({ email, password, role: 'shipper' });
+      const data = await AuthAPI.login({ email, password, role: 'driver' });
       
       login(data.user, data.token);
       toast.success('Logged in successfully!');
-      navigate(getDashboardPath('shipper'), { replace: true });
+      navigate(getDashboardPath('driver'), { replace: true });
     } catch (err: any) {
       const data = err.response?.data;
       let msg = data?.message || 'Login failed. Please check your credentials.';

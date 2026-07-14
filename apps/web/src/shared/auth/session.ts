@@ -1,6 +1,6 @@
 import { jwtDecode } from 'jwt-decode';
 
-export type AuthRole = 'customer' | 'merchant' | 'admin' | 'shipper';
+export type AuthRole = 'customer' | 'merchant' | 'admin' | 'driver';
 
 export interface AuthTokenPayload {
   id: string;
@@ -19,13 +19,13 @@ export const AUTH_PERSIST_KEY = 'foodiego-auth';
 
 export const getLoginPath = (role: AuthRole) => {
   if (role === 'customer') return '/login';
-  if (role === 'shipper') return '/driver/login';
+  if (role === 'driver') return '/driver/login';
   return `/${role}/login`;
 };
 
 export const getDashboardPath = (role: AuthRole) => {
   if (role === 'customer') return '/';
-  if (role === 'shipper') return '/driver';
+  if (role === 'driver') return '/driver';
   return `/${role}`;
 };
 

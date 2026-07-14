@@ -49,7 +49,12 @@ export function CustomerLayout() {
             <div className="border-l h-6 mx-2 border-border" />
             {isAuthenticated ? (
               <div className="flex items-center space-x-4">
-                <span className="text-sm font-medium">{user?.full_name}</span>
+                <Link to="/profile" className="text-sm font-medium hover:underline text-primary">
+                  {user?.full_name || 'Profile'}
+                </Link>
+                <Link to="/orders" className="text-sm font-medium hover:underline text-foreground/80">
+                  Orders
+                </Link>
                 <Button variant="ghost" size="sm" onClick={handleLogout}>
                   Logout
                 </Button>

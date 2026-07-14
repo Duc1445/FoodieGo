@@ -24,12 +24,12 @@ export function AdminDashboardPage() {
         <StatCard title="Total Users" value={stats?.total_users || 0} icon={Users} color="text-blue-500" />
         <StatCard title="Customers" value={stats?.total_customers || 0} icon={Users} color="text-indigo-500" />
         <StatCard title="Merchants" value={stats?.total_merchants || 0} icon={Store} color="text-purple-500" />
-        <StatCard title="Shippers" value={stats?.total_shippers || 0} icon={Users} color="text-cyan-500" />
+        <StatCard title="Drivers" value={stats?.total_drivers || 0} icon={Users} color="text-cyan-500" />
         
         <StatCard title="Pending Merchants" value={stats?.pending_merchants || 0} icon={AlertCircle} color="text-orange-500" />
         <StatCard title="Approved Merchants" value={stats?.approved_merchants || 0} icon={Store} color="text-green-500" />
-        <StatCard title="Pending Shippers" value={stats?.pending_shippers || 0} icon={AlertCircle} color="text-yellow-500" />
-        <StatCard title="Approved Shippers" value={stats?.approved_shippers || 0} icon={Users} color="text-emerald-500" />
+        <StatCard title="Pending Drivers" value={stats?.pending_drivers || 0} icon={AlertCircle} color="text-yellow-500" />
+        <StatCard title="Approved Drivers" value={stats?.approved_drivers || 0} icon={Users} color="text-emerald-500" />
         <StatCard title="Rejected Applications" value={stats?.rejected_applications || 0} icon={AlertCircle} color="text-red-500" />
 
         <StatCard title="Total Orders" value={stats?.total_orders || 0} icon={ShoppingBag} color="text-sky-500" />

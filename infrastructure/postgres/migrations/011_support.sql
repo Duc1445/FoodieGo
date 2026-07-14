@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS support_tickets (
   order_id        UUID REFERENCES orders(id) ON DELETE SET NULL,
   restaurant_id   UUID REFERENCES restaurants(id) ON DELETE SET NULL,
   merchant_id     UUID REFERENCES users(id) ON DELETE SET NULL,
-  shipper_id      UUID REFERENCES users(id) ON DELETE SET NULL,
+  driver_id      UUID REFERENCES users(id) ON DELETE SET NULL,
   
   issue_type      VARCHAR(50) NOT NULL,
   description     TEXT NOT NULL,

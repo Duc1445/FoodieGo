@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
   phone       VARCHAR(20),
   address     TEXT,
   role        VARCHAR(20) NOT NULL DEFAULT 'customer'
-                CHECK (role IN ('customer', 'admin', 'shipper', 'merchant')),
+                CHECK (role IN ('customer', 'admin', 'driver', 'merchant')),
   is_active   BOOLEAN NOT NULL DEFAULT true,
   created_at  TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at  TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -267,7 +267,7 @@ CREATE TABLE IF NOT EXISTS cart_items (
 CREATE TABLE IF NOT EXISTS delivery (
   id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   order_id    UUID UNIQUE NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
-  shipper_id  UUID REFERENCES users(id) ON DELETE SET NULL,
+  driver_id  UUID REFERENCES users(id) ON DELETE SET NULL,
   status      VARCHAR(30) NOT NULL DEFAULT 'waiting'
                 CHECK (status IN ('waiting','accepted','delivering','delivered')),
   note        TEXT,
@@ -278,40 +278,49 @@ CREATE TABLE IF NOT EXISTS delivery (
 -- ─────────────────────────────────────────────
 -- SEED DATA
 -- ─────────────────────────────────────────────
--- Admin account (password: Admin@123)
-INSERT INTO users (email, password, full_name, role)
+-- Admin account (password: 123456)
+INSERT INTO users (id, email, password, full_name, role)
 VALUES (
+  '00000000-0000-4000-0000-111111111111',
   'admin@foodiego.com',
-  '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS',
+  '$2a$10$leucJlIpKICtGDhom.8nDujFWf9CC4g1xfmRYLwloU9MV9/./vHG.',
   'FoodieGo Admin',
   'admin'
 ) ON CONFLICT (email) DO NOTHING;
 
--- Customer account (password: Admin@123)
-INSERT INTO users (email, password, full_name, role)
+-- Customer account (password: 123456)
+INSERT INTO users (id, email, password, full_name, role)
 VALUES (
+  '00000000-0000-4000-0000-222222222222',
   'customer@foodiego.com',
-  '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS',
+  '$2a$10$leucJlIpKICtGDhom.8nDujFWf9CC4g1xfmRYLwloU9MV9/./vHG.',
   'FoodieGo Customer',
   'customer'
 ) ON CONFLICT (email) DO NOTHING;
 
--- Merchant account (password: Admin@123)
-INSERT INTO users (email, password, full_name, role)
+-- Merchant account (password: 123456)
+INSERT INTO users (id, email, password, full_name, role, approval_status)
 VALUES (
+  '00000000-0000-4000-0000-333333333333',
   'merchant@foodiego.com',
-  '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS',
+  '$2a$10$leucJlIpKICtGDhom.8nDujFWf9CC4g1xfmRYLwloU9MV9/./vHG.',
   'FoodieGo Merchant',
-  'merchant'
+  'merchant',
+  'APPROVED'
 ) ON CONFLICT (email) DO NOTHING;
 
--- Shipper account (password: Admin@123)
-INSERT INTO users (email, password, full_name, role)
+-- Driver account (password: 123456)
+INSERT INTO users (id, email, password, full_name, role, approval_status, driver_license, vehicle_type, vehicle_plate)
 VALUES (
-  'shipper@foodiego.com',
-  '$2a$10$SS07OViAxA51JmpxrvorM.71jqAVucuaoANTouC2NeB21sMEgt3GS',
-  'FoodieGo Shipper',
-  'shipper'
+  '00000000-0000-4000-0000-444444444444',
+  'driver@foodiego.com',
+  '$2a$10$leucJlIpKICtGDhom.8nDujFWf9CC4g1xfmRYLwloU9MV9/./vHG.',
+  'FoodieGo Driver',
+  'driver',
+  'APPROVED',
+  'DL-999999',
+  'Motorcycle',
+  '59X1-12345'
 ) ON CONFLICT (email) DO NOTHING;
 
 -- ─────────────────────────────────────────────

@@ -3,6 +3,8 @@ import { Card, CardContent, Button, Input, Skeleton, Dialog, DialogContent, Dial
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getMerchantMenu, getGlobalCategories, createMenuItem, updateMenuItem, deleteMenuItem, MenuItem, MERCHANT_MENU_QUERY_KEY } from '../../shared/services/merchant.api';
 import { toast } from 'sonner';
+import { Utensils } from 'lucide-react';
+import { EmptyState } from '../../shared/components/EmptyState';
 
 export function MerchantMenuPage() {
   const queryClient = useQueryClient();
@@ -192,7 +194,13 @@ export function MerchantMenuPage() {
               <Skeleton className="h-12 w-full" />
             </div>
           ) : !menuItems || menuItems.length === 0 ? (
-            <p className="text-muted-foreground">No menu items found.</p>
+            <EmptyState 
+              icon={Utensils}
+              title="No menu items"
+              description="Your menu is currently empty. Add your first item to start receiving orders."
+              actionLabel="Add Item"
+              onAction={() => setIsAddOpen(true)}
+            />
           ) : (
             <div className="space-y-8">
               {(menuItems as any[]).map(category => (

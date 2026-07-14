@@ -9,7 +9,7 @@ jest.unstable_mockModule('../config/database.js', () => {
 });
 
 const pool = (await import('../config/database.js')).default;
-const { findByOrderId, updateStatus, assignShipper } = await import('../modules/delivery/repositories/delivery.repository.js');
+const { findByOrderId, updateStatus, assignDriver } = await import('../modules/delivery/repositories/delivery.repository.js');
 
 describe('Delivery Model', () => {
   beforeEach(() => {
@@ -34,9 +34,9 @@ describe('Delivery Model', () => {
     expect(res).toEqual({ id: '1' });
   });
 
-  it('assignShipper - should return updated row', async () => {
+  it('assignDriver - should return updated row', async () => {
     pool.query.mockResolvedValueOnce({ rows: [{ id: '1' }] });
-    const res = await assignShipper('1', 'shipper-1');
+    const res = await assignDriver('1', 'driver-1');
     expect(res).toEqual({ id: '1' });
   });
 });

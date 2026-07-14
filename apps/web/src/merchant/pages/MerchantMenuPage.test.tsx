@@ -8,6 +8,7 @@ import { getMerchantMenu, createMenuItem, updateMenuItem, deleteMenuItem } from 
 // Mock dependencies
 vi.mock('../../shared/services/merchant.api', () => ({
   getMerchantMenu: vi.fn(),
+  getGlobalCategories: vi.fn().mockResolvedValue([]),
   createMenuItem: vi.fn(),
   updateMenuItem: vi.fn(),
   deleteMenuItem: vi.fn(),
@@ -31,12 +32,18 @@ describe('MerchantMenuPage', () => {
 
   const mockItems: any[] = [
     {
-      id: 'item-1',
-      name: 'Burger',
-      price: 10.50,
-      category_id: 'cat-1',
-      is_available: true,
-      restaurant_id: 'rest-1',
+      id: 'cat-1',
+      name: 'Main Course',
+      items: [
+        {
+          id: 'item-1',
+          name: 'Burger',
+          price: 10.50,
+          category_id: 'cat-1',
+          is_available: true,
+          restaurant_id: 'rest-1',
+        }
+      ]
     }
   ];
 

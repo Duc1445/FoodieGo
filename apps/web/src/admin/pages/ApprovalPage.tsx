@@ -10,7 +10,7 @@ export function ApprovalPage() {
   const queryClient = useQueryClient();
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [reason, setReason] = useState('');
-  const [roleFilter, setRoleFilter] = useState<'all' | 'merchant' | 'shipper'>('all');
+  const [roleFilter, setRoleFilter] = useState<'all' | 'merchant' | 'driver'>('all');
 
   const { data: users, isLoading } = useQuery({
     queryKey: ['admin-pending-users', roleFilter],
@@ -69,10 +69,10 @@ export function ApprovalPage() {
             Merchants
           </button>
           <button 
-            className={`px-4 py-2 text-sm font-medium border-l ${roleFilter === 'shipper' ? 'bg-slate-100 text-slate-800' : 'text-slate-500 hover:bg-slate-50'}`}
-            onClick={() => setRoleFilter('shipper')}
+            className={`px-4 py-2 text-sm font-medium border-l ${roleFilter === 'driver' ? 'bg-slate-100 text-slate-800' : 'text-slate-500 hover:bg-slate-50'}`}
+            onClick={() => setRoleFilter('driver')}
           >
-            Shippers
+            Drivers
           </button>
         </div>
       </div>
@@ -135,7 +135,7 @@ export function ApprovalPage() {
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>{user.role === 'merchant' ? 'Merchant' : 'Shipper'} Details</DialogTitle>
+                        <DialogTitle>{user.role === 'merchant' ? 'Merchant' : 'Driver'} Details</DialogTitle>
                       </DialogHeader>
                       <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto pr-2">
                         <div className="grid grid-cols-3 gap-4 border-b pb-4">
@@ -172,7 +172,7 @@ export function ApprovalPage() {
                           </>
                         )}
 
-                        {user.role === 'shipper' && (
+                        {user.role === 'driver' && (
                           <>
                             <div className="grid grid-cols-3 gap-4 border-b pb-4">
                               <div className="font-medium text-gray-500">Identity Card</div>

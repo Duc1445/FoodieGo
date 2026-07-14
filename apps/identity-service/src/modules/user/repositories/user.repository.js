@@ -81,7 +81,7 @@ export const getPendingUsers = async (role) => {
             business_name, business_license, tax_code, 
             identity_card, driver_license, vehicle_type, vehicle_plate, avatar_url
      FROM users
-     WHERE approval_status = 'PENDING'
+     WHERE approval_status = 'PENDING' AND role IN ('merchant', 'driver', 'driver')
   `;
   const params = [];
 
@@ -158,12 +158,12 @@ export const getUserStats = async () => {
       COUNT(*) AS total_users,
       COUNT(*) FILTER (WHERE role = 'customer') AS total_customers,
       COUNT(*) FILTER (WHERE role = 'merchant') AS total_merchants,
-      COUNT(*) FILTER (WHERE role = 'shipper')  AS total_shippers,
+      COUNT(*) FILTER (WHERE role = 'driver')  AS total_drivers,
       COUNT(*) FILTER (WHERE role = 'admin')    AS total_admins,
       COUNT(*) FILTER (WHERE role = 'merchant' AND approval_status = 'PENDING') AS pending_merchants,
       COUNT(*) FILTER (WHERE role = 'merchant' AND approval_status = 'APPROVED') AS approved_merchants,
-      COUNT(*) FILTER (WHERE role = 'shipper' AND approval_status = 'PENDING') AS pending_shippers,
-      COUNT(*) FILTER (WHERE role = 'shipper' AND approval_status = 'APPROVED') AS approved_shippers,
+      COUNT(*) FILTER (WHERE role = 'driver' AND approval_status = 'PENDING') AS pending_drivers,
+      COUNT(*) FILTER (WHERE role = 'driver' AND approval_status = 'APPROVED') AS approved_drivers,
       COUNT(*) FILTER (WHERE approval_status = 'REJECTED') AS rejected_applications,
       COUNT(*) FILTER (WHERE is_active = false) AS suspended_users
     FROM users

@@ -1,0 +1,332 @@
+[
+  {
+    "id": "00000000-0000-4000-6666-000000000001",
+    "restaurant_id": "00000000-0000-4000-4444-000000000001",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Cơm Gà Xối Mỡ",
+    "description": "Gà chiên giòn rụm",
+    "price": 45000,
+    "image": "https://picsum.photos/seed/food00/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000002",
+    "restaurant_id": "00000000-0000-4000-4444-000000000001",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Cơm Gà Xé",
+    "description": "Cơm gà xé phay",
+    "price": 40000,
+    "image": "https://picsum.photos/seed/food01/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000003",
+    "restaurant_id": "00000000-0000-4000-4444-000000000001",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Cơm Gà Quay",
+    "description": "Cơm gà quay tiêu",
+    "price": 50000,
+    "image": "https://picsum.photos/seed/food02/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000004",
+    "restaurant_id": "00000000-0000-4000-4444-000000000001",
+    "category_id": "00000000-0000-4000-5555-000000000004",
+    "name": "Gỏi Gà",
+    "description": "Gỏi gà hành tây",
+    "price": 35000,
+    "image": "https://picsum.photos/seed/food03/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000005",
+    "restaurant_id": "00000000-0000-4000-4444-000000000001",
+    "category_id": "00000000-0000-4000-5555-000000000005",
+    "name": "Canh Gà",
+    "description": "Canh gà lá giang",
+    "price": 15000,
+    "image": "https://picsum.photos/seed/food04/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000006",
+    "restaurant_id": "00000000-0000-4000-4444-000000000001",
+    "category_id": "00000000-0000-4000-5555-000000000002",
+    "name": "Nước Lọc",
+    "description": "Nước suối tinh khiết",
+    "price": 10000,
+    "image": "https://picsum.photos/seed/food05/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000011",
+    "restaurant_id": "00000000-0000-4000-4444-000000000002",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Mì Quảng Ếch",
+    "description": "Đặc sản ếch om",
+    "price": 55000,
+    "image": "https://picsum.photos/seed/food10/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000012",
+    "restaurant_id": "00000000-0000-4000-4444-000000000002",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Mì Quảng Gà",
+    "description": "Gà quê dai ngon",
+    "price": 40000,
+    "image": "https://picsum.photos/seed/food11/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000013",
+    "restaurant_id": "00000000-0000-4000-4444-000000000002",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Mì Quảng Tôm Thịt",
+    "description": "Tôm đất và thịt",
+    "price": 40000,
+    "image": "https://picsum.photos/seed/food12/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000014",
+    "restaurant_id": "00000000-0000-4000-4444-000000000002",
+    "category_id": "00000000-0000-4000-5555-000000000004",
+    "name": "Ram",
+    "description": "Chả ram giòn",
+    "price": 15000,
+    "image": "https://picsum.photos/seed/food13/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000015",
+    "restaurant_id": "00000000-0000-4000-4444-000000000002",
+    "category_id": "00000000-0000-4000-5555-000000000005",
+    "name": "Bánh Tráng Mè",
+    "description": "Bánh tráng mè giòn rụm",
+    "price": 10000,
+    "image": "https://picsum.photos/seed/food14/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000016",
+    "restaurant_id": "00000000-0000-4000-4444-000000000002",
+    "category_id": "00000000-0000-4000-5555-000000000002",
+    "name": "Nước Lọc",
+    "description": "Nước suối tinh khiết",
+    "price": 10000,
+    "image": "https://picsum.photos/seed/food15/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000021",
+    "restaurant_id": "00000000-0000-4000-4444-000000000003",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Mực Hấp Hành Gừng",
+    "description": "Mực tươi roi rói",
+    "price": 120000,
+    "image": "https://picsum.photos/seed/food20/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000022",
+    "restaurant_id": "00000000-0000-4000-4444-000000000003",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Tôm Sú Nướng Mọi",
+    "description": "Tôm sú nướng",
+    "price": 150000,
+    "image": "https://picsum.photos/seed/food21/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000023",
+    "restaurant_id": "00000000-0000-4000-4444-000000000003",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Ốc Hương Xào Bơ Tỏi",
+    "description": "Ốc hương size lớn",
+    "price": 95000,
+    "image": "https://picsum.photos/seed/food22/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000024",
+    "restaurant_id": "00000000-0000-4000-4444-000000000003",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Nghêu Hấp Sả",
+    "description": "Nghêu hấp sả ớt",
+    "price": 65000,
+    "image": "https://picsum.photos/seed/food23/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000025",
+    "restaurant_id": "00000000-0000-4000-4444-000000000003",
+    "category_id": "00000000-0000-4000-5555-000000000002",
+    "name": "Bia Heineken",
+    "description": "Bia ướp lạnh",
+    "price": 20000,
+    "image": "https://picsum.photos/seed/food24/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000031",
+    "restaurant_id": "00000000-0000-4000-4444-000000000004",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Bún Bò Đặc Biệt",
+    "description": "Đầy đủ bắp bò, gân, sụn",
+    "price": 60000,
+    "image": "https://picsum.photos/seed/food30/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000032",
+    "restaurant_id": "00000000-0000-4000-4444-000000000004",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Bún Bò Tái Nạm",
+    "description": "Thịt bò tái mềm",
+    "price": 45000,
+    "image": "https://picsum.photos/seed/food31/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000033",
+    "restaurant_id": "00000000-0000-4000-4444-000000000004",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Bún Bò Gân",
+    "description": "Bún bò gân",
+    "price": 50000,
+    "image": "https://picsum.photos/seed/food32/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000034",
+    "restaurant_id": "00000000-0000-4000-4444-000000000004",
+    "category_id": "00000000-0000-4000-5555-000000000005",
+    "name": "Bánh Mì",
+    "description": "Bánh mì giòn rụm",
+    "price": 5000,
+    "image": "https://picsum.photos/seed/food33/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000035",
+    "restaurant_id": "00000000-0000-4000-4444-000000000004",
+    "category_id": "00000000-0000-4000-5555-000000000002",
+    "name": "Sting Vàng",
+    "description": "Nước tăng lực",
+    "price": 15000,
+    "image": "https://picsum.photos/seed/food34/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000036",
+    "restaurant_id": "00000000-0000-4000-4444-000000000004",
+    "category_id": "00000000-0000-4000-5555-000000000002",
+    "name": "Nước Lọc",
+    "description": "Nước suối tinh khiết",
+    "price": 10000,
+    "image": "https://picsum.photos/seed/food35/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000041",
+    "restaurant_id": "00000000-0000-4000-4444-000000000005",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Bê Thui (Lạng)",
+    "description": "Bê thui 100g",
+    "price": 60000,
+    "image": "https://picsum.photos/seed/food40/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000042",
+    "restaurant_id": "00000000-0000-4000-4444-000000000005",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Bún Mắm Bê Thui",
+    "description": "Bún mắm nêm",
+    "price": 45000,
+    "image": "https://picsum.photos/seed/food41/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000043",
+    "restaurant_id": "00000000-0000-4000-4444-000000000005",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Lẩu Bê Thui",
+    "description": "Lẩu sườn bê nấu măng",
+    "price": 150000,
+    "image": "https://picsum.photos/seed/food42/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000044",
+    "restaurant_id": "00000000-0000-4000-4444-000000000005",
+    "category_id": "00000000-0000-4000-5555-000000000005",
+    "name": "Bánh Tráng Đại Lộc",
+    "description": "Bánh tráng cuốn thịt bê",
+    "price": 15000,
+    "image": "https://picsum.photos/seed/food43/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000045",
+    "restaurant_id": "00000000-0000-4000-4444-000000000005",
+    "category_id": "00000000-0000-4000-5555-000000000002",
+    "name": "Bia Heineken",
+    "description": "Bia ướp lạnh",
+    "price": 20000,
+    "image": "https://picsum.photos/seed/food44/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000051",
+    "restaurant_id": "00000000-0000-4000-4444-000000000006",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Bánh Xèo Tôm Đất",
+    "description": "Tôm đất xèo xèo",
+    "price": 30000,
+    "image": "https://picsum.photos/seed/food50/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000052",
+    "restaurant_id": "00000000-0000-4000-4444-000000000006",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Bánh Xèo Bò",
+    "description": "Thịt bò xào giá",
+    "price": 35000,
+    "image": "https://picsum.photos/seed/food51/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000053",
+    "restaurant_id": "00000000-0000-4000-4444-000000000006",
+    "category_id": "00000000-0000-4000-5555-000000000001",
+    "name": "Bánh Xèo Mực",
+    "description": "Mực ống tươi",
+    "price": 40000,
+    "image": "https://picsum.photos/seed/food52/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000054",
+    "restaurant_id": "00000000-0000-4000-4444-000000000006",
+    "category_id": "00000000-0000-4000-5555-000000000004",
+    "name": "Nem Lụi",
+    "description": "Nem lụi nướng sả",
+    "price": 10000,
+    "image": "https://picsum.photos/seed/food53/400/400",
+    "is_available": true
+  },
+  {
+    "id": "00000000-0000-4000-6666-000000000055",
+    "restaurant_id": "00000000-0000-4000-4444-000000000006",
+    "category_id": "00000000-0000-4000-5555-000000000002",
+    "name": "Sting Vàng",
+    "description": "Nước tăng lực",
+    "price": 15000,
+    "image": "https://picsum.photos/seed/food54/400/400",
+    "is_available": true
+  }
+]

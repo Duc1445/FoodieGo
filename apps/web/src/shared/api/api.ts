@@ -14,10 +14,10 @@ export const api = axios.create({
 
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const currentPath = window.location.pathname;
-  let role: 'customer' | 'admin' | 'merchant' | 'shipper' = 'customer';
+  let role: 'customer' | 'admin' | 'merchant' | 'driver' = 'customer';
   if (currentPath.startsWith('/admin')) role = 'admin';
   else if (currentPath.startsWith('/merchant')) role = 'merchant';
-  else if (currentPath.startsWith('/driver')) role = 'shipper';
+  else if (currentPath.startsWith('/driver')) role = 'driver';
 
   const token = useAuthStore.getState().getToken(role);
   if (token && config.headers) {
@@ -38,10 +38,10 @@ api.interceptors.response.use(
       const currentPath = window.location.pathname;
       const isAuthPage = currentPath.includes('/login') || currentPath.includes('/register');
       if (!isAuthPage) {
-        let role: 'customer' | 'admin' | 'merchant' | 'shipper' = 'customer';
+        let role: 'customer' | 'admin' | 'merchant' | 'driver' = 'customer';
         if (currentPath.startsWith('/admin')) role = 'admin';
         else if (currentPath.startsWith('/merchant')) role = 'merchant';
-        else if (currentPath.startsWith('/driver')) role = 'shipper';
+        else if (currentPath.startsWith('/driver')) role = 'driver';
 
         useAuthStore.getState().logout(role);
         window.location.href = getLoginPath(role);

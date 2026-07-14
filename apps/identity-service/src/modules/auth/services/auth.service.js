@@ -32,7 +32,7 @@ export const register = async ({
   }
 
   const hashed = await bcrypt.hash(password, 10);
-  const approvalStatus = role === 'merchant' || role === 'shipper' ? 'PENDING' : 'APPROVED';
+  const approvalStatus = role === 'merchant' || role === 'driver' ? 'PENDING' : 'APPROVED';
   const user = await createUser({
     email,
     password: hashed,
@@ -78,7 +78,7 @@ export const login = async ({ email, password }) => {
     throw err;
   }
 
-  if (user.role === 'merchant' || user.role === 'shipper') {
+  if (user.role === 'merchant' || user.role === 'driver') {
     if (user.approval_status === 'PENDING') {
       const err = new Error('Account is pending approval');
       err.statusCode = 403;

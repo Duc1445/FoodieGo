@@ -1,0 +1,22 @@
+[
+  {
+    "id": "00000000-0000-4000-7777-000000000001",
+    "code": "WELCOME10",
+    "discount_type": "percentage",
+    "discount_value": 10,
+    "min_order_value": 50000,
+    "valid_from": "2026-07-14T08:05:19.940Z",
+    "valid_until": "2026-08-13T08:05:19.940Z",
+    "is_active": true
+  },
+  {
+    "id": "00000000-0000-4000-7777-000000000002",
+    "code": "GIAM50K",
+    "discount_type": "fixed",
+    "discount_value": 50000,
+    "min_order_value": 200000,
+    "valid_from": "2026-07-14T08:05:19.940Z",
+    "valid_until": "2026-08-13T08:05:19.940Z",
+    "is_active": true
+  }
+]

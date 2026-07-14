@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { LocationSelector } from '../../shared/components/LocationSelector';
 import { CartDrawer } from '../../shared/components/CartDrawer';
 import { useAuthStore } from '../../shared/stores/useAuthStore';
@@ -8,7 +8,10 @@ import { CartAPI } from '../../shared/services/cart.api';
 import { Button } from '@foodiego/ui';
 
 export function CustomerLayout() {
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const user = useAuthStore((state) => state.getUser('customer'));
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated('customer'));
+  const logout = useAuthStore((state) => state.logout);
+  const navigate = useNavigate();
   const loadCart = useCartStore((state) => state.actions.loadCart);
   const resetCart = useCartStore((state) => state.actions.reset);
 
@@ -20,12 +23,10 @@ export function CustomerLayout() {
   }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleLogout = () => {
-    // Reset local state immediately — never block on the API.
+    logout('customer');
     resetCart();
-    localStorage.removeItem('foodiego-auth-token');
-    logout();
-    // Best-effort backend clear — fire-and-forget, don't await.
     CartAPI.clearCart().catch(() => {});
+    navigate('/login');
   };
 
   return (
@@ -46,7 +47,7 @@ export function CustomerLayout() {
           <div className="ml-auto flex items-center space-x-4">
             <LocationSelector />
             <div className="border-l h-6 mx-2 border-border" />
-            {isAuthenticated() ? (
+            {isAuthenticated ? (
               <div className="flex items-center space-x-4">
                 <span className="text-sm font-medium">{user?.full_name}</span>
                 <Button variant="ghost" size="sm" onClick={handleLogout}>

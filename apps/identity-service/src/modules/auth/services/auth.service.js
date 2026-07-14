@@ -7,7 +7,23 @@ import {
 } from '../../user/repositories/user.repository.js';
 import { generateToken } from '../../../config/jwt.js';
 
-export const register = async ({ email, password, full_name, phone, address, role }) => {
+export const register = async ({
+  email,
+  password,
+  full_name,
+  phone,
+  address,
+  role,
+  business_name,
+  business_license,
+  tax_code,
+  identity_card,
+  driver_license,
+  vehicle_type,
+  vehicle_plate,
+  avatar_url,
+  restaurant_images,
+}) => {
   const existing = await findUserByEmail(email);
   if (existing) {
     const err = new Error('Email already exists');
@@ -16,7 +32,7 @@ export const register = async ({ email, password, full_name, phone, address, rol
   }
 
   const hashed = await bcrypt.hash(password, 10);
-  const merchantStatus = role === 'merchant' ? 'PENDING' : 'APPROVED';
+  const approvalStatus = role === 'merchant' || role === 'shipper' ? 'PENDING' : 'APPROVED';
   const user = await createUser({
     email,
     password: hashed,
@@ -24,8 +40,17 @@ export const register = async ({ email, password, full_name, phone, address, rol
     phone,
     address,
     role,
-    is_active: true, // accounts are always active initially, approval is handled via merchant_status
-    merchant_status: merchantStatus,
+    is_active: true,
+    approval_status: approvalStatus,
+    business_name,
+    business_license,
+    tax_code,
+    identity_card,
+    driver_license,
+    vehicle_type,
+    vehicle_plate,
+    avatar_url,
+    restaurant_images,
   });
 
   const token = generateToken({ id: user.id, role: user.role });
@@ -53,17 +78,17 @@ export const login = async ({ email, password }) => {
     throw err;
   }
 
-  if (user.role === 'merchant') {
-    if (user.merchant_status === 'PENDING') {
-      const err = new Error('Merchant account is pending approval');
+  if (user.role === 'merchant' || user.role === 'shipper') {
+    if (user.approval_status === 'PENDING') {
+      const err = new Error('Account is pending approval');
       err.statusCode = 403;
-      err.code = 'MERCHANT_PENDING';
+      err.code = 'ACCOUNT_PENDING';
       throw err;
     }
-    if (user.merchant_status === 'REJECTED') {
-      const err = new Error('Merchant account was rejected');
+    if (user.approval_status === 'REJECTED') {
+      const err = new Error('Account was rejected');
       err.statusCode = 403;
-      err.code = 'MERCHANT_REJECTED';
+      err.code = 'ACCOUNT_REJECTED';
       err.reason = user.rejection_reason || 'No reason provided';
       throw err;
     }

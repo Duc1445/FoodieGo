@@ -1,5 +1,4 @@
 import { api } from '../api/api';
-import { clearAuthStorage } from '../auth/session';
 
 export interface LoginRequest {
   email: string;
@@ -89,9 +88,5 @@ export const AuthAPI = {
   deleteAddress: async (userId: string, addressId: string) => {
     const res = await api.delete<{ success: boolean }>(`/users/${userId}/addresses/${addressId}`);
     return res.data;
-  },
-
-  logout: () => {
-    clearAuthStorage();
   }
 };

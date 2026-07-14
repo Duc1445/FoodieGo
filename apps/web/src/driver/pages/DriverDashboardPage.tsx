@@ -8,7 +8,7 @@ import { CheckCircle, Package } from 'lucide-react';
 
 export function DriverDashboardPage() {
   const queryClient = useQueryClient();
-  const { user } = useAuthStore();
+  const user = useAuthStore((state) => state.getUser('shipper'));
 
   // Fetch available deliveries (waiting status)
   const { data: availableDeliveries, isLoading: loadingAvailable } = useQuery({

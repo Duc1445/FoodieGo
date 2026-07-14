@@ -7,8 +7,15 @@ import { AuthAPI } from '../../shared/services/auth.api';
 import { useNavigate } from 'react-router-dom';
 
 export function ProfilePage() {
+  const user = useAuthStore((state) => state.getUser('customer'));
+  const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+
+  const handleLogout = () => {
+    logout('customer');
+    navigate('/login');
+  };
+
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     fullName: user?.name || '',
@@ -49,11 +56,6 @@ export function ProfilePage() {
     },
   });
 
-  const handleLogout = () => {
-    AuthAPI.logout();
-    logout();
-    navigate('/login');
-  };
 
   if (isLoading) {
     return (
@@ -188,7 +190,7 @@ export function ProfilePage() {
 }
 
 function AddressList() {
-  const { user } = useAuthStore();
+  const user = useAuthStore((state) => state.getUser('customer'));
   const [isAdding, setIsAdding] = useState(false);
   const [newAddress, setNewAddress] = useState({ address: '', phone: '' });
   

@@ -12,44 +12,47 @@ router.use(authenticate, authorize('admin'));
 // User management
 router.get(
   '/users',
-  query('role').optional().isIn(['customer', 'merchant', 'shipper', 'admin']).withMessage('Invalid role'),
+  query('role')
+    .optional()
+    .isIn(['customer', 'merchant', 'shipper', 'admin'])
+    .withMessage('Invalid role'),
   query('page').optional().isInt({ min: 1 }).withMessage('Invalid page number'),
   query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Invalid limit'),
   validate,
-  adminController.getAllUsers
-);
-
-router.patch(
-  '/users/:id/role',
-  param('id').isUUID().withMessage('User ID must be a valid UUID'),
-  body('role').isIn(['customer', 'merchant', 'shipper', 'admin']).withMessage('Invalid role'),
-  validate,
-  adminController.updateUserRole
+  adminController.getAllUsers,
 );
 
 router.delete(
   '/users/:id',
   param('id').isUUID().withMessage('User ID must be a valid UUID'),
   validate,
-  adminController.deleteUser
+  adminController.deleteUser,
 );
 
-// Merchant management
-router.get('/merchants/pending', adminController.getPendingMerchants);
-
-router.patch(
-  '/merchants/:id/approve',
-  param('id').isUUID().withMessage('Merchant ID must be a valid UUID'),
+// Approval management
+router.get(
+  '/users/pending',
+  query('role').optional().isIn(['merchant', 'shipper']).withMessage('Invalid role for pending'),
   validate,
-  adminController.approveMerchant
+  adminController.getPendingUsers,
 );
 
 router.patch(
-  '/merchants/:id/reject',
-  param('id').isUUID().withMessage('Merchant ID must be a valid UUID'),
+  '/users/:id/approve',
+  param('id').isUUID().withMessage('User ID must be a valid UUID'),
+  validate,
+  adminController.approveUser,
+);
+
+router.patch(
+  '/users/:id/reject',
+  param('id').isUUID().withMessage('User ID must be a valid UUID'),
   body('reason').notEmpty().withMessage('Rejection reason is required'),
   validate,
-  adminController.rejectMerchant
+  adminController.rejectUser,
 );
+
+// Dashboard stats (aggregated by gateway)
+router.get('/stats', adminController.getStats);
 
 export default router;

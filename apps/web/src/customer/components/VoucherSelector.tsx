@@ -124,17 +124,17 @@ export function VoucherSelector({ orderValue, onVoucherApplied, appliedVoucher }
                     <div>
                       <p className="font-medium">{promotion.code}</p>
                       <p className="text-sm text-muted-foreground">
-                        {promotion.discountType === 'percentage' 
-                          ? `${promotion.discountValue}% off`
-                          : `${promotion.discountValue.toFixed(2)} off`}
-                        {promotion.minOrderValue && (
-                          <span className="ml-2">(Min: {promotion.minOrderValue.toFixed(2)})</span>
+                        {promotion.discount_type === 'percentage' 
+                          ? `${promotion.discount_value}% off`
+                          : `${promotion.discount_value.toFixed(2)} off`}
+                        {promotion.min_order_value && (
+                          <span className="ml-2">(Min: {promotion.min_order_value.toFixed(2)})</span>
                         )}
                       </p>
                     </div>
-                    {promotion.usageLimit && (
+                    {promotion.usage_limit && (
                       <span className="text-xs text-muted-foreground">
-                        {promotion.usageCount}/{promotion.usageLimit} used
+                        {promotion.usage_count}/{promotion.usage_limit} used
                       </span>
                     )}
                   </div>

@@ -22,12 +22,20 @@ export function Login() {
 
     try {
       const data = await AuthAPI.login({ email, password, role: 'shipper' });
-      localStorage.setItem('foodiego-auth-token', data.token);
+      
       login(data.user, data.token);
       toast.success('Logged in successfully!');
       navigate(getDashboardPath('shipper'), { replace: true });
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Login failed. Please check your credentials.';
+      const data = err.response?.data;
+      let msg = data?.message || 'Login failed. Please check your credentials.';
+
+      if (data?.code === 'ACCOUNT_PENDING') {
+        msg = 'Your application is currently under review by our admin team. Please check back later.';
+      } else if (data?.code === 'ACCOUNT_REJECTED') {
+        msg = `Your application was rejected. Reason: ${data?.reason || 'No reason provided.'}`;
+      }
+
       setError(msg);
       toast.error(msg);
     } finally {

@@ -1,17 +1,28 @@
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../shared/stores/useAuthStore';
 import { Button } from '@foodiego/ui';
-import { Shield, Users, Store, Settings, LogOut, CheckSquare } from 'lucide-react';
+import { Shield, Users, LogOut, CheckSquare, Ticket, LifeBuoy } from 'lucide-react';
 
 export function AdminLayout() {
-  const { user, logout } = useAuthStore();
+  const user = useAuthStore((state) => state.getUser('admin'));
+  const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
 
+  const location = useLocation();
+
   const handleLogout = () => {
-    localStorage.removeItem('foodiego-auth-token');
-    logout();
+    logout('admin');
     navigate('/admin/login');
   };
+
+  const navLinks = [
+    { to: '/admin', icon: Shield, label: 'Dashboard' },
+    { to: '/admin/users', icon: Users, label: 'Users' },
+    { to: '/admin/approvals', icon: CheckSquare, label: 'Approvals' },
+    { to: '/admin/promotions', icon: Ticket, label: 'Promotions' },
+    { to: '/admin/support', icon: LifeBuoy, label: 'Support Tickets' },
+  ];
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -21,22 +32,22 @@ export function AdminLayout() {
           <Shield className="w-6 h-6 text-red-500 mr-2" />
           <span className="text-lg font-bold text-white">System Admin</span>
         </div>
-        <nav className="flex-1 p-4 space-y-2">
-          <Link to="/admin" className="flex items-center px-4 py-2 text-sm font-medium rounded-md bg-slate-800 text-white">
-            <Shield className="w-4 h-4 mr-3" /> Dashboard
-          </Link>
-          <Link to="/admin/users" className="flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-slate-800 hover:text-white transition-colors">
-            <Users className="w-4 h-4 mr-3" /> Users
-          </Link>
-          <Link to="/admin/restaurants" className="flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-slate-800 hover:text-white transition-colors">
-            <Store className="w-4 h-4 mr-3" /> Restaurants
-          </Link>
-          <Link to="/admin/approvals" className="flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-slate-800 hover:text-white transition-colors">
-            <CheckSquare className="w-4 h-4 mr-3" /> Approvals
-          </Link>
-          <Link to="/admin/settings" className="flex items-center px-4 py-2 text-sm font-medium rounded-md hover:bg-slate-800 hover:text-white transition-colors">
-            <Settings className="w-4 h-4 mr-3" /> Settings
-          </Link>
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+          {navLinks.map((link) => {
+            const isActive = location.pathname === link.to;
+            const Icon = link.icon;
+            return (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={`flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  isActive ? 'bg-slate-800 text-white' : 'hover:bg-slate-800 hover:text-white'
+                }`}
+              >
+                <Icon className="w-4 h-4 mr-3" /> {link.label}
+              </Link>
+            );
+          })}
         </nav>
         <div className="p-4 border-t border-slate-800">
           <Button variant="ghost" className="w-full justify-start text-slate-300 hover:text-white hover:bg-slate-800" onClick={handleLogout}>

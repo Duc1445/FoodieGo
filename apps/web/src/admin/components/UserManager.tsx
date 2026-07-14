@@ -5,7 +5,7 @@ import { Button } from '@foodiego/ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@foodiego/ui';
 import { Shield, Ban } from 'lucide-react';
 import { toast } from 'sonner';
-
+import { AdminLoading } from './AdminLoading';
 export function UserManager() {
   const queryClient = useQueryClient();
   const [roleFilter, setRoleFilter] = useState<string>('');
@@ -19,6 +19,7 @@ export function UserManager() {
     mutationFn: (userId: string) => AdminAPI.deleteUser(userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [ADMIN_QUERY_KEY, 'users'] });
+      queryClient.invalidateQueries({ queryKey: [ADMIN_QUERY_KEY, 'stats'] });
       toast.success('User deleted successfully');
     },
     onError: () => {
@@ -26,17 +27,7 @@ export function UserManager() {
     },
   });
 
-  const updateRoleMutation = useMutation({
-    mutationFn: ({ userId, role }: { userId: string; role: string }) =>
-      AdminAPI.updateUserRole(userId, role),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [ADMIN_QUERY_KEY, 'users'] });
-      toast.success('User role updated successfully');
-    },
-    onError: () => {
-      toast.error('Failed to update user role');
-    },
-  });
+
 
   const handleDelete = (userId: string) => {
     if (confirm('Are you sure you want to delete this user?')) {
@@ -44,14 +35,10 @@ export function UserManager() {
     }
   };
 
-  const handleRoleChange = (userId: string, newRole: string) => {
-    if (confirm(`Change user role to ${newRole}?`)) {
-      updateRoleMutation.mutate({ userId, role: newRole });
-    }
-  };
+
 
   if (isLoading) {
-    return <div className="text-center py-8">Loading users...</div>;
+    return <AdminLoading text="Loading users..." />;
   }
 
   const filteredUsers = users || [];
@@ -92,7 +79,6 @@ export function UserManager() {
                 key={user.id}
                 user={user}
                 onDelete={() => handleDelete(user.id)}
-                onRoleChange={(role) => handleRoleChange(user.id, role)}
               />
             ))}
           </div>
@@ -105,10 +91,9 @@ export function UserManager() {
 interface UserCardProps {
   user: User;
   onDelete: () => void;
-  onRoleChange: (role: string) => void;
 }
 
-function UserCard({ user, onDelete, onRoleChange }: UserCardProps) {
+function UserCard({ user, onDelete }: UserCardProps) {
   const roleColors = {
     customer: 'bg-blue-100 text-blue-800',
     merchant: 'bg-purple-100 text-purple-800',
@@ -127,13 +112,13 @@ function UserCard({ user, onDelete, onRoleChange }: UserCardProps) {
           <span className={`px-2 py-1 rounded-full text-xs font-medium ${roleColors[user.role] || 'bg-gray-100 text-gray-800'}`}>
             {user.role}
           </span>
-          {user.merchant_status && (
+          {user.approval_status && (
             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-              user.merchant_status === 'APPROVED' ? 'bg-green-100 text-green-800' :
-              user.merchant_status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+              user.approval_status === 'APPROVED' ? 'bg-green-100 text-green-800' :
+              user.approval_status === 'REJECTED' ? 'bg-red-100 text-red-800' :
               'bg-yellow-100 text-yellow-800'
             }`}>
-              {user.merchant_status}
+              {user.approval_status}
             </span>
           )}
         </div>
@@ -145,16 +130,6 @@ function UserCard({ user, onDelete, onRoleChange }: UserCardProps) {
         </p>
       </div>
       <div className="flex gap-2">
-        <select
-          className="px-2 py-1 border border-input bg-background rounded text-sm"
-          value={user.role}
-          onChange={(e) => onRoleChange(e.target.value)}
-        >
-          <option value="customer">Customer</option>
-          <option value="merchant">Merchant</option>
-          <option value="shipper">Shipper</option>
-          <option value="admin">Admin</option>
-        </select>
         <Button variant="ghost" size="sm" onClick={onDelete}>
           <Ban className="w-4 h-4 text-destructive" />
         </Button>

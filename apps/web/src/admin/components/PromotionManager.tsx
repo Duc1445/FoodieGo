@@ -3,9 +3,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { PromotionAPI, PROMOTIONS_QUERY_KEY, type Promotion, type CreatePromotionDto } from '../../shared/services/promotion.api';
 import { Button } from '@foodiego/ui';
 import { Input } from '@foodiego/ui';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@foodiego/ui';
+import { Card, CardContent, CardHeader, CardTitle, Badge } from '@foodiego/ui';
 import { Plus, Pencil, Trash2, Ticket } from 'lucide-react';
 import { toast } from 'sonner';
+import { AdminLoading } from './AdminLoading';
 
 export function PromotionManager() {
   const queryClient = useQueryClient();
@@ -79,7 +80,7 @@ export function PromotionManager() {
   };
 
   if (isLoading) {
-    return <div className="text-center py-8">Loading promotions...</div>;
+    return <AdminLoading text="Loading promotions..." />;
   }
 
   return (
@@ -151,48 +152,48 @@ function PromotionCard({ promotion, onEdit, onDelete }: PromotionCardProps) {
             </Button>
           </div>
         </div>
-        <CardDescription>
-          {promotion.discountType === 'percentage'
-            ? `${promotion.discountValue}% off`
-            : `${promotion.discountValue.toFixed(2)} off`}
-        </CardDescription>
+          <span className="font-bold text-lg text-emerald-600">
+            {promotion.discount_type === 'percentage' 
+              ? `${promotion.discount_value}% OFF` 
+              : `$${promotion.discount_value} OFF`}
+          </span>
       </CardHeader>
       <CardContent>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Status</span>
-            <span className={promotion.isActive ? 'text-green-600' : 'text-red-600'}>
-              {promotion.isActive ? 'Active' : 'Inactive'}
-            </span>
+            <Badge variant={promotion.is_active ? 'default' : 'secondary'} className={promotion.is_active ? 'bg-emerald-100 text-emerald-800' : ''}>
+            {promotion.is_active ? 'Active' : 'Inactive'}
+          </Badge>
           </div>
-          {promotion.minOrderValue && (
+          {promotion.min_order_value && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">Min Order</span>
-              <span>₫{promotion.minOrderValue.toLocaleString()}</span>
+              <span>₫{promotion.min_order_value.toLocaleString()}</span>
             </div>
           )}
-          {promotion.maxDiscountValue && (
+          {promotion.max_discount_value && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">Max Discount</span>
-              <span>₫{promotion.maxDiscountValue.toLocaleString()}</span>
+              <span>₫{promotion.max_discount_value.toLocaleString()}</span>
             </div>
           )}
-          {promotion.usageLimit && (
+          {promotion.usage_limit && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">Usage</span>
-              <span>{promotion.usageCount}/{promotion.usageLimit}</span>
+              <span>{promotion.usage_count}/{promotion.usage_limit}</span>
             </div>
           )}
-          {promotion.validFrom && (
+          {promotion.valid_from && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">Valid From</span>
-              <span>{new Date(promotion.validFrom).toLocaleDateString()}</span>
+              <span>{new Date(promotion.valid_from).toLocaleDateString()}</span>
             </div>
           )}
-          {promotion.validUntil && (
+          {promotion.valid_until && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">Valid Until</span>
-              <span>{new Date(promotion.validUntil).toLocaleDateString()}</span>
+              <span>{new Date(promotion.valid_until).toLocaleDateString()}</span>
             </div>
           )}
         </div>
@@ -211,14 +212,14 @@ function PromotionDialog({ promotion, onSubmit, onClose }: PromotionDialogProps)
   const [formData, setFormData] = useState<CreatePromotionDto>(
     promotion || {
       code: '',
-      discountType: 'percentage',
-      discountValue: 0,
-      minOrderValue: 0,
-      maxDiscountValue: undefined,
-      usageLimit: undefined,
-      validFrom: undefined,
-      validUntil: undefined,
-      isActive: true,
+      discount_type: 'percentage',
+      discount_value: 0,
+      min_order_value: 0,
+      max_discount_value: undefined,
+      usage_limit: undefined,
+      valid_from: undefined,
+      valid_until: undefined,
+      is_active: true,
     }
   );
 
@@ -241,87 +242,103 @@ function PromotionDialog({ promotion, onSubmit, onClose }: PromotionDialogProps)
                 value={formData.code}
                 onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
                 placeholder="SAVE10"
+                className="bg-white text-slate-900 border-slate-300 dark:bg-slate-900 dark:text-white dark:border-slate-700"
                 required
               />
             </div>
             <div>
               <label className="block text-sm font-medium mb-2">Discount Type</label>
               <select
-                className="w-full px-3 py-2 border border-input bg-background rounded-lg"
-                value={formData.discountType}
-                onChange={(e) => setFormData({ ...formData, discountType: e.target.value as 'percentage' | 'fixed' })}
+                className="w-full p-2 border rounded-md bg-white text-slate-900 border-slate-300 dark:bg-slate-900 dark:text-white dark:border-slate-700"
+                value={formData.discount_type}
+                onChange={(e) => setFormData({ ...formData, discount_type: e.target.value as 'percentage' | 'fixed' })}
               >
                 <option value="percentage">Percentage</option>
                 <option value="fixed">Fixed Amount</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">
-                {formData.discountType === 'percentage' ? 'Discount (%)' : 'Discount Amount'}
-              </label>
+              <label className="block text-sm font-medium mb-2">Discount Value</label>
               <Input
                 type="number"
-                value={formData.discountValue}
-                onChange={(e) => setFormData({ ...formData, discountValue: parseFloat(e.target.value) || 0 })}
+                min="0"
+                step="0.01"
+                value={formData.discount_value}
+                onChange={(e) => setFormData({ ...formData, discount_value: parseFloat(e.target.value) || 0 })}
+                className="bg-white text-slate-900 border-slate-300 dark:bg-slate-900 dark:text-white dark:border-slate-700"
                 required
+              />
+            </div>
+
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Min Order Value</label>
+              <Input
+                type="number"
                 min="0"
+                step="0.01"
+                value={formData.min_order_value || ''}
+                className="bg-white text-slate-900 border-slate-300 dark:bg-slate-900 dark:text-white dark:border-slate-700"
+                onChange={(e) => setFormData({ ...formData, min_order_value: parseFloat(e.target.value) || undefined })}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Minimum Order Value</label>
+              <label className="block text-sm font-medium mb-2">Max Discount Value</label>
               <Input
                 type="number"
-                value={formData.minOrderValue || 0}
-                onChange={(e) => setFormData({ ...formData, minOrderValue: parseFloat(e.target.value) || 0 })}
                 min="0"
+                step="0.01"
+                value={formData.max_discount_value || ''}
+                className="bg-white text-slate-900 border-slate-300 dark:bg-slate-900 dark:text-white dark:border-slate-700"
+                onChange={(e) => setFormData({ ...formData, max_discount_value: parseFloat(e.target.value) || undefined })}
               />
             </div>
-            {formData.discountType === 'percentage' && (
-              <div>
-                <label className="block text-sm font-medium mb-2">Maximum Discount</label>
-                <Input
-                  type="number"
-                  value={formData.maxDiscountValue || ''}
-                  onChange={(e) => setFormData({ ...formData, maxDiscountValue: parseFloat(e.target.value) || undefined })}
-                  min="0"
-                />
-              </div>
-            )}
-            <div>
-              <label className="block text-sm font-medium mb-2">Usage Limit</label>
-              <Input
-                type="number"
-                value={formData.usageLimit || ''}
-                onChange={(e) => setFormData({ ...formData, usageLimit: parseInt(e.target.value) || undefined })}
-                min="1"
-              />
-            </div>
+          </div>
+
+          <div className="mt-4">
+            <label className="block text-sm font-medium mb-2">Usage Limit (Optional)</label>
+            <Input
+              type="number"
+              min="1"
+              value={formData.usage_limit || ''}
+              className="bg-white text-slate-900 border-slate-300 dark:bg-slate-900 dark:text-white dark:border-slate-700"
+              onChange={(e) => setFormData({ ...formData, usage_limit: parseInt(e.target.value) || undefined })}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mt-4">
             <div>
               <label className="block text-sm font-medium mb-2">Valid From</label>
               <Input
                 type="datetime-local"
-                value={formData.validFrom || ''}
-                onChange={(e) => setFormData({ ...formData, validFrom: e.target.value || undefined })}
+                value={formData.valid_from ? new Date(formData.valid_from).toISOString().slice(0, 16) : ''}
+                className="bg-white text-slate-900 border-slate-300 dark:bg-slate-900 dark:text-white dark:border-slate-700 [color-scheme:light] dark:[color-scheme:dark]"
+                onChange={(e) => setFormData({ ...formData, valid_from: e.target.value ? new Date(e.target.value).toISOString() : undefined })}
               />
             </div>
             <div>
               <label className="block text-sm font-medium mb-2">Valid Until</label>
               <Input
                 type="datetime-local"
-                value={formData.validUntil || ''}
-                onChange={(e) => setFormData({ ...formData, validUntil: e.target.value || undefined })}
+                value={formData.valid_until ? new Date(formData.valid_until).toISOString().slice(0, 16) : ''}
+                className="bg-white text-slate-900 border-slate-300 dark:bg-slate-900 dark:text-white dark:border-slate-700 [color-scheme:light] dark:[color-scheme:dark]"
+                onChange={(e) => setFormData({ ...formData, valid_until: e.target.value ? new Date(e.target.value).toISOString() : undefined })}
               />
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="isActive"
-                checked={formData.isActive}
-                onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                className="w-4 h-4"
-              />
-              <label htmlFor="isActive" className="text-sm font-medium">Active</label>
-            </div>
+          </div>
+
+          <div className="flex items-center gap-2 mt-4">
+            <input
+              type="checkbox"
+              id="isActive"
+              checked={formData.is_active}
+              onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+              className="rounded border-gray-300"
+            />
+            <label htmlFor="isActive" className="text-sm font-medium">
+              Active
+            </label>
+          </div>
             <div className="flex gap-2 pt-4">
               <Button type="button" variant="outline" onClick={onClose} className="flex-1">
                 Cancel

@@ -22,7 +22,7 @@ export function Login() {
 
     try {
       const data = await AuthAPI.login({ email, password, role: 'admin' });
-      localStorage.setItem('foodiego-auth-token', data.token);
+      
       login(data.user, data.token);
       toast.success('Admin access granted.');
       navigate(getDashboardPath('admin'), { replace: true });

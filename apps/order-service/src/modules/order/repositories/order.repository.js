@@ -102,7 +102,7 @@ export class OrderRepository {
     const result = await trx.query(
       `SELECT id, status, is_payment_authorized, is_inventory_reserved, is_cancelled 
        FROM orders WHERE id = $1 FOR UPDATE`,
-      [orderId]
+      [orderId],
     );
     return result.rows[0] || null;
   }
@@ -110,22 +110,21 @@ export class OrderRepository {
   async setPaymentAuthorized(trx, orderId) {
     await trx.query(
       `UPDATE orders SET is_payment_authorized = true, updated_at = NOW() WHERE id = $1`,
-      [orderId]
+      [orderId],
     );
   }
 
   async setInventoryReserved(trx, orderId) {
     await trx.query(
       `UPDATE orders SET is_inventory_reserved = true, updated_at = NOW() WHERE id = $1`,
-      [orderId]
+      [orderId],
     );
   }
 
   async setCancelled(trx, orderId) {
-    await trx.query(
-      `UPDATE orders SET is_cancelled = true, updated_at = NOW() WHERE id = $1`,
-      [orderId]
-    );
+    await trx.query(`UPDATE orders SET is_cancelled = true, updated_at = NOW() WHERE id = $1`, [
+      orderId,
+    ]);
   }
 
   /**
@@ -142,7 +141,7 @@ export class OrderRepository {
          AND is_inventory_reserved = true
          AND is_cancelled = false
        RETURNING id`,
-      [orderId]
+      [orderId],
     );
     return result.rowCount === 1;
   }
@@ -172,7 +171,7 @@ export class OrderRepository {
   async findById(orderId) {
     const { rows } = await pool.query(
       'SELECT id, user_id as "userId", restaurant_id as "restaurantId", status, subtotal, delivery_fee as "deliveryFee", tax, discount, total, created_at as "createdAt", updated_at as "updatedAt" FROM orders WHERE id = $1',
-      [orderId]
+      [orderId],
     );
     return rows[0] || null;
   }
@@ -180,18 +179,30 @@ export class OrderRepository {
   async getAdminStats() {
     const { rows } = await pool.query(`
       SELECT 
-        (SELECT COUNT(*) FROM users) as total_users,
-        (SELECT COUNT(*) FROM restaurants) as total_restaurants,
-        (SELECT COUNT(*) FROM orders) as total_orders,
-        (SELECT COUNT(*) FROM orders WHERE status NOT IN ('DELIVERED', 'CANCELLED')) as active_orders,
-        (SELECT COUNT(*) FROM users WHERE role = 'merchant' AND merchant_status = 'PENDING') as pending_merchants
+        (SELECT COUNT(*) FROM orders) AS total_orders,
+        (SELECT COUNT(*) FROM orders WHERE status NOT IN ('DELIVERED', 'CANCELLED')) AS active_orders,
+        (SELECT COALESCE(SUM(total), 0) FROM orders WHERE status = 'DELIVERED') AS total_revenue,
+        (SELECT COUNT(*) FROM orders WHERE created_at::date = CURRENT_DATE) AS today_orders,
+        (SELECT COALESCE(SUM(total), 0) FROM orders WHERE status = 'DELIVERED' AND created_at::date = CURRENT_DATE) AS today_revenue,
+        (SELECT COUNT(*) FROM support_tickets) AS total_tickets,
+        (SELECT COUNT(*) FROM support_tickets WHERE status = 'OPEN') AS open_tickets,
+        (SELECT COUNT(*) FROM support_tickets WHERE status = 'CLOSED') AS closed_tickets,
+        (SELECT COUNT(*) FROM promotions) AS total_promotions,
+        (SELECT COUNT(*) FROM promotions WHERE is_active = true) AS active_promotions
     `);
-    return rows[0] || {
-      total_users: 0,
-      total_restaurants: 0,
-      total_orders: 0,
-      active_orders: 0,
-      pending_merchants: 0
-    };
+    return (
+      rows[0] || {
+        total_orders: 0,
+        active_orders: 0,
+        total_revenue: 0,
+        today_orders: 0,
+        today_revenue: 0,
+        total_tickets: 0,
+        open_tickets: 0,
+        closed_tickets: 0,
+        total_promotions: 0,
+        active_promotions: 0,
+      }
+    );
   }
 }

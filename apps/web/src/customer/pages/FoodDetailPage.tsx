@@ -16,7 +16,7 @@ export function FoodDetailPage() {
   const addItem = useCartStore((state) => state.actions.addItem);
   const clearCart = useCartStore((state) => state.actions.clearCart);
   const pendingItemIds = useCartStore((state) => state.pendingItemIds);
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated('customer'));
   
   const [quantity, setQuantity] = useState(1);
   const [isConflictDialogOpen, setIsConflictDialogOpen] = useState(false);
@@ -86,7 +86,7 @@ export function FoodDetailPage() {
   }
 
   const handleAddToCart = async () => {
-    if (!isAuthenticated()) {
+    if (!isAuthenticated) {
       toast.error('Please log in to add items to your cart.');
       return;
     }

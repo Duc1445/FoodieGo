@@ -4,6 +4,7 @@ import { Button } from '@foodiego/ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@foodiego/ui';
 import { Store, ToggleLeft, ToggleRight } from 'lucide-react';
 import { toast } from 'sonner';
+import { AdminLoading } from './AdminLoading';
 
 export function RestaurantManager() {
   const queryClient = useQueryClient();
@@ -17,6 +18,7 @@ export function RestaurantManager() {
     mutationFn: (restaurantId: string) => AdminAPI.toggleRestaurantStatus(restaurantId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [ADMIN_QUERY_KEY, 'restaurants'] });
+      queryClient.invalidateQueries({ queryKey: [ADMIN_QUERY_KEY, 'stats'] });
       toast.success('Restaurant status updated successfully');
     },
     onError: () => {
@@ -29,7 +31,7 @@ export function RestaurantManager() {
   };
 
   if (isLoading) {
-    return <div className="text-center py-8">Loading restaurants...</div>;
+    return <AdminLoading text="Loading restaurants..." />;
   }
 
   const restaurantList = restaurants || [];

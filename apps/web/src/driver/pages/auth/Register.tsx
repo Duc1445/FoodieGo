@@ -24,7 +24,7 @@ export function Register() {
 
     try {
       const data = await AuthAPI.register({ email, password, full_name, phone, role: 'shipper' });
-      localStorage.setItem('foodiego-auth-token', data.token);
+      
       login(data.user, data.token);
       toast.success('Registration successful!');
       navigate(getDashboardPath('shipper'), { replace: true });

@@ -1,15 +1,16 @@
+
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../shared/stores/useAuthStore';
 import { Button } from '@foodiego/ui';
 import { Store, Utensils, ClipboardList, Settings, LogOut } from 'lucide-react';
 
 export function MerchantLayout() {
-  const { user, logout } = useAuthStore();
+  const user = useAuthStore((state) => state.getUser('merchant'));
+  const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('foodiego-auth-token');
-    logout();
+    logout('merchant');
     navigate('/merchant/login');
   };
 

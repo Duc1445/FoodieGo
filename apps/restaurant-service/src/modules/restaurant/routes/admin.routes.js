@@ -15,14 +15,16 @@ router.get(
   query('page').optional().isInt({ min: 1 }).withMessage('Invalid page number'),
   query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Invalid limit'),
   validate,
-  adminController.getAllRestaurants
+  adminController.getAllRestaurants,
 );
+
+router.get('/admin/restaurants/stats', adminController.getStats);
 
 router.patch(
   '/admin/restaurants/:id/status',
   param('id').isUUID().withMessage('Restaurant ID must be a valid UUID'),
   validate,
-  adminController.toggleRestaurantStatus
+  adminController.toggleRestaurantStatus,
 );
 
 export default router;

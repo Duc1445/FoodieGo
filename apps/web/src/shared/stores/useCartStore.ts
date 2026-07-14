@@ -129,7 +129,7 @@ export const useCartStore = create<CartState>()(
               // Session expired — reset cart immediately and logout
               set(EMPTY_STATE);
               localStorage.removeItem('foodiego-auth-token');
-              useAuthStore.getState().logout();
+              useAuthStore.getState().logout('customer');
             } else {
               // Network / 500 — keep current (persisted) state, show toast
               toast.error('Could not sync cart. Showing last known state.');

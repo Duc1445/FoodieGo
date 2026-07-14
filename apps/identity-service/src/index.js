@@ -60,9 +60,8 @@ app.get('/metrics', async (_req, res) => {
 
 app.use('/api/v1/auth', authRoutes);
 
-
 app.use('/api/v1/users', addressRoutes);
-app.use('/api/v1/users/admin', adminRoutes);
+app.use('/api/v1/admin', adminRoutes);
 
 // ─── Error Handler ─────────────────────────────────────────────────────────
 app.use((err, _req, res, _next) => {

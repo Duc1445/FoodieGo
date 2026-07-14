@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/useAuthStore';
 import { Loading } from './Loading';
-import { clearAuthStorage, getLoginPath, readAuthSession, type AuthRole } from '../auth/session';
+import { getLoginPath, readAuthSession, type AuthRole } from '../auth/session';
 
 export function ProtectedRoute({
   children,
@@ -13,13 +13,17 @@ export function ProtectedRoute({
   allowedRoles?: AuthRole[];
   loginPath?: string;
 }) {
-  const { logout } = useAuthStore();
+  const logout = useAuthStore((state) => state.logout);
   const location = useLocation();
   const [redirectPath, setRedirectPath] = useState<string | null>(null);
   const [isValidating, setIsValidating] = useState(true);
 
+  // Determine which role we are protecting for this route
+  const primaryRole = allowedRoles?.[0] || 'customer';
+  const token = useAuthStore((state) => state.getToken(primaryRole));
+
   useEffect(() => {
-    const session = readAuthSession();
+    const session = readAuthSession(token);
 
     if (session.status === 'missing') {
       setRedirectPath(loginPath);
@@ -27,25 +31,15 @@ export function ProtectedRoute({
       return;
     }
 
-    if (session.status === 'invalid') {
-      clearAuthStorage();
-      logout();
-      setRedirectPath(loginPath);
-      setIsValidating(false);
-      return;
-    }
-
-    if (session.status === 'expired') {
-      clearAuthStorage();
-      logout();
+    if (session.status === 'invalid' || session.status === 'expired') {
+      logout(primaryRole);
       setRedirectPath(loginPath);
       setIsValidating(false);
       return;
     }
 
     if (allowedRoles && !allowedRoles.includes(session.role)) {
-      clearAuthStorage();
-      logout();
+      logout(primaryRole);
       setRedirectPath('/login');
       setIsValidating(false);
       return;
@@ -53,7 +47,7 @@ export function ProtectedRoute({
 
     setRedirectPath(null);
     setIsValidating(false);
-  }, [allowedRoles, loginPath, logout]);
+  }, [allowedRoles, loginPath, logout, token, primaryRole]);
 
   if (isValidating) {
     return <Loading fullScreen />;

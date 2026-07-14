@@ -3,17 +3,17 @@ import { api } from '../api/api';
 export interface Promotion {
   id: string;
   code: string;
-  discountType: 'percentage' | 'fixed';
-  discountValue: number;
-  minOrderValue?: number;
-  maxDiscountValue?: number;
-  usageLimit?: number;
-  usageCount: number;
-  validFrom?: string;
-  validUntil?: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  discount_type: 'percentage' | 'fixed';
+  discount_value: number;
+  min_order_value?: number;
+  max_discount_value?: number;
+  usage_limit?: number;
+  usage_count: number;
+  valid_from?: string;
+  valid_until?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ValidationResult {
@@ -26,14 +26,14 @@ export interface ValidationResult {
 
 export interface CreatePromotionDto {
   code: string;
-  discountType: 'percentage' | 'fixed';
-  discountValue: number;
-  minOrderValue?: number;
-  maxDiscountValue?: number;
-  usageLimit?: number;
-  validFrom?: string;
-  validUntil?: string;
-  isActive?: boolean;
+  discount_type: 'percentage' | 'fixed';
+  discount_value: number;
+  min_order_value?: number;
+  max_discount_value?: number;
+  usage_limit?: number;
+  valid_from?: string;
+  valid_until?: string;
+  is_active?: boolean;
 }
 
 export const PromotionAPI = {

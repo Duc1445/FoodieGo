@@ -1,72 +1,62 @@
-import { useState } from 'react';
-import { PromotionManager } from '../components/PromotionManager';
-import { UserManager } from '../components/UserManager';
-import { RestaurantManager } from '../components/RestaurantManager';
-import { OrderManager } from '../components/OrderManager';
-
-type TabType = 'overview' | 'users' | 'restaurants' | 'orders' | 'promotions';
+import { useQuery } from '@tanstack/react-query';
+import { AdminAPI, ADMIN_QUERY_KEY } from '../../shared/services/admin.api';
+import { AdminLoading } from '../components/AdminLoading';
+import { Users, Store, ShoppingBag, AlertCircle, CheckSquare, Ticket } from 'lucide-react';
 
 export function AdminDashboardPage() {
-  const [activeTab, setActiveTab] = useState<TabType>('overview');
+  const { data: stats, isLoading } = useQuery({
+    queryKey: [ADMIN_QUERY_KEY, 'stats'],
+    queryFn: () => AdminAPI.getStats(),
+  });
 
-  const tabs = [
-    { id: 'overview' as TabType, label: 'Overview' },
-    { id: 'users' as TabType, label: 'Users' },
-    { id: 'restaurants' as TabType, label: 'Restaurants' },
-    { id: 'orders' as TabType, label: 'Orders' },
-    { id: 'promotions' as TabType, label: 'Promotions' },
-  ];
+  if (isLoading) {
+    return <AdminLoading text="Loading dashboard..." />;
+  }
 
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow-sm border">
         <h2 className="text-2xl font-bold mb-2 text-slate-800">System Overview</h2>
-        <p className="text-slate-500">Welcome to the Admin Portal. Here you can monitor system activity and manage users.</p>
+        <p className="text-slate-500">Welcome to the Admin Portal. Monitor platform performance below.</p>
       </div>
 
-      <div className="border-b">
-        <nav className="flex gap-4">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? 'border-primary text-primary font-medium'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </nav>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard title="Total Users" value={stats?.total_users || 0} icon={Users} color="text-blue-500" />
+        <StatCard title="Customers" value={stats?.total_customers || 0} icon={Users} color="text-indigo-500" />
+        <StatCard title="Merchants" value={stats?.total_merchants || 0} icon={Store} color="text-purple-500" />
+        <StatCard title="Shippers" value={stats?.total_shippers || 0} icon={Users} color="text-cyan-500" />
+        
+        <StatCard title="Pending Merchants" value={stats?.pending_merchants || 0} icon={AlertCircle} color="text-orange-500" />
+        <StatCard title="Approved Merchants" value={stats?.approved_merchants || 0} icon={Store} color="text-green-500" />
+        <StatCard title="Pending Shippers" value={stats?.pending_shippers || 0} icon={AlertCircle} color="text-yellow-500" />
+        <StatCard title="Approved Shippers" value={stats?.approved_shippers || 0} icon={Users} color="text-emerald-500" />
+        <StatCard title="Rejected Applications" value={stats?.rejected_applications || 0} icon={AlertCircle} color="text-red-500" />
+
+        <StatCard title="Total Orders" value={stats?.total_orders || 0} icon={ShoppingBag} color="text-sky-500" />
+        <StatCard title="Active Orders" value={stats?.active_orders || 0} icon={ShoppingBag} color="text-blue-400" />
+        <StatCard title="Today's Orders" value={stats?.today_orders || 0} icon={ShoppingBag} color="text-amber-500" />
+        
+        <StatCard title="Total Tickets" value={stats?.total_tickets || 0} icon={AlertCircle} color="text-purple-600" />
+        <StatCard title="Open Tickets" value={stats?.open_tickets || 0} icon={AlertCircle} color="text-red-500" />
+        <StatCard title="Closed Tickets" value={stats?.closed_tickets || 0} icon={CheckSquare} color="text-green-500" />
+        
+        <StatCard title="Total Promotions" value={stats?.total_promotions || 0} icon={Ticket} color="text-pink-500" />
+        <StatCard title="Active Promotions" value={stats?.active_promotions || 0} icon={Ticket} color="text-rose-500" />
       </div>
+    </div>
+  );
+}
 
-      {activeTab === 'overview' && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <h3 className="text-sm font-medium text-slate-500 mb-4">Total Users</h3>
-            <div className="h-16 bg-slate-100 rounded-md animate-pulse"></div>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <h3 className="text-sm font-medium text-slate-500 mb-4">Total Restaurants</h3>
-            <div className="h-16 bg-slate-100 rounded-md animate-pulse"></div>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <h3 className="text-sm font-medium text-slate-500 mb-4">System Alerts</h3>
-            <div className="h-16 bg-slate-100 rounded-md animate-pulse"></div>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <h3 className="text-sm font-medium text-slate-500 mb-4">Active Orders</h3>
-            <div className="h-16 bg-slate-100 rounded-md animate-pulse"></div>
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'users' && <UserManager />}
-      {activeTab === 'restaurants' && <RestaurantManager />}
-      {activeTab === 'orders' && <OrderManager />}
-      {activeTab === 'promotions' && <PromotionManager />}
+function StatCard({ title, value, icon: Icon, color }: { title: string; value: string | number; icon: any; color: string }) {
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-sm border flex items-center">
+      <div className={`p-4 rounded-full bg-slate-50 ${color} mr-4`}>
+        <Icon className="w-6 h-6" />
+      </div>
+      <div>
+        <p className="text-sm font-medium text-slate-500">{title}</p>
+        <p className="text-2xl font-bold text-slate-800">{value}</p>
+      </div>
     </div>
   );
 }

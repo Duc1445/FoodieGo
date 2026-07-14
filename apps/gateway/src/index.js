@@ -59,9 +59,18 @@ const proxyOptions = (target) => ({
 app.use('/api/v1/auth', createProxyMiddleware(proxyOptions(process.env.IDENTITY_SERVICE_URL)));
 app.use('/api/v1/users', createProxyMiddleware(proxyOptions(process.env.IDENTITY_SERVICE_URL)));
 // Admin routes - split by service
-app.use('/api/v1/admin/users', createProxyMiddleware(proxyOptions(process.env.IDENTITY_SERVICE_URL)));
-app.use('/api/v1/admin/merchants', createProxyMiddleware(proxyOptions(process.env.IDENTITY_SERVICE_URL)));
-app.use('/api/v1/admin/restaurants', createProxyMiddleware(proxyOptions(process.env.RESTAURANT_SERVICE_URL)));
+app.use(
+  '/api/v1/admin/users',
+  createProxyMiddleware(proxyOptions(process.env.IDENTITY_SERVICE_URL)),
+);
+app.use(
+  '/api/v1/admin/merchants',
+  createProxyMiddleware(proxyOptions(process.env.IDENTITY_SERVICE_URL)),
+);
+app.use(
+  '/api/v1/admin/restaurants',
+  createProxyMiddleware(proxyOptions(process.env.RESTAURANT_SERVICE_URL)),
+);
 app.use('/api/v1/admin/orders', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
 app.use('/api/v1/admin/stats', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
 app.use(
@@ -94,6 +103,64 @@ app.use('/api/v1/delivery', createProxyMiddleware(proxyOptions(process.env.ORDER
 app.use('/api/v1/promotions', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
 app.use('/api/v1/payments', createProxyMiddleware(proxyOptions(process.env.PAYMENT_SERVICE_URL)));
 app.use('/api/v1/reviews', createProxyMiddleware(proxyOptions(process.env.RESTAURANT_SERVICE_URL)));
+app.use('/api/v1/support', createProxyMiddleware(proxyOptions(process.env.ORDER_SERVICE_URL)));
+
+// ─── Dashboard Aggregation ──────────────────────────────────────────────────
+// Pulls from identity-service, restaurant-service, and order-service
+// so the dashboard is not coupled to a single domain service.
+app.get('/api/v1/admin/dashboard', async (req, res) => {
+  const authHeader = req.headers['authorization'];
+  const headers = authHeader ? { Authorization: authHeader } : {};
+
+  const fetchJson = async (url) => {
+    try {
+      const response = await fetch(url, { headers });
+      if (!response.ok) return null;
+      return response.json();
+    } catch {
+      return null;
+    }
+  };
+
+  const [userStatsRes, orderStatsRes] = await Promise.all([
+    fetchJson(`${process.env.IDENTITY_SERVICE_URL}/api/v1/admin/stats`),
+    fetchJson(`${process.env.ORDER_SERVICE_URL}/api/v1/admin/stats`),
+  ]);
+
+  const userStats = userStatsRes?.data || {};
+  const orderStats = orderStatsRes?.data || {};
+
+  res.json({
+    success: true,
+    data: {
+      // Users (from identity-service)
+      total_users: userStats.total_users ?? 0,
+      total_customers: userStats.total_customers ?? 0,
+      total_merchants: userStats.total_merchants ?? 0,
+      total_shippers: userStats.total_shippers ?? 0,
+      total_admins: userStats.total_admins ?? 0,
+      pending_merchants: userStats.pending_merchants ?? 0,
+      approved_merchants: userStats.approved_merchants ?? 0,
+      pending_shippers: userStats.pending_shippers ?? 0,
+      approved_shippers: userStats.approved_shippers ?? 0,
+      rejected_applications: userStats.rejected_applications ?? 0,
+
+      // Orders (from order-service)
+      total_orders: orderStats.total_orders ?? 0,
+      active_orders: orderStats.active_orders ?? 0,
+      today_orders: orderStats.today_orders ?? 0,
+
+      // Support Tickets (from order-service)
+      total_tickets: orderStats.total_tickets ?? 0,
+      open_tickets: orderStats.open_tickets ?? 0,
+      closed_tickets: orderStats.closed_tickets ?? 0,
+
+      // Promotions (from order-service)
+      total_promotions: orderStats.total_promotions ?? 0,
+      active_promotions: orderStats.active_promotions ?? 0,
+    },
+  });
+});
 
 // Mock Analytics Endpoint for Sprint B1
 app.post('/api/analytics/events', (req, res) => {

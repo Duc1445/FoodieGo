@@ -1,8 +1,10 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { getDashboardPath, readAuthSession } from '../../shared/auth/session';
+import { getDashboardPath, readAuthSession, type AuthRole } from '../../shared/auth/session';
+import { useAuthStore } from '../../shared/stores/useAuthStore';
 
-export function AuthLayout() {
-  const session = readAuthSession();
+export function AuthLayout({ role }: { role: AuthRole }) {
+  const token = useAuthStore((state) => state.getToken(role));
+  const session = readAuthSession(token);
 
   if (session.status === 'valid') {
     return <Navigate to={getDashboardPath(session.role)} replace />;

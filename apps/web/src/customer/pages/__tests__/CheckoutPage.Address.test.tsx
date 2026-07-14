@@ -34,8 +34,8 @@ describe('CheckoutPage Address Flow', () => {
     
     // Mock user
     vi.mocked(useAuthStore).mockReturnValue({
-      user: { id: 'user-1', name: 'Test User', email: 'test@example.com', role: 'CUSTOMER' },
-      isAuthenticated: true,
+      getUser: () => ({ id: 'user-1', name: 'Test User', email: 'test@example.com', role: 'CUSTOMER' }),
+      isAuthenticated: () => true,
       isLoading: false,
       login: vi.fn(),
       register: vi.fn(),
@@ -45,7 +45,8 @@ describe('CheckoutPage Address Flow', () => {
 
     // Also mock getState for non-hook usage
     (useAuthStore as any).getState = () => ({
-      user: { id: 'user-1', name: 'Test User', email: 'test@example.com', role: 'CUSTOMER' }
+      getUser: () => ({ id: 'user-1', name: 'Test User', email: 'test@example.com', role: 'CUSTOMER' }),
+      isAuthenticated: () => true
     });
 
     // Mock cart

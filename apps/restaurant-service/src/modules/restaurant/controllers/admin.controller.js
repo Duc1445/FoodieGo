@@ -1,4 +1,4 @@
-import * as restaurantRepository from '../repositories/restaurant.repository.js';
+import { restaurantRepository } from '../repositories/restaurant.repository.js';
 
 export const getAllRestaurants = async (req, res, next) => {
   try {
@@ -16,13 +16,26 @@ export const getAllRestaurants = async (req, res, next) => {
 export const toggleRestaurantStatus = async (req, res, next) => {
   try {
     const restaurantId = req.params.id;
-    
+
     const restaurant = await restaurantRepository.toggleRestaurantStatus(restaurantId);
     if (!restaurant) {
       return res.status(404).json({ success: false, message: 'Restaurant not found' });
     }
-    
-    res.json({ success: true, message: 'Restaurant status updated successfully', data: restaurant });
+
+    res.json({
+      success: true,
+      message: 'Restaurant status updated successfully',
+      data: restaurant,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getStats = async (req, res, next) => {
+  try {
+    const stats = await restaurantRepository.getStats();
+    res.json({ success: true, data: stats });
   } catch (err) {
     next(err);
   }

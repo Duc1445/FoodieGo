@@ -11,7 +11,7 @@ interface AddressSelectorProps {
 }
 
 export function AddressSelector({ selectedId, onSelect, onAddressData }: AddressSelectorProps) {
-  const { user } = useAuthStore();
+  const user = useAuthStore((state) => state.getUser('customer'));
   const [isAdding, setIsAdding] = useState(false);
 
   const { data: addresses = [], isLoading } = useQuery({

@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from './shared/providers/ThemeProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -33,7 +33,11 @@ const MerchantLogin = lazy(() => import('./merchant/pages/auth/Login').then(modu
 const MerchantRegister = lazy(() => import('./merchant/pages/auth/Register').then(module => ({ default: module.Register })));
 
 const AdminDashboardPage = lazy(() => import('./admin/pages/AdminDashboardPage').then(module => ({ default: module.AdminDashboardPage })));
-const MerchantApprovalPage = lazy(() => import('./admin/pages/MerchantApprovalPage').then(module => ({ default: module.MerchantApprovalPage })));
+const ApprovalPage = lazy(() => import('./admin/pages/ApprovalPage').then(module => ({ default: module.ApprovalPage })));
+const UserManager = lazy(() => import('./admin/components/UserManager').then(module => ({ default: module.UserManager })));
+
+const PromotionManager = lazy(() => import('./admin/components/PromotionManager').then(module => ({ default: module.PromotionManager })));
+const SupportTicketManager = lazy(() => import('./admin/components/SupportTicketManager').then(module => ({ default: module.SupportTicketManager })));
 const AdminLogin = lazy(() => import('./admin/pages/auth/Login').then(module => ({ default: module.Login })));
 
 const DriverDashboardPage = lazy(() => import('./driver/pages/DriverDashboardPage').then(module => ({ default: module.DriverDashboardPage })));
@@ -80,12 +84,12 @@ const router = createBrowserRouter([
   },
   {
     path: '/login',
-    element: <Suspense fallback={<PageLoader />}><AuthLayout /></Suspense>,
+    element: <Suspense fallback={<PageLoader />}><AuthLayout role="customer" /></Suspense>,
     children: [{ index: true, element: <Suspense fallback={<PageLoader />}><CustomerLogin /></Suspense> }],
   },
   {
     path: '/register',
-    element: <Suspense fallback={<PageLoader />}><AuthLayout /></Suspense>,
+    element: <Suspense fallback={<PageLoader />}><AuthLayout role="customer" /></Suspense>,
     children: [{ index: true, element: <Suspense fallback={<PageLoader />}><CustomerRegister /></Suspense> }],
   },
   {
@@ -99,12 +103,12 @@ const router = createBrowserRouter([
   },
   {
     path: '/merchant/login',
-    element: <Suspense fallback={<PageLoader />}><AuthLayout /></Suspense>,
+    element: <Suspense fallback={<PageLoader />}><AuthLayout role="merchant" /></Suspense>,
     children: [{ index: true, element: <Suspense fallback={<PageLoader />}><MerchantLogin /></Suspense> }],
   },
   {
     path: '/merchant/register',
-    element: <Suspense fallback={<PageLoader />}><AuthLayout /></Suspense>,
+    element: <Suspense fallback={<PageLoader />}><AuthLayout role="merchant" /></Suspense>,
     children: [{ index: true, element: <Suspense fallback={<PageLoader />}><MerchantRegister /></Suspense> }],
   },
   {
@@ -113,12 +117,17 @@ const router = createBrowserRouter([
     errorElement: <ErrorBoundary />,
     children: [
       { index: true, element: <Suspense fallback={<PageLoader />}><AdminDashboardPage /></Suspense> },
-      { path: 'approvals', element: <Suspense fallback={<PageLoader />}><MerchantApprovalPage /></Suspense> },
+      { path: 'approvals', element: <Suspense fallback={<PageLoader />}><ApprovalPage /></Suspense> },
+      { path: 'users', element: <Suspense fallback={<PageLoader />}><UserManager /></Suspense> },
+
+      { path: 'promotions', element: <Suspense fallback={<PageLoader />}><PromotionManager /></Suspense> },
+      { path: 'support', element: <Suspense fallback={<PageLoader />}><SupportTicketManager /></Suspense> },
+      { path: '*', element: <Navigate to="/admin" replace /> },
     ],
   },
   {
     path: '/admin/login',
-    element: <Suspense fallback={<PageLoader />}><AuthLayout /></Suspense>,
+    element: <Suspense fallback={<PageLoader />}><AuthLayout role="admin" /></Suspense>,
     children: [{ index: true, element: <Suspense fallback={<PageLoader />}><AdminLogin /></Suspense> }],
   },
   {
@@ -131,12 +140,12 @@ const router = createBrowserRouter([
   },
   {
     path: '/driver/login',
-    element: <Suspense fallback={<PageLoader />}><AuthLayout /></Suspense>,
+    element: <Suspense fallback={<PageLoader />}><AuthLayout role="shipper" /></Suspense>,
     children: [{ index: true, element: <Suspense fallback={<PageLoader />}><DriverLogin /></Suspense> }],
   },
   {
     path: '/driver/register',
-    element: <Suspense fallback={<PageLoader />}><AuthLayout /></Suspense>,
+    element: <Suspense fallback={<PageLoader />}><AuthLayout role="shipper" /></Suspense>,
     children: [{ index: true, element: <Suspense fallback={<PageLoader />}><DriverRegister /></Suspense> }],
   },
 ]);

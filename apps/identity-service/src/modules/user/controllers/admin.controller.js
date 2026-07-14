@@ -1,9 +1,10 @@
 import * as userRepository from '../repositories/user.repository.js';
 
-export const getPendingMerchants = async (req, res, next) => {
+export const getPendingUsers = async (req, res, next) => {
   try {
-    const merchants = await userRepository.getPendingMerchants();
-    res.json({ success: true, data: merchants });
+    const role = req.query.role;
+    const users = await userRepository.getPendingUsers(role);
+    res.json({ success: true, data: users });
   } catch (err) {
     next(err);
   }
@@ -23,69 +24,68 @@ export const getAllUsers = async (req, res, next) => {
   }
 };
 
-export const updateUserRole = async (req, res, next) => {
-  try {
-    const userId = req.params.id;
-    const { role } = req.body;
-    
-    const user = await userRepository.updateUserRole(userId, role);
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
-    }
-    
-    res.json({ success: true, message: 'User role updated successfully', data: user });
-  } catch (err) {
-    next(err);
-  }
-};
-
 export const deleteUser = async (req, res, next) => {
   try {
     const userId = req.params.id;
-    
+
     const deleted = await userRepository.deleteUser(userId);
     if (!deleted) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
-    
+
     res.json({ success: true, message: 'User deleted successfully' });
   } catch (err) {
+    if (err.code === '23503') {
+      return res.status(409).json({
+        success: false,
+        message: 'Cannot delete user because related orders or records exist.',
+      });
+    }
     next(err);
   }
 };
 
-export const approveMerchant = async (req, res, next) => {
+export const approveUser = async (req, res, next) => {
   try {
     const adminId = req.user.id;
-    const merchantId = req.params.id;
-    
-    const merchant = await userRepository.updateMerchantStatus(merchantId, 'APPROVED', null, adminId);
-    if (!merchant) {
-      return res.status(404).json({ success: false, message: 'Merchant not found or not in merchant role' });
+    const userId = req.params.id;
+
+    const user = await userRepository.updateUserStatus(userId, 'APPROVED', null, adminId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
-    
-    res.json({ success: true, message: 'Merchant approved successfully', data: merchant });
+
+    res.json({ success: true, message: 'User approved successfully', data: user });
   } catch (err) {
     next(err);
   }
 };
 
-export const rejectMerchant = async (req, res, next) => {
+export const rejectUser = async (req, res, next) => {
   try {
     const adminId = req.user.id;
-    const merchantId = req.params.id;
+    const userId = req.params.id;
     const { reason } = req.body;
-    
+
     if (!reason || reason.trim().length === 0) {
       return res.status(400).json({ success: false, message: 'Rejection reason is required' });
     }
-    
-    const merchant = await userRepository.updateMerchantStatus(merchantId, 'REJECTED', reason.trim(), adminId);
-    if (!merchant) {
-      return res.status(404).json({ success: false, message: 'Merchant not found or not in merchant role' });
+
+    const user = await userRepository.updateUserStatus(userId, 'REJECTED', reason.trim(), adminId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
-    
-    res.json({ success: true, message: 'Merchant rejected', data: merchant });
+
+    res.json({ success: true, message: 'User rejected', data: user });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getStats = async (req, res, next) => {
+  try {
+    const stats = await userRepository.getUserStats();
+    res.json({ success: true, data: stats });
   } catch (err) {
     next(err);
   }

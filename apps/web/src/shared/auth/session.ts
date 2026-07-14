@@ -34,8 +34,7 @@ export const clearAuthStorage = () => {
   localStorage.removeItem(AUTH_PERSIST_KEY);
 };
 
-export const readAuthSession = (): AuthValidationResult => {
-  const token = localStorage.getItem(AUTH_TOKEN_KEY);
+export const readAuthSession = (token: string | null | undefined): AuthValidationResult => {
   if (!token) {
     return { status: 'missing' };
   }

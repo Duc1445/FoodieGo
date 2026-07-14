@@ -87,7 +87,7 @@ export function CheckoutPage() {
       
       // If manual entry (no selected address ID), create the address first
       if (!finalAddressId) {
-        const { id: userId } = useAuthStore.getState().user || {};
+        const { id: userId } = useAuthStore.getState().getUser('customer') || {};
         if (userId) {
           const newAddress = await AuthAPI.addAddress(userId, {
             address: formData.deliveryAddress,

@@ -12,6 +12,7 @@ import orderRoutes from './modules/order/routes/order.routes.js';
 import deliveryRoutes from './modules/delivery/routes/delivery.routes.js';
 import promotionRoutes from './routes/promotion.routes.js';
 import adminRoutes from './routes/admin.routes.js';
+import supportRoutes from './modules/support/support.routes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3003;
@@ -43,6 +44,7 @@ app.use('/api/v1/orders', ordersRouter);
 app.use('/api/v1/delivery', deliveryRoutes);
 app.use('/api/v1/promotions', promotionRoutes);
 app.use('/api/v1', adminRoutes);
+app.use('/api/v1/support', supportRoutes);
 
 // ─── Error Handler ─────────────────────────────────────────────────────────
 app.use((err, req, res, _next) => {
@@ -59,16 +61,16 @@ import { eventValidator } from '@foodiego/contracts';
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, async () => {
     logger.info({ port: PORT }, 'Order Service started');
-    
+
     // Initialize Schema Validator
     eventValidator.init();
-    
+
     await startDispatcher();
     await startConsumers();
 
     // Start Saga Timeout Sweep periodically
     setInterval(() => {
-      runTimeoutSweep().catch(err => {
+      runTimeoutSweep().catch((err) => {
         logger.error('Unhandled error in Saga Timeout Worker', err);
       });
     }, 60000); // Check every minute

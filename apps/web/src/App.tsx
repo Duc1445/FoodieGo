@@ -44,6 +44,10 @@ const DriverDashboardPage = lazy(() => import('./driver/pages/DriverDashboardPag
 const DriverLogin = lazy(() => import('./driver/pages/auth/Login').then(module => ({ default: module.Login })));
 const DriverRegister = lazy(() => import('./driver/pages/auth/Register').then(module => ({ default: module.Register })));
 
+const DriverAvailableOrdersPage = lazy(() => import('./driver/pages/DriverAvailableOrdersPage').then(module => ({ default: module.DriverAvailableOrdersPage })));
+const DriverActiveDeliveriesPage = lazy(() => import('./driver/pages/DriverActiveDeliveriesPage').then(module => ({ default: module.DriverActiveDeliveriesPage })));
+const DriverProfilePage = lazy(() => import('./driver/pages/DriverProfilePage').then(module => ({ default: module.DriverProfilePage })));
+
 const queryClient = new QueryClient();
 
 const PageLoader = () => (
@@ -136,6 +140,10 @@ const router = createBrowserRouter([
     errorElement: <ErrorBoundary />,
     children: [
       { index: true, element: <Suspense fallback={<PageLoader />}><DriverDashboardPage /></Suspense> },
+      { path: 'available', element: <Suspense fallback={<PageLoader />}><DriverAvailableOrdersPage /></Suspense> },
+      { path: 'active', element: <Suspense fallback={<PageLoader />}><DriverActiveDeliveriesPage /></Suspense> },
+      { path: 'profile', element: <Suspense fallback={<PageLoader />}><DriverProfilePage /></Suspense> },
+      { path: '*', element: <Navigate to="/driver" replace /> },
     ],
   },
   {

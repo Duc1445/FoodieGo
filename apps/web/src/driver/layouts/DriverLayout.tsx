@@ -1,4 +1,4 @@
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 
 import { useAuthStore } from '../../shared/stores/useAuthStore';
 import { Button } from '@foodiego/ui';
@@ -8,6 +8,7 @@ export function DriverLayout() {
   const user = useAuthStore((state) => state.getUser('shipper'));
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout('shipper');
@@ -23,18 +24,28 @@ export function DriverLayout() {
           <span className="text-lg font-bold text-primary">Driver Portal</span>
         </div>
         <nav className="flex-1 p-4 space-y-2">
-          <Link to="/driver" className="flex items-center px-4 py-2 text-sm font-medium rounded-md bg-primary/10 text-primary">
-            <ClipboardList className="w-4 h-4 mr-3" /> Dashboard
-          </Link>
-          <Link to="/driver/available" className="flex items-center px-4 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100">
-            <MapPin className="w-4 h-4 mr-3" /> Available Orders
-          </Link>
-          <Link to="/driver/active" className="flex items-center px-4 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100">
-            <Truck className="w-4 h-4 mr-3" /> Active Deliveries
-          </Link>
-          <Link to="/driver/profile" className="flex items-center px-4 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100">
-            <Settings className="w-4 h-4 mr-3" /> Profile
-          </Link>
+          {[
+            { to: '/driver', icon: ClipboardList, label: 'Dashboard' },
+            { to: '/driver/available', icon: MapPin, label: 'Available Orders' },
+            { to: '/driver/active', icon: Truck, label: 'Active Deliveries' },
+            { to: '/driver/profile', icon: Settings, label: 'Profile' }
+          ].map((item) => {
+            const isActive = location.pathname === item.to || (item.to !== '/driver' && location.pathname.startsWith(item.to));
+            const Icon = item.icon;
+            return (
+              <Link 
+                key={item.to}
+                to={item.to} 
+                className={`flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  isActive 
+                    ? 'bg-primary/10 text-primary' 
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                }`}
+              >
+                <Icon className="w-4 h-4 mr-3" /> {item.label}
+              </Link>
+            );
+          })}
         </nav>
         <div className="p-4 border-t">
           <Button variant="ghost" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50" onClick={handleLogout}>

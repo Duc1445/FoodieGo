@@ -1,20 +1,20 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuthStore } from '../../../shared/stores/useAuthStore';
 import { AuthAPI } from '../../../shared/services/auth.api';
 import { Button } from '@foodiego/ui';
 import { AlertCircle, Loader2, Truck } from 'lucide-react';
 import { toast } from 'sonner';
-import { getDashboardPath } from '../../../shared/auth/session';
 
 export function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [full_name, setFullName] = useState('');
   const [phone, setPhone] = useState('');
+  const [driver_license, setDriverLicense] = useState('');
+  const [vehicle_type, setVehicleType] = useState('');
+  const [vehicle_plate, setVehiclePlate] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const login = useAuthStore(state => state.login);
   const navigate = useNavigate();
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -23,11 +23,19 @@ export function Register() {
     setIsLoading(true);
 
     try {
-      const data = await AuthAPI.register({ email, password, full_name, phone, role: 'shipper' });
+      await AuthAPI.register({ 
+        email, 
+        password, 
+        full_name, 
+        phone, 
+        role: 'shipper',
+        driver_license,
+        vehicle_type,
+        vehicle_plate
+      } as any);
       
-      login(data.user, data.token);
-      toast.success('Registration successful!');
-      navigate(getDashboardPath('shipper'), { replace: true });
+      toast.success('Registration successful! Your application is now pending approval.');
+      navigate('/driver/login', { replace: true });
     } catch (err: any) {
       const msg = err.response?.data?.message || 'Registration failed. Please try again.';
       setError(msg);
@@ -94,6 +102,43 @@ export function Register() {
               className="w-full p-2 mt-1 border rounded text-black bg-white" 
               required 
               minLength={6}
+              disabled={isLoading}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Driver License</label>
+            <input 
+              type="text" 
+              value={driver_license} 
+              onChange={e => setDriverLicense(e.target.value)} 
+              className="w-full p-2 mt-1 border rounded text-black bg-white" 
+              required 
+              disabled={isLoading}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Vehicle Type</label>
+            <select 
+              value={vehicle_type} 
+              onChange={e => setVehicleType(e.target.value)} 
+              className="w-full p-2 mt-1 border rounded text-black bg-white" 
+              required 
+              disabled={isLoading}
+            >
+              <option value="">Select a vehicle type</option>
+              <option value="Motorcycle">Motorcycle</option>
+              <option value="Bicycle">Bicycle</option>
+              <option value="Car">Car</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Vehicle Plate</label>
+            <input 
+              type="text" 
+              value={vehicle_plate} 
+              onChange={e => setVehiclePlate(e.target.value)} 
+              className="w-full p-2 mt-1 border rounded text-black bg-white" 
+              required 
               disabled={isLoading}
             />
           </div>

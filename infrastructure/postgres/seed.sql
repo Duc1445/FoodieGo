@@ -927,3 +927,8 @@ VALUES ('00000000-0000-4000-3333-000000000200', '00000000-0000-4000-1111-0000000
 ON CONFLICT (id) DO UPDATE SET price = EXCLUDED.price, name = EXCLUDED.name;
 
 INSERT INTO inventory_stock (stock_item_id, total_quantity, reserved_quantity) SELECT id::varchar, 100, 0 FROM menu_items ON CONFLICT DO NOTHING;
+
+-- SHIPPER
+INSERT INTO users (id, email, password_hash, full_name, phone, role, is_active, approval_status, driver_license, vehicle_type, vehicle_plate)
+VALUES ('00000000-0000-4000-0000-333333333333', 'shipper@foodiego.com', '$2b$10$tZ2yD0kSIfqUoYjV/Rj7mO/p1HhXqBf/K1h.W253l2.O8lE2O9TdW', 'Test Shipper', '0933333333', 'shipper', true, 'APPROVED', 'DL-123456789', 'Motorcycle', '43A-12345')
+ON CONFLICT (email) DO NOTHING;

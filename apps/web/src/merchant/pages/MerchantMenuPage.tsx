@@ -12,7 +12,7 @@ export function MerchantMenuPage() {
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   
   const [itemToDelete, setItemToDelete] = useState<MenuItem | null>(null);
-  const [formData, setFormData] = useState({ name: '', price: '', category_id: '', image_url: '', description: '', is_available: true });
+  const [formData, setFormData] = useState({ name: '', price: '', category_id: '', image_url: '', description: '', status: 'AVAILABLE', preparation_time: '15' });
 
   const { data: menuItems, isLoading } = useQuery({
     queryKey: MERCHANT_MENU_QUERY_KEY,
@@ -30,7 +30,7 @@ export function MerchantMenuPage() {
       queryClient.invalidateQueries({ queryKey: MERCHANT_MENU_QUERY_KEY });
       toast.success('Menu item created');
       setIsAddOpen(false);
-      setFormData({ name: '', price: '', category_id: '', image_url: '', description: '', is_available: true });
+      setFormData({ name: '', price: '', category_id: '', image_url: '', description: '', status: 'AVAILABLE', preparation_time: '15' });
     },
     onError: (err: any) => {
       toast.error(err.response?.data?.error?.message || 'Failed to create item');
@@ -69,30 +69,35 @@ export function MerchantMenuPage() {
       category_id: formData.category_id,
       image_url: formData.image_url,
       description: formData.description,
-      is_available: formData.is_available
+      status: formData.status,
+      preparation_time: parseInt(formData.preparation_time) || 15
     });
   };
 
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingItem) return;
+    const data: Partial<MenuItem> = {
+      name: editingItem.name,
+      price: Number(editingItem.price),
+      status: editingItem.status,
+      description: editingItem.description,
+      image_url: editingItem.image_url,
+      preparation_time: editingItem.preparation_time
+    };
+    if (editingItem.category_id) {
+      data.category_id = editingItem.category_id;
+    }
     updateMutation.mutate({
       id: editingItem.id,
-      data: {
-        name: editingItem.name,
-        price: Number(editingItem.price),
-        category_id: editingItem.category_id,
-        is_available: editingItem.is_available,
-        description: editingItem.description,
-        image_url: editingItem.image_url
-      }
+      data
     });
   };
 
   const toggleAvailability = (item: MenuItem) => {
     updateMutation.mutate({
       id: item.id,
-      data: { is_available: !item.is_available }
+      data: { status: item.status === 'AVAILABLE' ? 'OUT_OF_STOCK' : 'AVAILABLE' }
     });
   };
 
@@ -127,9 +132,28 @@ export function MerchantMenuPage() {
                 <label className="text-sm font-medium">Description</label>
                 <Input className="bg-white text-black border-input" placeholder="Delicious food..." value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
               </div>
-              <div>
-                <label className="text-sm font-medium">Price</label>
-                <Input className="bg-white text-black border-input" placeholder="Price" type="number" step="0.01" min="0" value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} required />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Price (VND)</label>
+                  <Input
+                    type="number"
+                    placeholder="e.g. 50000"
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    required
+                    min="0"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Prep Time (mins)</label>
+                  <Input
+                    type="number"
+                    placeholder="15"
+                    value={formData.preparation_time}
+                    onChange={(e) => setFormData({ ...formData, preparation_time: e.target.value })}
+                    min="1"
+                  />
+                </div>
               </div>
               <div>
                 <label className="text-sm font-medium">Image Upload</label>
@@ -159,13 +183,14 @@ export function MerchantMenuPage() {
                   ))}
                 </select>
               </div>
-              <div className="flex items-center space-x-2 pt-2">
-                <input 
-                  type="checkbox" 
-                  checked={formData.is_available} 
-                  onChange={(e) => setFormData({...formData, is_available: e.target.checked})} 
-                />
-                <label className="text-sm font-medium">Available</label>
+              <div>
+                <label className="text-sm font-medium">Status</label>
+                <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-foreground" value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})} required>
+                  <option value="AVAILABLE">Available</option>
+                  <option value="OUT_OF_STOCK">Out of Stock</option>
+                  <option value="HIDDEN">Hidden</option>
+                  <option value="DISCONTINUED">Discontinued</option>
+                </select>
               </div>
               <Button type="submit" className="w-full" disabled={createMutation.isPending}>Create Item</Button>
             </form>
@@ -244,12 +269,29 @@ export function MerchantMenuPage() {
                                     <Input className="bg-white text-black border-input" value={editingItem.name} onChange={(e) => setEditingItem({...editingItem, name: e.target.value})} required />
                                   </div>
                                   <div>
-                                    <label className="text-sm font-medium">Price</label>
-                                    <Input className="bg-white text-black border-input" type="number" step="0.01" min="0" value={editingItem.price} onChange={(e) => setEditingItem({...editingItem, price: Number(e.target.value)})} required />
-                                  </div>
-                                  <div>
                                     <label className="text-sm font-medium">Description</label>
                                     <Input className="bg-white text-black border-input" value={editingItem.description || ''} onChange={(e) => setEditingItem({...editingItem, description: e.target.value})} />
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <label className="text-sm font-medium">Price (VND)</label>
+                                      <Input
+                                        type="number"
+                                        value={editingItem.price}
+                                        onChange={(e) => setEditingItem({ ...editingItem, price: Number(e.target.value) })}
+                                        required
+                                        min="0"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium">Prep Time (mins)</label>
+                                      <Input
+                                        type="number"
+                                        value={editingItem.preparation_time || 15}
+                                        onChange={(e) => setEditingItem({ ...editingItem, preparation_time: Number(e.target.value) })}
+                                        min="1"
+                                      />
+                                    </div>
                                   </div>
                                   <div>
                                     <label className="text-sm font-medium">Image Upload</label>
@@ -277,6 +319,15 @@ export function MerchantMenuPage() {
                                       {(globalCategories as any[])?.map(cat => (
                                         <option key={cat.id} value={cat.id}>{cat.name}</option>
                                       ))}
+                                    </select>
+                                  </div>
+                                  <div>
+                                    <label className="text-sm font-medium">Status</label>
+                                    <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-foreground" value={editingItem.status || 'AVAILABLE'} onChange={(e) => setEditingItem({...editingItem, status: e.target.value})} required>
+                                      <option value="AVAILABLE">Available</option>
+                                      <option value="OUT_OF_STOCK">Out of Stock</option>
+                                      <option value="HIDDEN">Hidden</option>
+                                      <option value="DISCONTINUED">Discontinued</option>
                                     </select>
                                   </div>
                                   <Button type="submit" className="w-full" disabled={updateMutation.isPending}>Save Changes</Button>

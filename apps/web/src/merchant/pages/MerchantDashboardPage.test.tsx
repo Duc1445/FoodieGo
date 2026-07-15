@@ -2,13 +2,11 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MerchantDashboardPage } from './MerchantDashboardPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { getMerchantOrders } from '../../shared/services/merchant.api';
-import { OrderStatus } from '@foodiego/platform-sdk/src/order-status';
+import { getMerchantMenu, getMerchantStats } from '../../shared/services/merchant.api';
 
-// Mock dependencies
 vi.mock('../../shared/services/merchant.api', () => ({
-  getMerchantOrders: vi.fn(),
-  updateOrderStatus: vi.fn(),
+  getMerchantMenu: vi.fn(),
+  getMerchantStats: vi.fn(),
 }));
 
 describe('MerchantDashboardPage', () => {
@@ -19,7 +17,6 @@ describe('MerchantDashboardPage', () => {
       defaultOptions: {
         queries: {
           retry: false,
-          // Disable refetchInterval in test environment to prevent open handles
           refetchInterval: false,
         },
       },
@@ -28,13 +25,14 @@ describe('MerchantDashboardPage', () => {
   });
 
   afterEach(() => {
-    // Cancel all queries and clear the query cache to stop any polling intervals
     queryClient.cancelQueries();
     queryClient.clear();
   });
 
-  it('renders loading skeleton initially', () => {
-    vi.mocked(getMerchantOrders).mockReturnValue(new Promise(() => {})); // never resolves
+  it('renders the dashboard shell', () => {
+    vi.mocked(getMerchantStats).mockResolvedValue({ total_revenue: 0, total_orders: 0 } as any);
+    vi.mocked(getMerchantMenu).mockResolvedValue([] as any);
+
     render(
       <QueryClientProvider client={queryClient}>
         <MerchantDashboardPage />
@@ -42,96 +40,25 @@ describe('MerchantDashboardPage', () => {
     );
 
     expect(screen.getByText('Merchant Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('Recent Orders')).toBeInTheDocument();
+    expect(screen.getByText('Total Revenue')).toBeInTheDocument();
+    expect(screen.getByText('Total Orders')).toBeInTheDocument();
+    expect(screen.getByText('Active Menu Items')).toBeInTheDocument();
   });
 
-  it('renders empty state when no orders', async () => {
-    vi.mocked(getMerchantOrders).mockResolvedValue([]);
+  it('renders fetched values', async () => {
+    vi.mocked(getMerchantStats).mockResolvedValue({ total_revenue: 123450, total_orders: 7 } as any);
+    vi.mocked(getMerchantMenu).mockResolvedValue([
+      { id: 'category-1', items: [{ id: 'item-1' }, { id: 'item-2' }, { id: 'item-3' }] },
+    ] as any);
+
     render(
       <QueryClientProvider client={queryClient}>
         <MerchantDashboardPage />
       </QueryClientProvider>
     );
 
-    const emptyText = await screen.findByText('No orders yet');
-    expect(emptyText).toBeInTheDocument();
-  });
-
-  it('renders orders when available', async () => {
-    const mockOrders = [
-      {
-        id: 'order-1',
-        restaurantId: 'rest-1',
-        userId: 'user-1',
-        status: 'CONFIRMED' as any,
-        subtotal: 10,
-        deliveryFee: 2,
-        tax: 1,
-        discount: 0,
-        total: 13,
-        createdAt: '2026-01-01T00:00:00.000Z',
-        items: []
-      }
-    ];
-
-    vi.mocked(getMerchantOrders).mockResolvedValue(mockOrders);
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MerchantDashboardPage />
-      </QueryClientProvider>
-    );
-
-    const orderIdText = await screen.findByText('Order #order-1');
-    expect(orderIdText).toBeInTheDocument();
-    expect(screen.getByText('CONFIRMED')).toBeInTheDocument();
-  });
-
-  it('renders correct badge for READY and DELIVERING status', async () => {
-    // The CTO specifically requested checking against the exact enum values.
-    
-    const mockOrders = [
-      {
-        id: 'order-ready',
-        restaurantId: 'rest-1',
-        userId: 'user-1',
-        status: OrderStatus.READY,
-        subtotal: 10,
-        deliveryFee: 2,
-        tax: 1,
-        discount: 0,
-        total: 13,
-        createdAt: '2026-01-01T00:00:00.000Z',
-        items: []
-      },
-      {
-        id: 'order-delivering',
-        restaurantId: 'rest-1',
-        userId: 'user-2',
-        status: OrderStatus.DELIVERING,
-        subtotal: 10,
-        deliveryFee: 2,
-        tax: 1,
-        discount: 0,
-        total: 13,
-        createdAt: '2026-01-01T00:00:00.000Z',
-        items: []
-      }
-    ];
-
-    vi.mocked(getMerchantOrders).mockResolvedValue(mockOrders as any);
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MerchantDashboardPage />
-      </QueryClientProvider>
-    );
-
-    // Wait for render
-    await screen.findByText('Order #order-re');
-    await screen.findByText('Order #order-de');
-
-    // Assert that the exact texts from order.state.js are rendered on the screen
-    // getByText with exact: true (default) ensures strict matching
-    expect(screen.getByText(OrderStatus.READY)).toBeInTheDocument();
-    expect(screen.getByText(OrderStatus.DELIVERING)).toBeInTheDocument();
+    await screen.findByText('123,450 VND');
+    expect(screen.getByText('7')).toBeInTheDocument();
+    expect(screen.getByText('1')).toBeInTheDocument();
   });
 });

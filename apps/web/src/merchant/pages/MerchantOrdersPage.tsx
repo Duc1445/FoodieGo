@@ -78,12 +78,10 @@ export function MerchantOrdersPage() {
                       disabled={updateStatusMutation.isPending || order.status === 'COMPLETED' || order.status === 'CANCELLED' || order.status === 'REFUNDED'}
                     >
                         <option value="" disabled>Update Status</option>
-                        <option value="CONFIRMED" disabled={!['PAID'].includes(order.status) && order.status !== 'CONFIRMED'}>Confirmed (Pending)</option>
-                        <option value="PREPARING" disabled={!['CONFIRMED'].includes(order.status) && order.status !== 'PREPARING'}>Preparing (Cooking)</option>
-                        <option value="READY" disabled={!['PREPARING'].includes(order.status) && order.status !== 'READY'}>Ready for Pickup</option>
-                        <option value="DELIVERING" disabled={!['READY'].includes(order.status) && order.status !== 'DELIVERING'}>Delivering</option>
-                        <option value="COMPLETED" disabled={!['DELIVERING'].includes(order.status) && order.status !== 'COMPLETED'}>Completed</option>
-                        <option value="CANCELLED" disabled={['COMPLETED', 'CANCELLED', 'REFUNDED', 'DELIVERING', 'READY'].includes(order.status)}>Cancelled</option>
+                        <option value="MERCHANT_ACCEPTED" disabled={!['PENDING'].includes(order.status) && order.status !== 'MERCHANT_ACCEPTED'}>Merchant Accepted</option>
+                        <option value="PREPARING" disabled={!['MERCHANT_ACCEPTED'].includes(order.status) && order.status !== 'PREPARING'}>Preparing (Cooking)</option>
+                        <option value="READY_FOR_PICKUP" disabled={!['PREPARING'].includes(order.status) && order.status !== 'READY_FOR_PICKUP'}>Ready for Pickup</option>
+                        <option value="CANCELLED" disabled={['COMPLETED', 'CANCELLED', 'EXPIRED', 'REFUNDED', 'DELIVERING', 'READY_FOR_PICKUP', 'DRIVER_ACCEPTED', 'PICKED_UP'].includes(order.status)}>Rejected by Merchant</option>
                     </select>
                   </div>
                 </div>

@@ -20,6 +20,9 @@ export interface OrderDetail {
   total: number;
   createdAt: string;
   items: OrderItem[];
+  paymentMethod?: string;
+  promotions?: { code: string; type: string; value: number; amount: number }[];
+  delivery?: { driverId?: string; name?: string; phone?: string; vehicleInfo?: string; status?: string };
 }
 
 export interface OrderSummary {

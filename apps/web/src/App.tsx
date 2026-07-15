@@ -30,6 +30,7 @@ const CustomerRegister = lazy(() => import('./customer/pages/auth/Register').the
 const MerchantDashboardPage = lazy(() => import('./merchant/pages/MerchantDashboardPage').then(module => ({ default: module.MerchantDashboardPage })));
 const MerchantMenuPage = lazy(() => import('./merchant/pages/MerchantMenuPage').then(module => ({ default: module.MerchantMenuPage })));
 const MerchantOrdersPage = lazy(() => import('./merchant/pages/MerchantOrdersPage').then(module => ({ default: module.MerchantOrdersPage })));
+const MerchantVouchersPage = lazy(() => import('./merchant/pages/MerchantVouchersPage').then(module => ({ default: module.MerchantVouchersPage })));
 const MerchantLogin = lazy(() => import('./merchant/pages/auth/Login').then(module => ({ default: module.Login })));
 const MerchantRegister = lazy(() => import('./merchant/pages/auth/Register').then(module => ({ default: module.Register })));
 
@@ -39,6 +40,8 @@ const UserManager = lazy(() => import('./admin/components/UserManager').then(mod
 
 const PromotionManager = lazy(() => import('./admin/components/PromotionManager').then(module => ({ default: module.PromotionManager })));
 const SupportTicketManager = lazy(() => import('./admin/components/SupportTicketManager').then(module => ({ default: module.SupportTicketManager })));
+const CategoryManager = lazy(() => import('./admin/components/CategoryManager').then(module => ({ default: module.CategoryManager })));
+const VoucherApprovalManager = lazy(() => import('./admin/components/VoucherApprovalManager').then(module => ({ default: module.VoucherApprovalManager })));
 const AdminLogin = lazy(() => import('./admin/pages/auth/Login').then(module => ({ default: module.Login })));
 
 const DriverDashboardPage = lazy(() => import('./driver/pages/DriverDashboardPage').then(module => ({ default: module.DriverDashboardPage })));
@@ -48,6 +51,8 @@ const DriverRegister = lazy(() => import('./driver/pages/auth/Register').then(mo
 const DriverAvailableOrdersPage = lazy(() => import('./driver/pages/DriverAvailableOrdersPage').then(module => ({ default: module.DriverAvailableOrdersPage })));
 const DriverActiveDeliveriesPage = lazy(() => import('./driver/pages/DriverActiveDeliveriesPage').then(module => ({ default: module.DriverActiveDeliveriesPage })));
 const DriverProfilePage = lazy(() => import('./driver/pages/DriverProfilePage').then(module => ({ default: module.DriverProfilePage })));
+const DriverHistoryPage = lazy(() => import('./driver/pages/DriverHistoryPage').then(module => ({ default: module.DriverHistoryPage })));
+const DriverEarningsPage = lazy(() => import('./driver/pages/DriverEarningsPage').then(module => ({ default: module.DriverEarningsPage })));
 
 const queryClient = new QueryClient();
 
@@ -105,6 +110,7 @@ const router = createBrowserRouter([
       { index: true, element: <Suspense fallback={<PageLoader />}><MerchantDashboardPage /></Suspense> },
       { path: 'menu', element: <Suspense fallback={<PageLoader />}><MerchantMenuPage /></Suspense> },
       { path: 'orders', element: <Suspense fallback={<PageLoader />}><MerchantOrdersPage /></Suspense> },
+      { path: 'vouchers', element: <Suspense fallback={<PageLoader />}><MerchantVouchersPage /></Suspense> },
     ],
   },
   {
@@ -125,7 +131,8 @@ const router = createBrowserRouter([
       { index: true, element: <Suspense fallback={<PageLoader />}><AdminDashboardPage /></Suspense> },
       { path: 'approvals', element: <Suspense fallback={<PageLoader />}><ApprovalPage /></Suspense> },
       { path: 'users', element: <Suspense fallback={<PageLoader />}><UserManager /></Suspense> },
-
+      { path: 'categories', element: <Suspense fallback={<PageLoader />}><CategoryManager /></Suspense> },
+      { path: 'voucher-approvals', element: <Suspense fallback={<PageLoader />}><VoucherApprovalManager /></Suspense> },
       { path: 'promotions', element: <Suspense fallback={<PageLoader />}><PromotionManager /></Suspense> },
       { path: 'support', element: <Suspense fallback={<PageLoader />}><SupportTicketManager /></Suspense> },
       { path: '*', element: <Navigate to="/admin" replace /> },
@@ -144,6 +151,8 @@ const router = createBrowserRouter([
       { index: true, element: <Suspense fallback={<PageLoader />}><DriverDashboardPage /></Suspense> },
       { path: 'available', element: <Suspense fallback={<PageLoader />}><DriverAvailableOrdersPage /></Suspense> },
       { path: 'active', element: <Suspense fallback={<PageLoader />}><DriverActiveDeliveriesPage /></Suspense> },
+      { path: 'history', element: <Suspense fallback={<PageLoader />}><DriverHistoryPage /></Suspense> },
+      { path: 'earnings', element: <Suspense fallback={<PageLoader />}><DriverEarningsPage /></Suspense> },
       { path: 'profile', element: <Suspense fallback={<PageLoader />}><DriverProfilePage /></Suspense> },
       { path: '*', element: <Navigate to="/driver" replace /> },
     ],

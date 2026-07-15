@@ -7,6 +7,7 @@ export interface CheckoutPayload {
   addressId: string | null;
   paymentMethod: 'cash' | 'card' | 'wallet';
   idempotencyKey: string;
+  voucherCode?: string;
 }
 
 export interface CheckoutResult {

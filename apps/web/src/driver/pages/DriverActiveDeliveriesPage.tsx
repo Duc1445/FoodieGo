@@ -21,11 +21,11 @@ export function DriverActiveDeliveriesPage() {
     enabled: !!user?.id,
   });
 
-  // Filter only active ones (accepted or delivering)
-  const currentActive = activeDeliveries?.filter(d => ['accepted', 'delivering'].includes(d.status)) || [];
+  // Filter only active ones (accepted, picked_up, or delivering)
+  const currentActive = activeDeliveries?.filter(d => ['accepted', 'picked_up', 'delivering'].includes(d.status)) || [];
 
   const updateStatusMutation = useMutation({
-    mutationFn: ({ deliveryId, status }: { deliveryId: string; status: 'delivering' | 'delivered' }) =>
+    mutationFn: ({ deliveryId, status }: { deliveryId: string; status: 'picked_up' | 'delivering' | 'delivered' }) =>
       DeliveryAPI.updateDeliveryStatus(deliveryId, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: DRIVER_DELIVERIES_QUERY_KEY });
@@ -62,7 +62,8 @@ export function DriverActiveDeliveriesPage() {
         ) : (
           currentActive.map((delivery) => {
             const canPickup = delivery.status === 'accepted';
-            const canDeliver = delivery.status === 'delivering';
+            const canDeliver = delivery.status === 'picked_up';
+            const canComplete = delivery.status === 'delivering';
 
             return (
               <Card key={delivery.id}>
@@ -71,8 +72,8 @@ export function DriverActiveDeliveriesPage() {
                     <div className="space-y-2 cursor-pointer" onClick={() => setSelectedOrderId(delivery.orderId)}>
                       <div className="flex items-center gap-3">
                         <span className="font-semibold text-lg hover:underline text-primary">Order #{delivery.orderId.slice(0, 8)}</span>
-                        <Badge variant={delivery.status === 'accepted' ? 'secondary' : 'default'}>
-                          {delivery.status === 'accepted' ? 'Assigned' : 'On The Way'}
+                        <Badge variant={delivery.status === 'accepted' ? 'secondary' : delivery.status === 'picked_up' ? 'default' : 'default'}>
+                          {delivery.status === 'accepted' ? 'Assigned' : delivery.status === 'picked_up' ? 'Picked Up' : 'On The Way'}
                         </Badge>
                       </div>
                       <p className="text-sm text-muted-foreground">
@@ -83,7 +84,7 @@ export function DriverActiveDeliveriesPage() {
                     <div className="flex gap-2">
                       {canPickup && (
                         <Button
-                          onClick={() => updateStatusMutation.mutate({ deliveryId: delivery.id, status: 'delivering' })}
+                          onClick={() => updateStatusMutation.mutate({ deliveryId: delivery.id, status: 'picked_up' })}
                           disabled={updateStatusMutation.isPending}
                           className="bg-blue-600 hover:bg-blue-700"
                         >
@@ -92,6 +93,16 @@ export function DriverActiveDeliveriesPage() {
                         </Button>
                       )}
                       {canDeliver && (
+                        <Button
+                          onClick={() => updateStatusMutation.mutate({ deliveryId: delivery.id, status: 'delivering' })}
+                          disabled={updateStatusMutation.isPending}
+                          className="bg-indigo-600 hover:bg-indigo-700"
+                        >
+                          <Truck className="w-4 h-4 mr-2" />
+                          Start Delivery
+                        </Button>
+                      )}
+                      {canComplete && (
                         <Button
                           onClick={() => updateStatusMutation.mutate({ deliveryId: delivery.id, status: 'delivered' })}
                           disabled={updateStatusMutation.isPending}

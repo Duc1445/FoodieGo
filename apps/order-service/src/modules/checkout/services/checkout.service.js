@@ -4,13 +4,12 @@ import { RestaurantGateway } from '../../cart/gateways/restaurant.gateway.js';
 import { PricingService } from '../../pricing/pricing.service.js';
 import { OrderStateMachine, OrderStatus } from '../state/order.state.js';
 import { ValidationError, ConflictError } from '@foodiego/core';
-import pool from '../../../config/database.js';
+import promotionService from '../../../services/promotion.service.js';
 
 const checkoutRepo = new CheckoutRepository();
 const cartService = new CartService();
 const restaurantGateway = new RestaurantGateway();
 const pricingService = new PricingService();
-
 
 export class CheckoutService {
   async processCheckout(userId, payload, traceId) {
@@ -51,16 +50,47 @@ export class CheckoutService {
     }
 
     // 5. Run Pricing Pipeline
+    const restaurantDetails = await restaurantGateway.getRestaurantById(
+      cart.restaurant_id,
+      traceId,
+    );
     const pricingContext = pricingService.calculatePricing(
       cart.items,
       menuItems,
-      { id: cart.restaurant_id, delivery_fee: 5.0 },
+      {
+        id: cart.restaurant_id,
+        delivery_fee: restaurantDetails?.delivery_fee ?? 15000,
+      },
       { id: addressId },
     );
 
+    const voucherCodes = payload.voucherCodes || (payload.voucherCode ? [payload.voucherCode] : []);
+
+    if (voucherCodes.length > 0) {
+      const validation = await promotionService.validateMultipleVouchers(
+        voucherCodes,
+        userId,
+        pricingContext.subtotal,
+        cart.restaurant_id,
+      );
+      if (!validation.valid) {
+        throw new ValidationError(validation.reason || 'Invalid voucher(s)');
+      }
+      pricingContext.discount = validation.discountAmount;
+      pricingContext.total = Math.round(
+        pricingContext.subtotal -
+          pricingContext.discount +
+          pricingContext.deliveryFee +
+          pricingContext.tax,
+      );
+
+      // Store validated promotions to record usage later
+      payload._validatedPromotions = validation.promotions;
+    }
+
     // 6. Determine initial order status
-    // All orders must start as PENDING_RESERVATION and await Inventory.
-    const initialStatus = OrderStatus.PENDING_RESERVATION;
+    // All orders start as PENDING and await Merchant Acceptance.
+    const initialStatus = OrderStatus.PENDING;
 
     const orderData = {
       userId,

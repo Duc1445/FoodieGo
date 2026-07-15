@@ -2,11 +2,11 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useMemo, useState, useEffect } from 'react';
 import { useLocationStore } from '../../shared/stores/useLocationStore';
-import { calculateDistance } from '../../shared/utils/utils';
 import { RestaurantAPI } from '../../shared/services/restaurant.api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, RestaurantCardSkeleton, Button } from '@foodiego/ui';
 import { AlertCircle, RefreshCw, Search, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Image } from '../../shared/components/Image';
+import { formatVnd } from '../../shared/constants/pricing';
 
 export function LandingPage() {
   const { lat, lng } = useLocationStore();
@@ -69,8 +69,8 @@ export function LandingPage() {
   };
 
   const { data, isLoading, isPlaceholderData, error, refetch } = useQuery({
-    queryKey: ['restaurants', page, limit, querySearch],
-    queryFn: () => RestaurantAPI.getRestaurants({ page, limit, search: querySearch }),
+    queryKey: ['restaurants', page, limit, querySearch, lat, lng],
+    queryFn: () => RestaurantAPI.getRestaurants({ page, limit, search: querySearch, lat, lng, radius: 10 }),
     placeholderData: keepPreviousData,
     retry: 2,
   });
@@ -79,14 +79,8 @@ export function LandingPage() {
   const pagination = data?.pagination;
 
   const nearbyRestaurants = useMemo(() => {
-    return restaurants
-      .map(r => {
-        const distance = calculateDistance(lat, lng, r.latitude, r.longitude);
-        return { ...r, distance };
-      })
-      .filter(r => r.distance <= 10) // Only show within 10km radius
-      .sort((a, b) => a.distance - b.distance);
-  }, [restaurants, lat, lng]);
+    return restaurants.map(r => ({ ...r, distance: r.distance || 0 }));
+  }, [restaurants]);
 
   const handleNextPage = () => {
     if (pagination && page * limit < pagination.total) {
@@ -187,13 +181,18 @@ export function LandingPage() {
                     <CardDescription className="line-clamp-1">{restaurant.description}</CardDescription>
                   </CardHeader>
                   <CardContent className="mt-auto">
+                    {(() => {
+                      const distance = restaurant.distance ?? 0;
+                      return (
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <span>{restaurant.distance.toFixed(1)} km</span>
+                      <span>{distance.toFixed(1)} km</span>
                       <span>•</span>
-                      <span>{(restaurant.distance * 10).toFixed(0)} mins</span>
+                      <span>{(distance * 10).toFixed(0)} mins</span>
                       <span>•</span>
-                      <span>Fee: ₫{restaurant.delivery_fee.toLocaleString()}</span>
+                      <span>Fee: {formatVnd(restaurant.delivery_fee)}</span>
                     </div>
+                      );
+                    })()}
                   </CardContent>
                 </Card>
               </Link>

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MerchantMenuPage } from './MerchantMenuPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { getMerchantMenu, createMenuItem, updateMenuItem, deleteMenuItem } from '../../shared/services/merchant.api';
+import { getMerchantMenu, getGlobalCategories, createMenuItem, updateMenuItem, deleteMenuItem } from '../../shared/services/merchant.api';
 
 // Mock dependencies
 vi.mock('../../shared/services/merchant.api', () => ({
@@ -23,6 +23,9 @@ describe('MerchantMenuPage', () => {
       defaultOptions: { queries: { retry: false } },
     });
     vi.resetAllMocks();
+    vi.mocked(getGlobalCategories).mockResolvedValue([
+      { id: 'cat-1', name: 'Main Course' },
+    ] as any);
   });
 
   afterEach(() => {
@@ -38,7 +41,7 @@ describe('MerchantMenuPage', () => {
         {
           id: 'item-1',
           name: 'Burger',
-          price: 10.50,
+          price: 10500,
           category_id: 'cat-1',
           is_available: true,
           restaurant_id: 'rest-1',
@@ -57,7 +60,7 @@ describe('MerchantMenuPage', () => {
 
     const nameText = await screen.findByText('Burger');
     expect(nameText).toBeInTheDocument();
-    expect(screen.getByText('$10.50')).toBeInTheDocument();
+    expect(screen.getByText('10,500 VND')).toBeInTheDocument();
   });
 
   it('can open add dialog and submit form', async () => {
@@ -80,7 +83,7 @@ describe('MerchantMenuPage', () => {
     const priceInput = screen.getByPlaceholderText('Price');
     await userEvent.clear(priceInput);
     await userEvent.type(priceInput, '5');
-    await userEvent.type(screen.getByPlaceholderText('Category UUID'), 'cat-1');
+    await userEvent.selectOptions(screen.getByLabelText('Category'), 'cat-1');
     
     // Submit
     await userEvent.click(screen.getByRole('button', { name: 'Create Item' }));

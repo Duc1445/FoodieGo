@@ -16,12 +16,16 @@ const OrderCard = ({ order }: { order: OrderSummary }) => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-500 hover:bg-yellow-600';
-      case 'accepted': return 'bg-blue-500 hover:bg-blue-600';
-      case 'preparing': return 'bg-indigo-500 hover:bg-indigo-600';
-      case 'delivering': return 'bg-purple-500 hover:bg-purple-600';
-      case 'completed': return 'bg-green-500 hover:bg-green-600';
-      case 'cancelled': return 'bg-red-500 hover:bg-red-600';
+      case 'PENDING': return 'bg-yellow-500 hover:bg-yellow-600';
+      case 'MERCHANT_ACCEPTED': return 'bg-blue-500 hover:bg-blue-600';
+      case 'PREPARING': return 'bg-indigo-500 hover:bg-indigo-600';
+      case 'READY_FOR_PICKUP': return 'bg-teal-500 hover:bg-teal-600';
+      case 'DRIVER_ACCEPTED': return 'bg-cyan-500 hover:bg-cyan-600';
+      case 'PICKED_UP': return 'bg-blue-600 hover:bg-blue-700';
+      case 'DELIVERING': return 'bg-purple-500 hover:bg-purple-600';
+      case 'COMPLETED': return 'bg-green-500 hover:bg-green-600';
+      case 'CANCELLED': return 'bg-red-500 hover:bg-red-600';
+      case 'EXPIRED': return 'bg-gray-500 hover:bg-gray-600';
       default: return 'bg-gray-500 hover:bg-gray-600';
     }
   };

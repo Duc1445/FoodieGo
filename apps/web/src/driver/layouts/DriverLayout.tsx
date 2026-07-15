@@ -2,7 +2,7 @@ import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 
 import { useAuthStore } from '../../shared/stores/useAuthStore';
 import { Button } from '@foodiego/ui';
-import { Truck, MapPin, ClipboardList, Settings, LogOut } from 'lucide-react';
+import { Truck, MapPin, ClipboardList, Settings, LogOut, History, DollarSign } from 'lucide-react';
 
 export function DriverLayout() {
   const user = useAuthStore((state) => state.getUser('driver'));
@@ -28,6 +28,8 @@ export function DriverLayout() {
             { to: '/driver', icon: ClipboardList, label: 'Dashboard' },
             { to: '/driver/available', icon: MapPin, label: 'Available Orders' },
             { to: '/driver/active', icon: Truck, label: 'Active Deliveries' },
+            { to: '/driver/history', icon: History, label: 'History' },
+            { to: '/driver/earnings', icon: DollarSign, label: 'Earnings' },
             { to: '/driver/profile', icon: Settings, label: 'Profile' }
           ].map((item) => {
             const isActive = location.pathname === item.to || (item.to !== '/driver' && location.pathname.startsWith(item.to));
@@ -62,7 +64,7 @@ export function DriverLayout() {
             <span className="text-sm font-medium text-gray-600">{user?.full_name || user?.name}</span>
           </div>
         </header>
-        <main className="flex-1 overflow-auto p-6 bg-zinc-50 dark:bg-zinc-950">
+        <main className="flex-1 overflow-auto p-6 bg-gray-50">
           <Outlet />
         </main>
       </div>

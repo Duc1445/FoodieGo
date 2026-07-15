@@ -2,9 +2,10 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card } from '@foodiego/ui';
 import { ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
 import { useCartStore } from '../../shared/stores/useCartStore';
 import { CheckoutAPI } from '../../shared/services/checkout.api';
-import { calculateDeliveryFee, calculateTotal } from '../../shared/constants/pricing';
+import { calculateDeliveryFee, calculateTotal, formatVnd } from '../../shared/constants/pricing';
 
 import { AddressSelector } from '../components/checkout/AddressSelector';
 import { VoucherSelector } from '../components/VoucherSelector';
@@ -30,7 +31,7 @@ interface CheckoutFormData {
 
 export function CheckoutPage() {
   const navigate = useNavigate();
-  const { items, summary, version, actions } = useCartStore();
+  const { items, summary, version, actions, restaurant } = useCartStore();
   const { totalPrice: subtotal } = summary;
   const deliveryFee = calculateDeliveryFee(subtotal);
 
@@ -69,8 +70,6 @@ export function CheckoutPage() {
     e.preventDefault();
     setError('');
 
-    console.log('HANDLESUBMIT CALLED WITH:', formData);
-
     if (!formData.deliveryAddress.trim()) {
       setError('Please enter a delivery address');
       return;
@@ -103,11 +102,16 @@ export function CheckoutPage() {
         addressId: finalAddressId,
         paymentMethod: formData.paymentMethod,
         idempotencyKey: idempotencyKeyRef.current,
+        voucherCode: appliedVoucher?.valid ? appliedVoucher.promotion?.code : undefined,
       });
 
       // Success — clear local cart then navigate. UUID is discarded with the component.
       await actions.clearCart();
-      navigate(`/order-success?orderId=${result.orderId}`);
+      toast.success('Order successfully created!', {
+        description: `Order ID: ${result.orderId}`,
+        duration: 5000,
+      });
+      navigate(`/`);
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response?.status;
       const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
@@ -208,6 +212,7 @@ export function CheckoutPage() {
 
               <VoucherSelector
                 orderValue={subtotal}
+                restaurantId={restaurant.id}
                 onVoucherApplied={setAppliedVoucher}
                 appliedVoucher={appliedVoucher}
               />
@@ -217,7 +222,7 @@ export function CheckoutPage() {
                 className="w-full mt-6 h-12 text-lg"
                 disabled={!canCheckout}
               >
-                {isSubmitting ? 'Placing Order...' : `Place Order — ₫${finalTotal.toLocaleString()}`}
+                {isSubmitting ? 'Placing Order...' : `Place Order - ${formatVnd(finalTotal)}`}
               </Button>
 
               {version === null && (
@@ -236,29 +241,29 @@ export function CheckoutPage() {
               {items.map((item) => (
                 <div key={item.id} className="flex justify-between text-sm">
                   <span className="line-clamp-1 pr-2">{item.quantity}x {item.name}</span>
-                  <span className="flex-shrink-0">₫{(Number(item.price) * item.quantity).toLocaleString()}</span>
+                  <span className="flex-shrink-0">{formatVnd(Number(item.price) * item.quantity)}</span>
                 </div>
               ))}
             </div>
             <div className="space-y-3 border-b pb-4 mb-4">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span>₫{subtotal.toLocaleString()}</span>
+                <span>{formatVnd(subtotal)}</span>
               </div>
               {discountAmount > 0 && (
                 <div className="flex justify-between text-sm text-green-600">
                   <span>Discount</span>
-                  <span>-₫{discountAmount.toLocaleString()}</span>
+                  <span>-{formatVnd(discountAmount)}</span>
                 </div>
               )}
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Delivery</span>
-                <span>₫{deliveryFee.toLocaleString()}</span>
+                <span>{formatVnd(deliveryFee)}</span>
               </div>
             </div>
             <div className="flex justify-between font-bold text-lg">
               <span>Total</span>
-              <span className="text-primary">₫{finalTotal.toLocaleString()}</span>
+              <span className="text-primary">{formatVnd(finalTotal)}</span>
             </div>
           </Card>
         </div>

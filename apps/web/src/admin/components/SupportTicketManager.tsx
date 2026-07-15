@@ -19,12 +19,16 @@ export function SupportTicketManager() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, updates }: { id: string; updates: any }) => AdminAPI.updateTicket(id, updates),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: [ADMIN_QUERY_KEY, 'support-tickets'] });
       toast.success('Ticket updated');
-      setSelectedTicket(null);
+      if (selectedTicket && selectedTicket.id === variables.id) {
+        setSelectedTicket({ ...selectedTicket, ...variables.updates });
+      }
     },
-    onError: () => toast.error('Failed to update ticket'),
+    onError: (err: any) => {
+      toast.error(err.response?.data?.error?.message || err.response?.data?.message || 'Failed to update ticket');
+    },
   });
 
   if (isLoading) return <AdminLoading text="Loading tickets..." />;

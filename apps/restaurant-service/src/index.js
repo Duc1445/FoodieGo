@@ -4,10 +4,10 @@
 import { initTracing } from '@foodiego/tracing';
 initTracing();
 
+import 'dotenv/config';
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import { MetricsRegistry } from '@foodiego/metrics';
 import { createLogger as createPlatformLogger, requestLogger } from '@foodiego/logging';
 
@@ -18,8 +18,6 @@ import {
   errorHandlerMiddleware,
   config,
 } from '@foodiego/core';
-
-dotenv.config();
 
 const app = express();
 const PORT = config.server.port || 3002;

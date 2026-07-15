@@ -12,6 +12,11 @@ export interface Promotion {
   valid_from?: string;
   valid_until?: string;
   is_active: boolean;
+  promotion_type?: 'platform' | 'merchant';
+  restaurant_id?: string;
+  restaurant_name?: string;
+  approval_status?: 'PENDING' | 'APPROVED' | 'REJECTED';
+  rejection_reason?: string;
   created_at: string;
   updated_at: string;
 }
@@ -37,8 +42,9 @@ export interface CreatePromotionDto {
 }
 
 export const PromotionAPI = {
-  getActivePromotions: async (): Promise<Promotion[]> => {
-    const res = await api.get<{ success: boolean; data: Promotion[] }>('/promotions/active');
+  getActivePromotions: async (restaurantId?: string): Promise<Promotion[]> => {
+    const query = restaurantId ? `?restaurantId=${restaurantId}` : '';
+    const res = await api.get<{ success: boolean; data: Promotion[] }>(`/promotions/active${query}`);
     return res.data.data;
   },
 
@@ -47,16 +53,42 @@ export const PromotionAPI = {
     return res.data.data;
   },
 
-  validateVoucher: async (code: string, orderValue: number): Promise<ValidationResult> => {
+  getPendingVouchers: async (): Promise<Promotion[]> => {
+    const res = await api.get<{ success: boolean; data: Promotion[] }>('/promotions/pending');
+    return res.data.data;
+  },
+
+  getMerchantVouchers: async (): Promise<Promotion[]> => {
+    const res = await api.get<{ success: boolean; data: Promotion[] }>('/promotions/merchant');
+    return res.data.data;
+  },
+
+  validateVoucher: async (code: string, orderValue: number, restaurantId?: string): Promise<ValidationResult> => {
     const res = await api.post<{ success: boolean; data: ValidationResult }>('/promotions/validate', {
       code,
       orderValue,
+      restaurantId,
     });
     return res.data.data;
   },
 
   createPromotion: async (data: CreatePromotionDto): Promise<Promotion> => {
     const res = await api.post<{ success: boolean; data: Promotion }>('/promotions', data);
+    return res.data.data;
+  },
+
+  createMerchantVoucher: async (data: CreatePromotionDto): Promise<Promotion> => {
+    const res = await api.post<{ success: boolean; data: Promotion }>('/promotions/merchant', data);
+    return res.data.data;
+  },
+
+  approveVoucher: async (id: string): Promise<Promotion> => {
+    const res = await api.patch<{ success: boolean; data: Promotion }>(`/promotions/${id}/approve`);
+    return res.data.data;
+  },
+
+  rejectVoucher: async (id: string, reason: string): Promise<Promotion> => {
+    const res = await api.patch<{ success: boolean; data: Promotion }>(`/promotions/${id}/reject`, { reason });
     return res.data.data;
   },
 

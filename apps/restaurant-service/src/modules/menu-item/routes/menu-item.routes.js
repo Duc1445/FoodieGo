@@ -15,16 +15,22 @@ const validateCreate = [
     .optional()
     .isUUID()
     .withMessage('Restaurant ID must be a valid UUID if provided'),
-  body('is_available').optional().isBoolean(),
+  body('status')
+    .optional()
+    .isIn(['AVAILABLE', 'OUT_OF_STOCK', 'HIDDEN', 'DISCONTINUED'])
+    .withMessage('Invalid status'),
   body('display_order').optional().isInt(),
 ];
 
 const validateUpdate = [
-  body('name').optional().isString(),
-  body('price').optional().isNumeric(),
-  body('category_id').optional().isUUID(),
-  body('is_available').optional().isBoolean(),
-  body('display_order').optional().isInt(),
+  body('name').optional({ checkFalsy: true }).isString(),
+  body('price').optional({ checkFalsy: true }).isNumeric(),
+  body('category_id').optional({ checkFalsy: true }).isUUID(),
+  body('status')
+    .optional({ checkFalsy: true })
+    .isIn(['AVAILABLE', 'OUT_OF_STOCK', 'HIDDEN', 'DISCONTINUED'])
+    .withMessage('Invalid status'),
+  body('display_order').optional({ checkFalsy: true }).isInt(),
 ];
 
 router.get('/items', menuController.getAll.bind(menuController));

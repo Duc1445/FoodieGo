@@ -1,16 +1,15 @@
 export declare const OrderStatus: {
   readonly CREATED: 'CREATED';
   readonly PENDING: 'PENDING';
-  readonly PENDING_RESERVATION: 'PENDING_RESERVATION';
-  readonly RESERVED: 'RESERVED';
-  readonly READY_FOR_PAYMENT: 'READY_FOR_PAYMENT';
-  readonly PAID: 'PAID';
-  readonly CONFIRMED: 'CONFIRMED';
+  readonly MERCHANT_ACCEPTED: 'MERCHANT_ACCEPTED';
   readonly PREPARING: 'PREPARING';
-  readonly READY: 'READY';
+  readonly READY_FOR_PICKUP: 'READY_FOR_PICKUP';
+  readonly DRIVER_ACCEPTED: 'DRIVER_ACCEPTED';
+  readonly PICKED_UP: 'PICKED_UP';
   readonly DELIVERING: 'DELIVERING';
   readonly COMPLETED: 'COMPLETED';
   readonly CANCELLED: 'CANCELLED';
+  readonly EXPIRED: 'EXPIRED';
   readonly REFUNDED: 'REFUNDED';
   readonly FAILED: 'FAILED';
 };

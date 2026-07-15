@@ -23,7 +23,7 @@ export function Login() {
     try {
       const data = await AuthAPI.login({ email, password, role: 'admin' });
       
-      login(data.user, data.token);
+      login({ ...data.user, role: 'admin' }, data.token);
       toast.success('Admin access granted.');
       navigate(getDashboardPath('admin'), { replace: true });
     } catch (err: any) {
@@ -49,8 +49,9 @@ export function Login() {
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium">Admin Email</label>
+            <label htmlFor="admin-email" className="block text-sm font-medium">Admin Email</label>
             <input 
+              id="admin-email"
               type="email" 
               value={email} 
               onChange={e => setEmail(e.target.value)} 
@@ -60,8 +61,9 @@ export function Login() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium">Password</label>
+            <label htmlFor="admin-password" className="block text-sm font-medium">Password</label>
             <input 
+              id="admin-password"
               type="password" 
               value={password} 
               onChange={e => setPassword(e.target.value)} 

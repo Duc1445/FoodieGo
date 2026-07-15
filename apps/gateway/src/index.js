@@ -122,13 +122,15 @@ app.get('/api/v1/admin/dashboard', async (req, res) => {
     }
   };
 
-  const [userStatsRes, orderStatsRes] = await Promise.all([
+  const [userStatsRes, orderStatsRes, restaurantStatsRes] = await Promise.all([
     fetchJson(`${process.env.IDENTITY_SERVICE_URL}/api/v1/admin/stats`),
     fetchJson(`${process.env.ORDER_SERVICE_URL}/api/v1/admin/stats`),
+    fetchJson(`${process.env.RESTAURANT_SERVICE_URL}/api/v1/admin/restaurants/stats`),
   ]);
 
   const userStats = userStatsRes?.data || {};
   const orderStats = orderStatsRes?.data || {};
+  const restaurantStats = restaurantStatsRes?.data || {};
 
   res.json({
     success: true,
@@ -139,25 +141,20 @@ app.get('/api/v1/admin/dashboard', async (req, res) => {
       total_merchants: userStats.total_merchants ?? 0,
       total_drivers: userStats.total_drivers ?? 0,
       total_admins: userStats.total_admins ?? 0,
-      pending_merchants: userStats.pending_merchants ?? 0,
-      approved_merchants: userStats.approved_merchants ?? 0,
-      pending_drivers: userStats.pending_drivers ?? 0,
-      approved_drivers: userStats.approved_drivers ?? 0,
-      rejected_applications: userStats.rejected_applications ?? 0,
+      active_drivers: userStats.approved_drivers ?? 0,
 
-      // Orders (from order-service)
-      total_orders: orderStats.total_orders ?? 0,
-      active_orders: orderStats.active_orders ?? 0,
-      today_orders: orderStats.today_orders ?? 0,
+      // API Health
+      api_health: 'Healthy',
+      api_uptime: process.uptime(),
 
       // Support Tickets (from order-service)
       total_tickets: orderStats.total_tickets ?? 0,
       open_tickets: orderStats.open_tickets ?? 0,
       closed_tickets: orderStats.closed_tickets ?? 0,
+      resolved_tickets: orderStats.closed_tickets ?? 0,
 
-      // Promotions (from order-service)
-      total_promotions: orderStats.total_promotions ?? 0,
-      active_promotions: orderStats.active_promotions ?? 0,
+      // Restaurants (from restaurant-service)
+      active_restaurants: restaurantStats.approved_restaurants ?? 0,
     },
   });
 });

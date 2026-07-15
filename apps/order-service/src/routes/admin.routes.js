@@ -12,24 +12,33 @@ router.use(authenticate, authorize('admin'));
 // Order management
 router.get(
   '/admin/orders',
-  query('status').optional().isIn(['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'PICKED_UP', 'DELIVERED', 'CANCELLED']).withMessage('Invalid status'),
+  query('status')
+    .optional()
+    .isIn([
+      'PENDING',
+      'CONFIRMED',
+      'PREPARING',
+      'READY',
+      'PICKED_UP',
+      'COMPLETED',
+      'CANCELLED',
+      'EXPIRED',
+    ])
+    .withMessage('Invalid status'),
   query('page').optional().isInt({ min: 1 }).withMessage('Invalid page number'),
   query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Invalid limit'),
   validate,
-  adminController.getAllOrders
+  adminController.getAllOrders,
 );
 
 router.get(
   '/admin/orders/:id',
   param('id').isUUID().withMessage('Order ID must be a valid UUID'),
   validate,
-  adminController.getOrderDetails
+  adminController.getOrderDetails,
 );
 
 // Stats
-router.get(
-  '/admin/stats',
-  adminController.getStats
-);
+router.get('/admin/stats', adminController.getStats);
 
 export default router;

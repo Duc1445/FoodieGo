@@ -13,6 +13,11 @@ router.get(
   authorize('merchant', 'admin'),
   controller.getMerchantOrders.bind(controller),
 );
+router.get(
+  '/merchant/stats',
+  authorize('merchant', 'admin'),
+  controller.getMerchantStats.bind(controller),
+);
 router.get('/:id', controller.getOrderDetail.bind(controller));
 router.patch(
   '/:id/status',

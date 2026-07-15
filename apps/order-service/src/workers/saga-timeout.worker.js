@@ -15,7 +15,7 @@ export async function runTimeoutSweep() {
     // 1. Atomic UPDATE ... RETURNING to avoid race conditions with consumers
     const timeoutResult = await client.query(`
       UPDATE orders 
-      SET status = 'CANCELLED', is_cancelled = true, updated_at = NOW()
+      SET status = 'EXPIRED', updated_at = NOW()
       WHERE status = 'PENDING' AND created_at < NOW() - INTERVAL '5 MINUTES'
       RETURNING id, is_payment_authorized, is_inventory_reserved, idempotency_key
     `);
@@ -43,7 +43,7 @@ export async function runTimeoutSweep() {
       if (order.is_inventory_reserved) {
         await insertOutbox(client, 'ReleaseInventoryCommand', { orderId, reason }, metadata);
       }
-      
+
       if (order.is_payment_authorized) {
         await insertOutbox(client, 'RefundPaymentCommand', { orderId, reason }, metadata);
       }
@@ -70,13 +70,6 @@ async function insertOutbox(trx, eventType, payload, metadata) {
       event_type, event_version, aggregate_type, aggregate_id, payload, metadata, status
     ) VALUES ($1, $2, $3, $4, $5, $6, 'PENDING')
     `,
-    [
-      eventType,
-      1,
-      'Order',
-      payload.orderId,
-      JSON.stringify(payload),
-      JSON.stringify(metadata),
-    ],
+    [eventType, 1, 'Order', payload.orderId, JSON.stringify(payload), JSON.stringify(metadata)],
   );
 }

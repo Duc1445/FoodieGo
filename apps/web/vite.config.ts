@@ -14,6 +14,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/vitest.setup.ts'],
+    exclude: ['**/node_modules/**', 'e2e.test.ts', 'test-results/**'],
     // Use 'forks' pool: each test file runs in its own child process.
     // This ensures open handles (React Query polling intervals, pending promises)
     // do NOT prevent vitest from exiting after all tests complete.

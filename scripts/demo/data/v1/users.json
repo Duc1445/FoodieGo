@@ -2,7 +2,7 @@
   {
     "id": "00000000-0000-4000-0000-000000000001",
     "email": "admin@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "FoodieGo Admin",
     "role": "admin",
     "approval_status": "APPROVED",
@@ -11,7 +11,7 @@
   {
     "id": "00000000-0000-4000-1111-000000000001",
     "email": "customer1@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Customer 1",
     "role": "customer",
     "approval_status": "APPROVED",
@@ -21,7 +21,7 @@
   {
     "id": "00000000-0000-4000-1111-000000000002",
     "email": "customer2@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Customer 2",
     "role": "customer",
     "approval_status": "APPROVED",
@@ -31,7 +31,7 @@
   {
     "id": "00000000-0000-4000-1111-000000000003",
     "email": "customer3@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Customer 3",
     "role": "customer",
     "approval_status": "APPROVED",
@@ -41,7 +41,7 @@
   {
     "id": "00000000-0000-4000-1111-000000000004",
     "email": "customer4@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Customer 4",
     "role": "customer",
     "approval_status": "APPROVED",
@@ -51,7 +51,7 @@
   {
     "id": "00000000-0000-4000-1111-000000000005",
     "email": "customer5@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Customer 5",
     "role": "customer",
     "approval_status": "APPROVED",
@@ -61,7 +61,7 @@
   {
     "id": "00000000-0000-4000-1111-000000000006",
     "email": "customer6@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Customer 6",
     "role": "customer",
     "approval_status": "APPROVED",
@@ -71,7 +71,7 @@
   {
     "id": "00000000-0000-4000-1111-000000000007",
     "email": "customer7@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Customer 7",
     "role": "customer",
     "approval_status": "APPROVED",
@@ -81,7 +81,7 @@
   {
     "id": "00000000-0000-4000-1111-000000000008",
     "email": "customer8@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Customer 8",
     "role": "customer",
     "approval_status": "APPROVED",
@@ -91,7 +91,7 @@
   {
     "id": "00000000-0000-4000-1111-000000000009",
     "email": "customer9@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Customer 9",
     "role": "customer",
     "approval_status": "APPROVED",
@@ -101,7 +101,7 @@
   {
     "id": "00000000-0000-4000-1111-000000000010",
     "email": "customer10@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Customer 10",
     "role": "customer",
     "approval_status": "APPROVED",
@@ -111,7 +111,7 @@
   {
     "id": "00000000-0000-4000-2222-000000000001",
     "email": "merchant1@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Merchant 1",
     "role": "merchant",
     "approval_status": "APPROVED",
@@ -121,7 +121,7 @@
   {
     "id": "00000000-0000-4000-2222-000000000002",
     "email": "merchant2@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Merchant 2",
     "role": "merchant",
     "approval_status": "APPROVED",
@@ -131,7 +131,7 @@
   {
     "id": "00000000-0000-4000-2222-000000000003",
     "email": "merchant3@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Merchant 3",
     "role": "merchant",
     "approval_status": "APPROVED",
@@ -141,7 +141,7 @@
   {
     "id": "00000000-0000-4000-2222-000000000004",
     "email": "merchant4@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Merchant 4",
     "role": "merchant",
     "approval_status": "APPROVED",
@@ -151,7 +151,7 @@
   {
     "id": "00000000-0000-4000-2222-000000000005",
     "email": "merchant5@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Merchant 5",
     "role": "merchant",
     "approval_status": "APPROVED",
@@ -161,7 +161,7 @@
   {
     "id": "00000000-0000-4000-2222-000000000006",
     "email": "merchant6@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Merchant 6",
     "role": "merchant",
     "approval_status": "APPROVED",
@@ -171,7 +171,7 @@
   {
     "id": "00000000-0000-4000-3333-000000000001",
     "email": "driver1@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Nguyễn Văn An",
     "role": "driver",
     "approval_status": "APPROVED",
@@ -181,7 +181,7 @@
   {
     "id": "00000000-0000-4000-3333-000000000002",
     "email": "driver2@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Trần Minh Khoa",
     "role": "driver",
     "approval_status": "APPROVED",
@@ -191,7 +191,7 @@
   {
     "id": "00000000-0000-4000-3333-000000000003",
     "email": "driver3@foodiego.com",
-    "password": "$2a$10$bcDTz/XRxluccC1u18wFTuCN6hXM7GbM72BQpYvLz88bM/Tkxy87u",
+    "password": "$2a$10$rZmZ5abiDRSK/2Ol6jNg0ecfY9ehk.FWkvCSglmnAivxWCFLE3DHq",
     "full_name": "Lê Quốc Huy",
     "role": "driver",
     "approval_status": "APPROVED",

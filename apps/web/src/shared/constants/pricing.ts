@@ -15,3 +15,7 @@ export const calculateDeliveryFee = (subtotal: number): number => {
 export const calculateTotal = (subtotal: number, deliveryFee: number): number => {
   return subtotal + deliveryFee;
 };
+
+export const formatVnd = (value: number): string => {
+  return `${Math.round(value).toLocaleString('en-US')} VND`;
+};

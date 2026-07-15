@@ -10,15 +10,17 @@ router.get(
   '/',
   authenticate,
   authorize('driver', 'admin'), // Assuming drivers and admins can list deliveries
-  deliveryController.listDeliveries
+  deliveryController.listDeliveries,
 );
+
+router.get('/stats', authenticate, authorize('driver'), deliveryController.getDriverStats);
 
 router.get(
   '/order/:orderId',
   authenticate,
   param('orderId').isUUID().withMessage('orderId must be a valid UUID'),
   validate,
-  deliveryController.getDeliveryByOrder
+  deliveryController.getDeliveryByOrder,
 );
 
 router.patch(
@@ -27,7 +29,7 @@ router.patch(
   authorize('driver'),
   param('id').isUUID().withMessage('id must be a valid UUID'),
   validate,
-  deliveryController.acceptDelivery
+  deliveryController.acceptDelivery,
 );
 
 router.patch(
@@ -39,7 +41,7 @@ router.patch(
     .isIn(['waiting', 'accepted', 'delivering', 'delivered'])
     .withMessage('Invalid delivery status'),
   validate,
-  deliveryController.updateDeliveryStatus
+  deliveryController.updateDeliveryStatus,
 );
 
 export default router;

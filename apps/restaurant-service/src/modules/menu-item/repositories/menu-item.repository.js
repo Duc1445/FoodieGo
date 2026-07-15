@@ -13,7 +13,8 @@ export class MenuItemRepository {
         m.description,
         m.price,
         m.image_url,
-        m.is_available,
+        m.status,
+        m.preparation_time,
         m.display_order AS menu_item_order
       FROM menu_items m
       LEFT JOIN categories c ON m.category_id = c.id
@@ -40,7 +41,8 @@ export class MenuItemRepository {
           description: row.description,
           price: parseFloat(row.price),
           image_url: row.image_url,
-          is_available: row.is_available,
+          status: row.status,
+          preparation_time: row.preparation_time,
           display_order: row.menu_item_order,
         });
       }
@@ -50,7 +52,7 @@ export class MenuItemRepository {
   }
 
   async findAll({ q = '', limit = 50, offset = 0 } = {}) {
-    let query = 'SELECT * FROM menu_items WHERE is_available = true AND is_active = true';
+    let query = "SELECT * FROM menu_items WHERE status = 'AVAILABLE' AND is_active = true";
     const params = [];
 
     if (q) {
@@ -79,7 +81,7 @@ export class MenuItemRepository {
 
   async create(data) {
     const query = `
-      INSERT INTO menu_items (restaurant_id, category_id, name, description, price, image_url, is_available, display_order, is_active)
+      INSERT INTO menu_items (restaurant_id, category_id, name, description, price, image_url, status, display_order, is_active)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, true)
       RETURNING *
     `;
@@ -90,7 +92,7 @@ export class MenuItemRepository {
       data.description || null,
       data.price,
       data.image_url || null,
-      data.is_available !== undefined ? data.is_available : true,
+      data.status || 'AVAILABLE',
       data.display_order || 0,
     ];
     const { rows } = await pool.query(query, params);
@@ -109,7 +111,8 @@ export class MenuItemRepository {
           'description',
           'price',
           'image_url',
-          'is_available',
+          'status',
+          'preparation_time',
           'display_order',
           'category_id',
         ].includes(key)

@@ -68,7 +68,7 @@ describe('MyOrdersPage', () => {
         id: '12345678-aaaa-bbbb-cccc-dddddddddddd',
         restaurantId: 'r1',
         status: 'completed',
-        total: 1500,
+        total: 15000,
         createdAt: new Date().toISOString(),
       },
     ];
@@ -78,7 +78,7 @@ describe('MyOrdersPage', () => {
     
     expect(await screen.findByText('Order #12345678')).toBeInTheDocument();
     expect(screen.getByText('completed')).toBeInTheDocument();
-    expect(screen.getByText('Total: $15.00')).toBeInTheDocument();
+    expect(screen.getByText('Total: 15,000 VND')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /view details/i })).toBeInTheDocument();
   });
 

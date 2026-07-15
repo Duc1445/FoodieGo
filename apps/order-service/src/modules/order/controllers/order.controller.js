@@ -68,6 +68,25 @@ export class OrderController {
     }
   }
 
+  async getMerchantStats(req, res, next) {
+    try {
+      const restaurantIds = await this._getAuthorizedRestaurantIds(req);
+      let targetRestaurantId = restaurantIds[0];
+      if (targetRestaurantId === 'ALL') {
+        targetRestaurantId = req.query.restaurant_id;
+        if (!targetRestaurantId) throw new DomainError('Admin must specify a restaurant_id');
+      }
+
+      const result = await withSpan('OrderController.getMerchantStats', async (span) => {
+        span.setAttribute('order.restaurant_id', targetRestaurantId);
+        return await orderService.getMerchantStats(targetRestaurantId);
+      });
+      return successResponse(res, result, 'Merchant stats retrieved successfully');
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getOrderDetail(req, res, next) {
     try {
       const userId = req.user.id;
@@ -98,10 +117,18 @@ export class OrderController {
         throw new AuthorizationError('Not authorized to update this order');
       }
 
+      const context = {
+        role,
+        actorId: req.user.id,
+        actionType: 'MANUAL_UPDATE',
+        ipAddress: req.ip || req.connection.remoteAddress,
+        userAgent: req.get('User-Agent'),
+      };
+
       const result = await withSpan('OrderController.updateOrderStatus', async (span) => {
         span.setAttribute('order.id', orderId);
         span.setAttribute('order.status_to', newStatus);
-        return await orderService.changeOrderStatus(orderId, newStatus, role);
+        return await orderService.changeOrderStatus(orderId, newStatus, context);
       });
 
       return successResponse(res, result, 'Order status updated successfully');

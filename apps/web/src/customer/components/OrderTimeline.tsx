@@ -3,10 +3,12 @@ import { CheckCircle2, Circle, XCircle } from 'lucide-react';
 import { OrderStatus } from '@foodiego/platform-sdk/src/order-status';
 
 const TIMELINE_STEPS = [
-  { status: OrderStatus.CREATED, label: 'Order Placed' },
-  { status: OrderStatus.CONFIRMED, label: 'Confirmed' },
+  { status: OrderStatus.PENDING, label: 'Order Placed' },
+  { status: OrderStatus.MERCHANT_ACCEPTED, label: 'Confirmed' },
   { status: OrderStatus.PREPARING, label: 'Preparing' },
-  { status: OrderStatus.READY, label: 'Ready' },
+  { status: OrderStatus.READY_FOR_PICKUP, label: 'Ready for Pickup' },
+  { status: OrderStatus.DRIVER_ACCEPTED, label: 'Driver Assigned' },
+  { status: OrderStatus.PICKED_UP, label: 'Picked Up' },
   { status: OrderStatus.DELIVERING, label: 'Delivering' },
   { status: OrderStatus.COMPLETED, label: 'Delivered' },
 ];

@@ -6,27 +6,30 @@ import { Input } from '@foodiego/ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@foodiego/ui';
 import { Ticket, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { formatVnd } from '../../shared/constants/pricing';
 
 interface VoucherSelectorProps {
   orderValue: number;
+  restaurantId?: string | null;
   onVoucherApplied: (result: ValidationResult) => void;
   appliedVoucher?: ValidationResult;
 }
 
-export function VoucherSelector({ orderValue, onVoucherApplied, appliedVoucher }: VoucherSelectorProps) {
+export function VoucherSelector({ orderValue, restaurantId, onVoucherApplied, appliedVoucher }: VoucherSelectorProps) {
   const [code, setCode] = useState('');
   const [isValidating, setIsValidating] = useState(false);
 
   const { data: promotions, isLoading } = useQuery({
-    queryKey: [PROMOTIONS_QUERY_KEY, 'active'],
-    queryFn: () => PromotionAPI.getActivePromotions(),
+    queryKey: [PROMOTIONS_QUERY_KEY, 'active', restaurantId],
+    queryFn: () => PromotionAPI.getActivePromotions(restaurantId || undefined),
+    enabled: !!restaurantId,
   });
 
   const validateMutation = useMutation({
-    mutationFn: (voucherCode: string) => PromotionAPI.validateVoucher(voucherCode, orderValue),
+    mutationFn: (voucherCode: string) => PromotionAPI.validateVoucher(voucherCode, orderValue, restaurantId || undefined),
     onSuccess: (result) => {
       if (result.valid) {
-        toast.success(`Voucher applied! You save ${result.discountAmount?.toFixed(2)}`);
+        toast.success(`Voucher applied! You save ${formatVnd(result.discountAmount || 0)}`);
         onVoucherApplied(result);
         setCode('');
       } else {
@@ -66,7 +69,7 @@ export function VoucherSelector({ orderValue, onVoucherApplied, appliedVoucher }
               <Check className="w-5 h-5 text-green-600" />
               <div>
                 <p className="font-medium text-green-900">{appliedVoucher.promotion?.code}</p>
-                <p className="text-sm text-green-700">Discount: {appliedVoucher.discountAmount?.toFixed(2)}</p>
+                <p className="text-sm text-green-700">Discount: {formatVnd(appliedVoucher.discountAmount || 0)}</p>
               </div>
             </div>
             <Button variant="ghost" size="sm" onClick={handleRemoveVoucher}>
@@ -126,9 +129,9 @@ export function VoucherSelector({ orderValue, onVoucherApplied, appliedVoucher }
                       <p className="text-sm text-muted-foreground">
                         {promotion.discount_type === 'percentage' 
                           ? `${promotion.discount_value}% off`
-                          : `${promotion.discount_value.toFixed(2)} off`}
+                          : `${formatVnd(promotion.discount_value)} off`}
                         {promotion.min_order_value && (
-                          <span className="ml-2">(Min: {promotion.min_order_value.toFixed(2)})</span>
+                          <span className="ml-2">(Min: {formatVnd(promotion.min_order_value)})</span>
                         )}
                       </p>
                     </div>

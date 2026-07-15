@@ -76,14 +76,45 @@ export const getTicketByIdHandler = async (req, res, next) => {
 
 export const updateTicketHandler = async (req, res, next) => {
   try {
+    const ticketId = req.params.id;
+    const existingTicket = await supportRepo.findTicketById(ticketId);
+
+    if (!existingTicket) {
+      return res.status(404).json({ success: false, message: 'Ticket not found' });
+    }
+
     const { status, priority, assigned_admin, internal_notes } = req.body;
-    const ticket = await supportRepo.updateTicket(req.params.id, {
+
+    if (existingTicket.status === 'CLOSED') {
+      return res
+        .status(403)
+        .json({ success: false, error: { message: 'CLOSED tickets are read-only' } });
+    }
+
+    if (status && status !== existingTicket.status) {
+      const transitions = {
+        OPEN: ['IN_PROGRESS', 'RESOLVED', 'CLOSED'],
+        IN_PROGRESS: ['WAITING_USER', 'RESOLVED', 'CLOSED'],
+        WAITING_USER: ['IN_PROGRESS', 'RESOLVED', 'CLOSED'],
+        RESOLVED: ['CLOSED', 'IN_PROGRESS'], // Re-open support
+      };
+
+      const allowed = transitions[existingTicket.status] || [];
+      if (!allowed.includes(status)) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            message: `Cannot transition ticket from ${existingTicket.status} to ${status}`,
+          },
+        });
+      }
+    }
+    const ticket = await supportRepo.updateTicket(ticketId, {
       status,
       priority,
       assigned_admin,
       internal_notes,
     });
-    if (!ticket) return res.status(404).json({ success: false, message: 'Ticket not found' });
     res.json({ success: true, data: ticket });
   } catch (err) {
     next(err);

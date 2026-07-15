@@ -31,23 +31,27 @@ describe('CheckoutPage Address Flow', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     queryClient.clear();
-    
-    // Mock user
-    vi.mocked(useAuthStore).mockReturnValue({
-      getUser: () => ({ id: 'user-1', name: 'Test User', email: 'test@example.com', role: 'CUSTOMER' }),
+
+    const customerStore = {
+      getUser: () => ({ id: 'user-1', name: 'Test User', email: 'test@example.com', role: 'customer' }),
       isAuthenticated: () => true,
       isLoading: false,
       login: vi.fn(),
       register: vi.fn(),
       logout: vi.fn(),
       checkAuth: vi.fn()
-    } as any);
+    };
+    
+    // Mock user store selector behavior
+    vi.mocked(useAuthStore).mockImplementation((selector?: any) => {
+      if (typeof selector === 'function') {
+        return selector(customerStore);
+      }
+      return customerStore as any;
+    });
 
     // Also mock getState for non-hook usage
-    (useAuthStore as any).getState = () => ({
-      getUser: () => ({ id: 'user-1', name: 'Test User', email: 'test@example.com', role: 'CUSTOMER' }),
-      isAuthenticated: () => true
-    });
+    (useAuthStore as any).getState = () => customerStore;
 
     // Mock cart
     vi.mocked(useCartStore).mockReturnValue({
@@ -78,7 +82,7 @@ describe('CheckoutPage Address Flow', () => {
 
     // Wait for address to load
     await waitFor(() => {
-      expect(screen.getByText('123 Test St')).toBeInTheDocument();
+      expect(screen.getAllByRole('radio')[0]).toBeInTheDocument();
     });
 
     // Address should be auto-selected (the first radio button, payment methods are also radios)

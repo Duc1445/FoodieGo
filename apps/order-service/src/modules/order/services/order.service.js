@@ -24,6 +24,10 @@ export class OrderService {
     return await orderRepository.findOrdersByRestaurantId(restaurantId);
   }
 
+  async getMerchantStats(restaurantId) {
+    return await orderRepository.getMerchantStats(restaurantId);
+  }
+
   async getOrderDetail(orderId, userId) {
     const order = await orderRepository.findOrderDetailById(orderId);
     if (!order) {
@@ -38,25 +42,49 @@ export class OrderService {
     return order;
   }
 
-  /**
-   * Unified domain transition point for order status changes.
-   * All callers (controllers, workers, retries) must go through here.
-   * This ensures delivery creation on READY is applied exactly once,
-   * regardless of which subsystem triggers the transition.
-   *
-   * @param {string} orderId
-   * @param {string} newStatus
-   * @param {string} role - 'merchant' | 'admin' | 'system' (internal workers)
-   * @param {object|null} outboxEvent - optional outbox event to publish atomically
-   */
-  async changeOrderStatus(orderId, newStatus, role = 'system', outboxEvent = null, trx = null) {
-    if (role !== 'system' && role !== 'merchant' && role !== 'admin') {
-      throw new AuthorizationError('Only merchants and admins can update order status');
+  async changeOrderStatus(orderId, newStatus, context = {}, outboxEvent = null, trx = null) {
+    const {
+      role = 'system',
+      actorId = null,
+      actionType = null,
+      ipAddress = null,
+      userAgent = null,
+      note = null,
+    } = context;
+
+    if (role !== 'system' && role !== 'merchant' && role !== 'admin' && role !== 'driver') {
+      throw new AuthorizationError('Only merchants, drivers, and admins can update order status');
     }
 
     const order = await orderRepository.findOrderDetailById(orderId);
     if (!order) {
       throw new NotFoundError('Order not found');
+    }
+
+    if (role === 'merchant') {
+      const allowedMerchantStates = [
+        OrderStatus.PENDING,
+        OrderStatus.MERCHANT_ACCEPTED,
+        OrderStatus.PREPARING,
+        OrderStatus.READY_FOR_PICKUP,
+        OrderStatus.CANCELLED,
+      ];
+      if (!allowedMerchantStates.includes(newStatus)) {
+        throw new AuthorizationError(`Merchants cannot transition to ${newStatus}`);
+      }
+    }
+
+    if (role === 'driver') {
+      const allowedDriverStates = [
+        OrderStatus.READY_FOR_PICKUP,
+        OrderStatus.DRIVER_ACCEPTED,
+        OrderStatus.PICKED_UP,
+        OrderStatus.DELIVERING,
+        OrderStatus.COMPLETED,
+      ];
+      if (!allowedDriverStates.includes(newStatus)) {
+        throw new AuthorizationError(`Drivers cannot transition to ${newStatus}`);
+      }
     }
 
     const stateMachine = new OrderStateMachine(order.status);
@@ -68,11 +96,20 @@ export class OrderService {
     }
 
     // Persist status + optional outbox event atomically
-    await checkoutRepo.updateOrderStatus(orderId, newStatus, outboxEvent, trx);
+    await checkoutRepo.updateOrderStatus(
+      orderId,
+      newStatus,
+      order.status, // previousStatus
+      actorId,
+      role,
+      actionType,
+      outboxEvent,
+      trx,
+    );
 
-    // Idempotent delivery creation: only when transitioning to READY.
+    // Idempotent delivery creation: only when transitioning to READY_FOR_PICKUP.
     // Checks for existing delivery first so duplicate READY events are safe.
-    if (newStatus === OrderStatus.READY) {
+    if (newStatus === OrderStatus.READY_FOR_PICKUP) {
       const existingDelivery = await deliveryRepository.findByOrderId(orderId);
       if (!existingDelivery) {
         await deliveryRepository.create(orderId);
@@ -89,11 +126,13 @@ export class OrderService {
     const order = await orderRepository.findByIdForUpdate(trx, orderId);
 
     if (!order) throw new NotFoundError('Order not found');
-    
+
     // Business Idempotency: Ignore if already at target state or further
-    if (order.status === OrderStatus.RESERVED || 
-        order.status === OrderStatus.READY_FOR_PAYMENT ||
-        order.status === OrderStatus.CONFIRMED) {
+    if (
+      order.status === OrderStatus.RESERVED ||
+      order.status === OrderStatus.READY_FOR_PAYMENT ||
+      order.status === OrderStatus.CONFIRMED
+    ) {
       return;
     }
 
@@ -105,8 +144,14 @@ export class OrderService {
     }
 
     // Mutate state atomically (uses StateMachine internally to guard transitions)
-    await this.changeOrderStatus(orderId, OrderStatus.RESERVED, 'system', null, trx);
-    
+    await this.changeOrderStatus(
+      orderId,
+      OrderStatus.RESERVED,
+      { role: 'system', actionType: 'SAGA_SUCCESS' },
+      null,
+      trx,
+    );
+
     // In a full saga, we would emit PaymentRequested here
     // For now, since payment isn't fully separated, we just stay at RESERVED
   }
@@ -116,9 +161,9 @@ export class OrderService {
     const order = await orderRepository.findByIdForUpdate(trx, orderId);
 
     if (!order) throw new NotFoundError('Order not found');
-    
+
     if (order.status === OrderStatus.CANCELLED || order.status === OrderStatus.FAILED) {
-       return; // Business Idempotency: Already failed/cancelled
+      return; // Business Idempotency: Already failed/cancelled
     }
 
     const metadata = extractTraceMetadata(event);
@@ -126,22 +171,34 @@ export class OrderService {
     if (type === 'InventoryFailed') {
       // Advance to FAILED
       // We pass the OrderFailed outbox event to changeOrderStatus to be atomic!
-      await this.changeOrderStatus(orderId, OrderStatus.FAILED, 'system', {
-        eventType: 'OrderFailed',
-        payload: { orderId, reason: event.payload.reason },
-        correlationId: metadata.correlationId,
-        traceId: metadata.traceId
-      }, trx);
+      await this.changeOrderStatus(
+        orderId,
+        OrderStatus.FAILED,
+        { role: 'system', actionType: 'SAGA_FAILURE' },
+        {
+          eventType: 'OrderFailed',
+          payload: { orderId, reason: event.payload.reason },
+          correlationId: metadata.correlationId,
+          traceId: metadata.traceId,
+        },
+        trx,
+      );
       return;
     }
 
     // Default cancellation for other types
-    await this.changeOrderStatus(orderId, OrderStatus.CANCELLED, 'system', {
-      eventType: 'OrderCancelled',
-      payload: { orderId, reason: type || 'Unknown failure' },
-      correlationId: metadata.correlationId,
-      traceId: metadata.traceId
-    }, trx);
+    await this.changeOrderStatus(
+      orderId,
+      OrderStatus.CANCELLED,
+      { role: 'system', actionType: 'SAGA_FAILURE' },
+      {
+        eventType: 'OrderCancelled',
+        payload: { orderId, reason: type || 'Unknown failure' },
+        correlationId: metadata.correlationId,
+        traceId: metadata.traceId,
+      },
+      trx,
+    );
 
     // Emit compensations for completed branches if needed
     if (order.status === OrderStatus.RESERVED || order.status === OrderStatus.CONFIRMED) {
@@ -184,11 +241,11 @@ export class OrderService {
         'Order',
         payload.orderId,
         JSON.stringify({ ...payload, traceId: metadata.traceId }),
-        JSON.stringify({ 
-          ...traceHeaders, 
+        JSON.stringify({
+          ...traceHeaders,
           traceId: metadata.traceId,
           correlationId: metadata.correlationId,
-          causationId: metadata.causationId
+          causationId: metadata.causationId,
         }),
       ],
     );

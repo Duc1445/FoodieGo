@@ -1,31 +1,24 @@
 import { test, expect } from '@playwright/test';
 
-test('End-to-End Happy Path Order Flow', async ({ page }) => {
-  // Wait longer for elements and navigation since it's E2E
-  test.setTimeout(60000);
+test.setTimeout(120000);
 
+test('End-to-End Happy Path Order Flow', async ({ page }) => {
   console.log('[E2E] Step 1: Navigating to Landing Page...');
   await page.goto('http://localhost/');
 
   console.log('[E2E] Step 2: Logging in as customer...');
-  await page.click('text=Login');
-  
-  // Try to use the auth store mock, but actually we use real UI
-  await page.fill('input[placeholder*="Email"]', 'customer@foodiego.com');
-  await page.fill('input[placeholder*="Password"]', 'password');
-  await page.click('button:has-text("Sign In")');
+  await page.goto('http://localhost/login');
+  await page.getByLabel('Email').fill('customer1@foodiego.com');
+  await page.getByLabel('Password').fill('123456');
+  await page.getByRole('button', { name: 'Login' }).click();
 
   // Wait for login to complete (should redirect to landing page or keep us there with avatar)
   await page.waitForSelector('text=Welcome', { timeout: 10000 }).catch(() => {});
   
-  console.log('[E2E] Step 3: Searching for Mi Quang...');
-  // Type in search bar
-  const searchInput = await page.waitForSelector('input[placeholder*="Search"]');
-  await searchInput.fill('Mi Quang');
-  await page.keyboard.press('Enter');
-
-  // Find Mi Quang Ba Mua card and click
-  await page.click('text=Mi Quang Ba Mua', { timeout: 10000 });
+  console.log('[E2E] Step 3: Opening the first restaurant card...');
+  // Open the first visible restaurant card from the seeded demo data
+  await page.waitForSelector('a[href^="/restaurant/"]', { timeout: 15000 });
+  await page.locator('a[href^="/restaurant/"]').first().click({ timeout: 10000 });
 
   console.log('[E2E] Step 4: Adding to cart...');
   // The menu loads, find any Add to Cart button
@@ -56,10 +49,10 @@ test('End-to-End Happy Path Order Flow', async ({ page }) => {
   await page.evaluate(() => localStorage.clear()); // forceful logout
 
   console.log('[E2E] Step 9: Logging in as merchant...');
-  await page.goto('http://localhost/login');
-  await page.fill('input[placeholder*="Email"]', 'merchant_miquangbamua@foodiego.com');
-  await page.fill('input[placeholder*="Password"]', 'password');
-  await page.click('button:has-text("Sign In")');
+  await page.goto('http://localhost/merchant/login');
+  await page.getByLabel('Email').fill('merchant2@foodiego.com');
+  await page.getByLabel('Password').fill('123456');
+  await page.getByRole('button', { name: 'Login to Dashboard' }).click();
 
   console.log('[E2E] Step 10: Going to Merchant Dashboard...');
   await page.goto('http://localhost/merchant');

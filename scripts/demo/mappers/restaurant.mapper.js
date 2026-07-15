@@ -11,7 +11,7 @@ export const RestaurantMapper = {
     json.minimum_order || 0,
     json.opening_time || '00:00',
     json.closing_time || '23:59',
-    json.status || 'open',
+    json.status || 'APPROVED',
     json.latitude || 0,
     json.longitude || 0,
     json.is_active !== undefined ? json.is_active : true,

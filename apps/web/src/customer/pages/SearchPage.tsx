@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { FoodAPI, Food } from '../../shared/services/food.api';
 import { Card, CardHeader, CardTitle, CardDescription, Input, Button, FoodCardSkeleton } from '@foodiego/ui';
 import { Search as SearchIcon, AlertCircle, RefreshCw } from 'lucide-react';
+import { formatVnd } from '../../shared/constants/pricing';
 
 export function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -138,7 +139,7 @@ export function SearchPage() {
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <CardTitle className="text-lg">{food.name}</CardTitle>
-                      <span className="font-bold text-primary">₫{Number(food.price).toLocaleString()}</span>
+                      <span className="font-bold text-primary">{formatVnd(Number(food.price))}</span>
                     </div>
                     <CardDescription className="line-clamp-2 mt-2">{food.description}</CardDescription>
                   </CardHeader>

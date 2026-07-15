@@ -60,7 +60,10 @@ const run = async () => {
     console.log(`Transition:\n${currentOrder.status} -> ${newStatus}\n`);
 
     // Using the official service method that respects OrderStateMachine
-    await orderService.changeOrderStatus(orderId, newStatus, 'merchant');
+    await orderService.changeOrderStatus(orderId, newStatus, {
+      role: 'merchant',
+      actionType: 'SCRIPT_UPDATE',
+    });
 
     console.log(`Result:\nSUCCESS\n`);
     console.log(`================================\n`);

@@ -140,7 +140,7 @@ export function FoodDetailPage() {
         </div>
         
         <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
-          {food.is_available !== false ? (
+          {food.status === 'AVAILABLE' ? (
             <Badge className="w-fit mb-4 bg-green-500/10 text-green-600 hover:bg-green-500/20 border-none">Available</Badge>
           ) : (
             <Badge variant="destructive" className="w-fit mb-4">Out of Stock</Badge>
@@ -159,7 +159,7 @@ export function FoodDetailPage() {
               <button 
                 className="px-4 py-3 hover:bg-accent text-muted-foreground transition-colors disabled:opacity-50"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                disabled={quantity <= 1 || food.is_available === false}
+                disabled={quantity <= 1 || food.status !== 'AVAILABLE'}
               >
                 <Minus className="w-4 h-4" />
               </button>
@@ -167,7 +167,7 @@ export function FoodDetailPage() {
               <button 
                 className="px-4 py-3 hover:bg-accent text-muted-foreground transition-colors disabled:opacity-50"
                 onClick={() => setQuantity(quantity + 1)}
-                disabled={food.is_available === false}
+                disabled={food.status !== 'AVAILABLE'}
               >
                 <Plus className="w-4 h-4" />
               </button>
@@ -182,7 +182,7 @@ export function FoodDetailPage() {
             size="lg"
             className="w-full text-lg h-14 rounded-xl shadow-lg"
             onClick={handleAddToCart}
-            disabled={food.is_available === false || pendingItemIds.includes(food.id)}
+            disabled={food.status !== 'AVAILABLE' || pendingItemIds.includes(food.id)}
           >
             <ShoppingCart className="w-5 h-5 mr-2" />
             {pendingItemIds.includes(food.id) ? 'Adding...' : 'Add to Cart'}

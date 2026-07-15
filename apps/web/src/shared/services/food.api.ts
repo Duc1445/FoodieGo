@@ -8,7 +8,8 @@ export interface Food {
   image_url: string;
   category_id: string;
   restaurant_id: string;
-  is_available: boolean;
+  status: string;
+  preparation_time?: number;
 }
 
 export const FoodAPI = {

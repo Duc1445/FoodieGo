@@ -15,14 +15,24 @@ export class PaymentRepository {
         ON CONFLICT (idempotency_key) DO NOTHING
         RETURNING id
       `,
-        [paymentData.orderId, paymentData.amount, paymentData.currency || 'USD', paymentData.status || 'PENDING', paymentData.paymentMethod, paymentData.gatewayProvider || 'mock', paymentData.idempotencyKey]
+        [
+          paymentData.orderId,
+          paymentData.amount,
+          paymentData.currency || 'VND',
+          paymentData.status || 'PENDING',
+          paymentData.paymentMethod,
+          paymentData.gatewayProvider || 'mock',
+          paymentData.idempotencyKey,
+        ],
       );
-      
+
       const isNew = insertRes.rowCount > 0;
       let paymentId = isNew ? insertRes.rows[0].id : null;
 
       if (!isNew) {
-        const existing = await client.query(`SELECT id FROM payments WHERE idempotency_key = $1`, [paymentData.idempotencyKey]);
+        const existing = await client.query(`SELECT id FROM payments WHERE idempotency_key = $1`, [
+          paymentData.idempotencyKey,
+        ]);
         paymentId = existing.rows[0].id;
       }
 
@@ -34,13 +44,22 @@ export class PaymentRepository {
       return { paymentId, isNew };
     } catch (err) {
       await client.query('ROLLBACK');
-      throw new InfrastructureError(`Database transaction failed during createPayment: ${err.message}`);
+      throw new InfrastructureError(
+        `Database transaction failed during createPayment: ${err.message}`,
+      );
     } finally {
       client.release();
     }
   }
 
-  async tryTransitionStatus(trx, paymentId, expectedStatus, newStatus, updates = {}, outboxEvent = null) {
+  async tryTransitionStatus(
+    trx,
+    paymentId,
+    expectedStatus,
+    newStatus,
+    updates = {},
+    outboxEvent = null,
+  ) {
     const { providerTransactionId, errorReason, gatewaySequence } = updates;
     const result = await trx.query(
       `
@@ -59,7 +78,14 @@ export class PaymentRepository {
         )
       RETURNING *
       `,
-      [newStatus, providerTransactionId || null, errorReason || null, gatewaySequence || null, paymentId, Array.isArray(expectedStatus) ? expectedStatus : [expectedStatus]]
+      [
+        newStatus,
+        providerTransactionId || null,
+        errorReason || null,
+        gatewaySequence || null,
+        paymentId,
+        Array.isArray(expectedStatus) ? expectedStatus : [expectedStatus],
+      ],
     );
 
     if (result.rowCount > 0 && outboxEvent) {
@@ -68,7 +94,7 @@ export class PaymentRepository {
         await this._insertOutboxEvent(trx, paymentId, evt);
       }
     }
-    
+
     return result.rowCount > 0 ? result.rows[0] : null;
   }
 
@@ -84,18 +110,18 @@ export class PaymentRepository {
         AND status NOT IN ('REFUNDED', 'REFUND_PENDING')
       RETURNING *
       `,
-      [orderId]
+      [orderId],
     );
     return res.rowCount > 0 ? res.rows[0] : null;
   }
-  
+
   async updatePaymentStatus(paymentId, status, gatewayTxId = null, errorReason = null) {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
       await client.query(
         `UPDATE payments SET status = $1, gateway_tx_id = COALESCE($2, gateway_tx_id), error_reason = COALESCE($3, error_reason), updated_at = NOW() WHERE id = $4`,
-        [status, gatewayTxId, errorReason, paymentId]
+        [status, gatewayTxId, errorReason, paymentId],
       );
       await client.query('COMMIT');
     } catch (err) {
@@ -121,30 +147,43 @@ export class PaymentRepository {
     return res.rows[0];
   }
 
-  async persistWebhookInbox(eventId, provider, providerEventId, signature, payloadHash, payload, traceparent) {
+  async persistWebhookInbox(
+    eventId,
+    provider,
+    providerEventId,
+    signature,
+    payloadHash,
+    payload,
+    traceparent,
+  ) {
     const res = await pool.query(
       `INSERT INTO webhook_inbox (event_id, provider, provider_event_id, signature, payload_hash, payload, traceparent)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        ON CONFLICT (event_id) DO NOTHING
        RETURNING id`,
-      [eventId, provider, providerEventId, signature, payloadHash, payload, traceparent]
+      [eventId, provider, providerEventId, signature, payloadHash, payload, traceparent],
     );
     return res.rowCount > 0;
   }
 
   async getPendingWebhooks() {
-    const res = await pool.query(`SELECT * FROM webhook_inbox WHERE status = 'PENDING' ORDER BY received_at ASC LIMIT 100`);
+    const res = await pool.query(
+      `SELECT * FROM webhook_inbox WHERE status = 'PENDING' ORDER BY received_at ASC LIMIT 100`,
+    );
     return res.rows;
   }
 
   async markWebhookProcessed(trx, eventId) {
-    await trx.query(`UPDATE webhook_inbox SET status = 'PROCESSED', processed_at = NOW() WHERE event_id = $1`, [eventId]);
+    await trx.query(
+      `UPDATE webhook_inbox SET status = 'PROCESSED', processed_at = NOW() WHERE event_id = $1`,
+      [eventId],
+    );
   }
 
   async createMockGatewayJob(paymentId, scenario, executeAfter) {
     await pool.query(
       `INSERT INTO mock_gateway_jobs (payment_id, scenario, execute_after, status) VALUES ($1, $2, $3, 'PENDING')`,
-      [paymentId, scenario, executeAfter]
+      [paymentId, scenario, executeAfter],
     );
   }
 
@@ -167,7 +206,7 @@ export class PaymentRepository {
         paymentId,
         JSON.stringify(outboxEvent.payload),
         JSON.stringify({ ...traceHeaders, traceId: outboxEvent.payload.traceId }),
-      ]
+      ],
     );
   }
 }

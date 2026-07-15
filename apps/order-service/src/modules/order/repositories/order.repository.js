@@ -39,7 +39,31 @@ export class OrderRepository {
       const query = `
         SELECT 
           o.id, o.user_id, o.restaurant_id, o.status, 
-          o.subtotal, o.delivery_fee, o.tax, o.discount, o.total, o.created_at,
+          o.subtotal, o.delivery_fee, o.tax, o.discount, o.total, o.created_at, o.payment_method,
+          (
+            SELECT json_build_object(
+              'id', d.id,
+              'driverId', d.driver_id,
+              'status', d.status,
+              'driverName', u.full_name,
+              'driverPhone', u.phone_number
+            )
+            FROM delivery d
+            LEFT JOIN users u ON d.driver_id = u.id
+            WHERE d.order_id = o.id
+            LIMIT 1
+          ) as delivery,
+          (
+            SELECT COALESCE(json_agg(
+              json_build_object(
+                'code', p.code,
+                'discountValue', pu.discount_value
+              )
+            ), '[]')
+            FROM promotion_usages pu
+            JOIN promotions p ON pu.promotion_id = p.id
+            WHERE pu.order_id = o.id
+          ) as promotions,
           COALESCE(
             json_agg(
               json_build_object(
@@ -179,30 +203,77 @@ export class OrderRepository {
   async getAdminStats() {
     const { rows } = await pool.query(`
       SELECT 
-        (SELECT COUNT(*) FROM orders) AS total_orders,
-        (SELECT COUNT(*) FROM orders WHERE status NOT IN ('DELIVERED', 'CANCELLED')) AS active_orders,
-        (SELECT COALESCE(SUM(total), 0) FROM orders WHERE status = 'DELIVERED') AS total_revenue,
-        (SELECT COUNT(*) FROM orders WHERE created_at::date = CURRENT_DATE) AS today_orders,
-        (SELECT COALESCE(SUM(total), 0) FROM orders WHERE status = 'DELIVERED' AND created_at::date = CURRENT_DATE) AS today_revenue,
+        -- Support Metrics
         (SELECT COUNT(*) FROM support_tickets) AS total_tickets,
         (SELECT COUNT(*) FROM support_tickets WHERE status = 'OPEN') AS open_tickets,
         (SELECT COUNT(*) FROM support_tickets WHERE status = 'CLOSED') AS closed_tickets,
+        
+        -- Promotion Metrics
         (SELECT COUNT(*) FROM promotions) AS total_promotions,
-        (SELECT COUNT(*) FROM promotions WHERE is_active = true) AS active_promotions
+        (SELECT COUNT(*) FROM promotions WHERE is_active = true) AS active_promotions,
+        (SELECT COUNT(*) FROM promotions WHERE promotion_type = 'merchant' AND approval_status = 'PENDING') AS pending_voucher_approvals,
+        
+        -- Platform Health & User Metrics
+        (SELECT COUNT(*) FROM restaurants) AS total_restaurants,
+        (SELECT COUNT(*) FROM restaurants WHERE is_active = true) AS active_restaurants,
+        (SELECT COUNT(*) FROM users WHERE role = 'customer') AS total_customers,
+        (SELECT COUNT(*) FROM users WHERE role = 'driver') AS total_drivers,
+        (SELECT COUNT(*) FROM users WHERE role = 'merchant') AS total_merchants
     `);
     return (
       rows[0] || {
-        total_orders: 0,
-        active_orders: 0,
-        total_revenue: 0,
-        today_orders: 0,
-        today_revenue: 0,
         total_tickets: 0,
         open_tickets: 0,
         closed_tickets: 0,
         total_promotions: 0,
         active_promotions: 0,
+        pending_voucher_approvals: 0,
+        total_restaurants: 0,
+        active_restaurants: 0,
+        total_customers: 0,
+        total_drivers: 0,
+        total_merchants: 0,
       }
     );
+  }
+
+  async getMerchantStats(restaurantId) {
+    const { rows: generalStats } = await pool.query(
+      `
+      SELECT 
+        (SELECT COUNT(*) FROM orders WHERE restaurant_id = $1) AS total_orders,
+        (SELECT COALESCE(SUM(total), 0) FROM orders WHERE restaurant_id = $1 AND status = 'COMPLETED') AS total_revenue
+    `,
+      [restaurantId],
+    );
+
+    const { rows: revenueByDay } = await pool.query(
+      `
+      SELECT TO_CHAR(created_at, 'YYYY-MM-DD') as date, COALESCE(SUM(total), 0) as revenue
+      FROM orders
+      WHERE restaurant_id = $1 AND status = 'COMPLETED' AND created_at >= NOW() - INTERVAL '30 days'
+      GROUP BY TO_CHAR(created_at, 'YYYY-MM-DD')
+      ORDER BY date ASC
+    `,
+      [restaurantId],
+    );
+
+    const { rows: revenueByMonth } = await pool.query(
+      `
+      SELECT TO_CHAR(created_at, 'YYYY-MM') as month, COALESCE(SUM(total), 0) as revenue
+      FROM orders
+      WHERE restaurant_id = $1 AND status = 'COMPLETED' AND created_at >= NOW() - INTERVAL '12 months'
+      GROUP BY TO_CHAR(created_at, 'YYYY-MM')
+      ORDER BY month ASC
+    `,
+      [restaurantId],
+    );
+
+    return {
+      total_orders: generalStats[0]?.total_orders || 0,
+      total_revenue: generalStats[0]?.total_revenue || 0,
+      revenue_by_day: revenueByDay,
+      revenue_by_month: revenueByMonth,
+    };
   }
 }

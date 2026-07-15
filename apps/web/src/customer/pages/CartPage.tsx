@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Card } from '@foodiego/ui';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { useCartStore } from '../../shared/stores/useCartStore';
-import { calculateDeliveryFee, calculateTotal } from '../../shared/constants/pricing';
+import { calculateDeliveryFee, calculateTotal, formatVnd } from '../../shared/constants/pricing';
 import { toast } from 'sonner';
 
 export function CartPage() {
@@ -69,7 +69,7 @@ export function CartPage() {
                   >
                     <div className="flex-1">
                       <p className="font-medium">{item.name}</p>
-                      <p className="text-sm text-muted-foreground">₫{Number(item.price).toLocaleString()}</p>
+                      <p className="text-sm text-muted-foreground">{formatVnd(Number(item.price))}</p>
                     </div>
                     <div className="flex items-center gap-4">
                       <div className="flex items-center border rounded-lg overflow-hidden">
@@ -89,9 +89,7 @@ export function CartPage() {
                           <Plus className="w-4 h-4" />
                         </button>
                       </div>
-                      <p className="font-bold min-w-[80px] text-right">
-                        ₫{(Number(item.price) * item.quantity).toLocaleString()}
-                      </p>
+                      <p className="font-bold min-w-[80px] text-right">{formatVnd(Number(item.price) * item.quantity)}</p>
                       <button
                         className="text-red-500 hover:text-red-700 disabled:opacity-50"
                         onClick={() => handleRemove(item.id)}
@@ -113,16 +111,16 @@ export function CartPage() {
             <div className="space-y-3 border-b pb-4 mb-4">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span>₫{subtotal.toLocaleString()}</span>
+                <span>{formatVnd(subtotal)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Delivery Fee</span>
-                <span>₫{deliveryFee.toLocaleString()}</span>
+                <span>{formatVnd(deliveryFee)}</span>
               </div>
             </div>
             <div className="flex justify-between font-bold text-lg mb-6">
               <span>Total</span>
-              <span>₫{total.toLocaleString()}</span>
+              <span>{formatVnd(total)}</span>
             </div>
             <Button
               className="w-full mb-2"

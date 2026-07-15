@@ -212,8 +212,8 @@ describe('OrderDetailPage', () => {
     // Click it
     advanceBtn.click();
 
-    // Should call API to update status to next status: 'CONFIRMED'
-    expect(OrderAPI.updateOrderStatus).toHaveBeenCalledWith('12345678-bbbb-cccc-dddd-eeeeeeeeeeee', OrderStatus.CONFIRMED);
+    // Should call API to update status to next status: 'MERCHANT_ACCEPTED'
+    expect(OrderAPI.updateOrderStatus).toHaveBeenCalledWith('12345678-bbbb-cccc-dddd-eeeeeeeeeeee', OrderStatus.MERCHANT_ACCEPTED);
     
     vi.unstubAllEnvs();
   });

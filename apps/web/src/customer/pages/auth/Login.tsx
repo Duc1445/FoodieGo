@@ -23,7 +23,7 @@ export function Login() {
     try {
       const data = await AuthAPI.login({ email, password, role: 'customer' });
       
-      login(data.user, data.token);
+      login({ ...data.user, role: 'customer' }, data.token);
       toast.success('Logged in successfully!');
       navigate(getDashboardPath('customer'), { replace: true });
     } catch (err: any) {
@@ -49,8 +49,9 @@ export function Login() {
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium">Email</label>
+            <label htmlFor="customer-email" className="block text-sm font-medium">Email</label>
             <input 
+              id="customer-email"
               type="email" 
               value={email} 
               onChange={e => setEmail(e.target.value)} 
@@ -60,8 +61,9 @@ export function Login() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium">Password</label>
+            <label htmlFor="customer-password" className="block text-sm font-medium">Password</label>
             <input 
+              id="customer-password"
               type="password" 
               value={password} 
               onChange={e => setPassword(e.target.value)} 

@@ -1,6 +1,16 @@
 import { api } from '../api/api';
 import { Promotion } from './promotion.api';
 
+export interface Category {
+  id: string;
+  name: string;
+  description?: string;
+  image_url?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -30,6 +40,9 @@ export interface Restaurant {
   address?: string;
   phone?: string;
   owner_id: string;
+  owner_name?: string;
+  owner_email?: string;
+  status?: string;
   is_active: boolean;
   rating?: number;
   total_reviews?: number;
@@ -53,22 +66,14 @@ export interface AdminStats {
   total_merchants: number;
   total_drivers: number;
   total_admins: number;
-  pending_merchants: number;
-  approved_merchants: number;
-  pending_drivers: number;
-  approved_drivers: number;
-  rejected_applications: number;
-  
-  total_orders: number;
-  active_orders: number;
-  today_orders: number;
-  
+  active_drivers: number;
+  active_restaurants: number;
+  api_health: string;
+  api_uptime: number;
   total_tickets: number;
   open_tickets: number;
   closed_tickets: number;
-  
-  total_promotions: number;
-  active_promotions: number;
+  resolved_tickets: number;
 }
 
 export interface SupportTicket {
@@ -181,6 +186,21 @@ export const AdminAPI = {
     return res.data.data;
   },
 
+  getPendingRestaurants: async (): Promise<Restaurant[]> => {
+    const res = await api.get<{ success: boolean; data: Restaurant[] }>('/admin/restaurants/pending');
+    return res.data.data ?? [];
+  },
+
+  approveRestaurant: async (restaurantId: string): Promise<Restaurant> => {
+    const res = await api.patch<{ success: boolean; data: Restaurant }>(`/admin/restaurants/${restaurantId}/approve`);
+    return res.data.data;
+  },
+
+  rejectRestaurant: async (restaurantId: string, reason: string): Promise<Restaurant> => {
+    const res = await api.patch<{ success: boolean; data: Restaurant }>(`/admin/restaurants/${restaurantId}/reject`, { reason });
+    return res.data.data;
+  },
+
   // Order Management
   getAllOrders: async (params?: { status?: string; page?: number; limit?: number }): Promise<Order[]> => {
     const queryParams = new URLSearchParams();
@@ -219,6 +239,26 @@ export const AdminAPI = {
   updateTicket: async (ticketId: string, updates: { status?: string; priority?: string; internal_notes?: string }): Promise<SupportTicket> => {
     const res = await api.patch<{ success: boolean; data: SupportTicket }>(`/support/${ticketId}`, updates);
     return res.data.data;
+  },
+
+  // Category Management
+  getAllCategories: async (): Promise<Category[]> => {
+    const res = await api.get<{ success: boolean; data: Category[] }>('/categories');
+    return res.data.data ?? [];
+  },
+
+  createCategory: async (data: Partial<Category>): Promise<Category> => {
+    const res = await api.post<{ success: boolean; data: Category }>('/categories', data);
+    return res.data.data;
+  },
+
+  updateCategory: async (categoryId: string, data: Partial<Category>): Promise<Category> => {
+    const res = await api.put<{ success: boolean; data: Category }>(`/categories/${categoryId}`, data);
+    return res.data.data;
+  },
+
+  deleteCategory: async (categoryId: string): Promise<void> => {
+    await api.delete(`/categories/${categoryId}`);
   },
 };
 

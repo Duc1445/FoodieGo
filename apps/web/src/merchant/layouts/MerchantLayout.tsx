@@ -2,7 +2,7 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../shared/stores/useAuthStore';
 import { Button } from '@foodiego/ui';
-import { Store, Utensils, ClipboardList, Settings, LogOut } from 'lucide-react';
+import { Store, Utensils, ClipboardList, LogOut, Ticket } from 'lucide-react';
 
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -36,8 +36,8 @@ export function MerchantLayout() {
           <Link to="/merchant/orders" className="flex items-center px-4 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100">
             <ClipboardList className="w-4 h-4 mr-3" /> Orders
           </Link>
-          <Link to="/merchant/settings" className="flex items-center px-4 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100">
-            <Settings className="w-4 h-4 mr-3" /> Settings
+          <Link to="/merchant/vouchers" className="flex items-center px-4 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100">
+            <Ticket className="w-4 h-4 mr-3" /> Vouchers
           </Link>
         </nav>
         <div className="p-4 border-t">

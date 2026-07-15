@@ -105,9 +105,9 @@ export function OrderDetailPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case OrderStatus.CREATED: return 'bg-yellow-500 hover:bg-yellow-600';
-      case OrderStatus.CONFIRMED: return 'bg-blue-500 hover:bg-blue-600';
+      case OrderStatus.MERCHANT_ACCEPTED: return 'bg-blue-500 hover:bg-blue-600';
       case OrderStatus.PREPARING: return 'bg-indigo-500 hover:bg-indigo-600';
-      case OrderStatus.READY: return 'bg-orange-500 hover:bg-orange-600';
+      case OrderStatus.READY_FOR_PICKUP: return 'bg-orange-500 hover:bg-orange-600';
       case OrderStatus.DELIVERING: return 'bg-purple-500 hover:bg-purple-600';
       case OrderStatus.COMPLETED: return 'bg-green-500 hover:bg-green-600';
       case OrderStatus.CANCELLED: return 'bg-red-500 hover:bg-red-600';
@@ -131,7 +131,7 @@ export function OrderDetailPage() {
               variant="outline"
               size="sm"
               onClick={async () => {
-                const statuses = [OrderStatus.CREATED, OrderStatus.CONFIRMED, OrderStatus.PREPARING, OrderStatus.READY, OrderStatus.DELIVERING, OrderStatus.COMPLETED];
+                const statuses = [OrderStatus.CREATED, OrderStatus.MERCHANT_ACCEPTED, OrderStatus.PREPARING, OrderStatus.READY_FOR_PICKUP, OrderStatus.DELIVERING, OrderStatus.COMPLETED];
                 const currentIdx = statuses.indexOf(order.status as any);
                 if (currentIdx >= 0 && currentIdx < statuses.length - 1) {
                   const nextStatus = statuses[currentIdx + 1];

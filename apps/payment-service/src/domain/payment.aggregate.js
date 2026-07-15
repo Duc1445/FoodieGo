@@ -6,7 +6,7 @@ export class PaymentAggregate {
     this.id = id;
     this.orderId = data.orderId;
     this.amount = data.amount;
-    this.currency = data.currency || 'USD';
+    this.currency = data.currency || 'VND';
     this.gatewayTxId = data.gatewayTxId;
     this.providerTransactionId = data.providerTransactionId;
     this.errorReason = data.errorReason;

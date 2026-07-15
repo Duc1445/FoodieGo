@@ -5,9 +5,11 @@
     "discount_type": "percentage",
     "discount_value": 10,
     "min_order_value": 50000,
-    "valid_from": "2026-07-14T08:05:19.940Z",
-    "valid_until": "2026-08-13T08:05:19.940Z",
-    "is_active": true
+    "valid_from": "2026-07-14T10:49:10.166Z",
+    "valid_until": "2026-08-13T10:49:10.166Z",
+    "is_active": true,
+    "promotion_type": "platform",
+    "approval_status": "APPROVED"
   },
   {
     "id": "00000000-0000-4000-7777-000000000002",
@@ -15,8 +17,36 @@
     "discount_type": "fixed",
     "discount_value": 50000,
     "min_order_value": 200000,
-    "valid_from": "2026-07-14T08:05:19.940Z",
-    "valid_until": "2026-08-13T08:05:19.940Z",
-    "is_active": true
+    "valid_from": "2026-07-14T10:49:10.166Z",
+    "valid_until": "2026-08-13T10:49:10.166Z",
+    "is_active": true,
+    "promotion_type": "platform",
+    "approval_status": "APPROVED"
+  },
+  {
+    "id": "00000000-0000-4000-7777-000000000003",
+    "code": "COMGA15",
+    "discount_type": "percentage",
+    "discount_value": 15,
+    "min_order_value": 80000,
+    "valid_from": "2026-07-14T10:49:10.166Z",
+    "valid_until": "2026-09-13T10:49:10.166Z",
+    "is_active": true,
+    "promotion_type": "merchant",
+    "restaurant_id": "00000000-0000-4000-4444-000000000001",
+    "approval_status": "APPROVED"
+  },
+  {
+    "id": "00000000-0000-4000-7777-000000000004",
+    "code": "MIQUANG20K",
+    "discount_type": "fixed",
+    "discount_value": 20000,
+    "min_order_value": 100000,
+    "valid_from": "2026-07-14T10:49:10.166Z",
+    "valid_until": "2026-09-13T10:49:10.166Z",
+    "is_active": true,
+    "promotion_type": "merchant",
+    "restaurant_id": "00000000-0000-4000-4444-000000000002",
+    "approval_status": "APPROVED"
   }
 ]

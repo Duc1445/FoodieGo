@@ -69,7 +69,7 @@ export class CheckoutRepository {
         order.tax,
         order.discount,
         order.total,
-        order.currency || 'USD',
+        order.currency || 'VND',
         order.paymentMethod,
         order.addressId,
         order.idempotencyKey,
@@ -97,7 +97,25 @@ export class CheckoutRepository {
         }
       }
 
-      // 4. Insert Outbox Event with Full Metadata
+      // 4. Insert Promotion Usages if any
+      if (rawPayload._validatedPromotions && rawPayload._validatedPromotions.length > 0) {
+        for (const vp of rawPayload._validatedPromotions) {
+          await client.query(
+            `
+            INSERT INTO promotion_usages (promotion_id, user_id, order_id, discount_value)
+            VALUES ($1, $2, $3, $4)
+            `,
+            [vp.promotion.id, order.userId, orderId, vp.discountAmount],
+          );
+
+          await client.query(
+            `UPDATE promotions SET usage_count = usage_count + 1, updated_at = NOW() WHERE id = $1`,
+            [vp.promotion.id],
+          );
+        }
+      }
+
+      // 5. Insert Outbox Event with Full Metadata
       if (outboxEvent) {
         // Build standardize event via Factory
         const event = EventFactory.create(
@@ -106,7 +124,7 @@ export class CheckoutRepository {
           orderId, // aggregateId
           outboxEvent.payload,
           outboxEvent.correlationId || orderId,
-          outboxEvent.payload.traceId // traceId
+          outboxEvent.payload.traceId, // traceId
         );
 
         // This executes: Validation -> Logging -> Serialization -> DB Tx Insert
@@ -162,14 +180,34 @@ export class CheckoutRepository {
     }
   }
 
-  async updateOrderStatus(orderId, status, outboxEvent = null, trx = null) {
-    const client = trx || await pool.connect();
+  async updateOrderStatus(
+    orderId,
+    status,
+    previousStatus = null,
+    actorId = null,
+    actorRole = null,
+    actionType = null,
+    outboxEvent = null,
+    trx = null,
+  ) {
+    const client = trx || (await pool.connect());
     try {
       if (!trx) await client.query('BEGIN');
       await client.query(`UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2`, [
         status,
         orderId,
       ]);
+
+      if (previousStatus && previousStatus !== status) {
+        await client.query(
+          `
+          INSERT INTO order_status_history (
+            order_id, previous_status, new_status, actor_id, actor_role, action_type
+          ) VALUES ($1, $2, $3, $4, $5, $6)
+        `,
+          [orderId, previousStatus, status, actorId, actorRole, actionType],
+        );
+      }
 
       if (outboxEvent) {
         // Build standardize event via Factory
@@ -179,7 +217,7 @@ export class CheckoutRepository {
           orderId, // aggregateId
           outboxEvent.payload,
           outboxEvent.correlationId || orderId,
-          outboxEvent.traceId
+          outboxEvent.traceId,
         );
 
         // This executes: Validation -> Logging -> Serialization -> DB Tx Insert
@@ -194,5 +232,4 @@ export class CheckoutRepository {
       if (!trx) client.release();
     }
   }
-
 }

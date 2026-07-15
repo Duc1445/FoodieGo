@@ -14,9 +14,12 @@ export const authenticate = (req, res, next) => {
   }
 };
 
-export const authorize = (...roles) => (req, res, next) => {
-  if (!roles.includes(req.user?.role)) {
-    return next(new AuthorizationError('Forbidden: insufficient role'));
-  }
-  next();
-};
+export const authorize =
+  (...roles) =>
+  (req, res, next) => {
+    console.log('authorize middleware check:', { roles, userRole: req.user?.role, user: req.user });
+    if (!roles.includes(req.user?.role)) {
+      return next(new AuthorizationError('Forbidden: insufficient role'));
+    }
+    next();
+  };

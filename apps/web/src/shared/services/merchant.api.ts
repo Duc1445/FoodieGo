@@ -15,7 +15,8 @@ export interface CreateMenuItemDto {
   price: number;
   image_url?: string;
   category_id: string;
-  is_available?: boolean;
+  status?: string;
+  preparation_time?: number;
   // Admin only
   restaurant_id?: string;
 }
@@ -26,7 +27,8 @@ export interface UpdateMenuItemDto {
   price?: number;
   image_url?: string;
   category_id?: string;
-  is_active?: boolean;
+  status?: string;
+  preparation_time?: number;
 }
 
 export interface UpdateOrderStatusDto {
@@ -37,12 +39,12 @@ export interface UpdateOrderStatusDto {
 
 export const getMerchantMenu = async (): Promise<MenuItem[]> => {
   const response = await api.get('/menus/merchant/items');
-  return response.data.data;
+  return response.data.data ?? [];
 };
 
 export const getGlobalCategories = async (): Promise<any[]> => {
   const response = await api.get('/categories');
-  return response.data.data;
+  return response.data.data ?? [];
 };
 
 export const createMenuItem = async (data: CreateMenuItemDto): Promise<MenuItem> => {
@@ -60,6 +62,18 @@ export const deleteMenuItem = async (id: string): Promise<void> => {
 };
 
 // --- Order Management ---
+
+export interface MerchantStats {
+  total_orders: number;
+  total_revenue: number;
+  revenue_by_day?: { date: string; revenue: number }[];
+  revenue_by_month?: { month: string; revenue: number }[];
+}
+
+export const getMerchantStats = async (): Promise<MerchantStats> => {
+  const response = await api.get('/orders/merchant/stats');
+  return response.data.data;
+};
 
 export const getMerchantOrders = async (): Promise<Order[]> => {
   const response = await api.get('/orders/merchant');

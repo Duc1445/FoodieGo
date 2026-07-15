@@ -6,14 +6,19 @@ export interface Delivery {
   id: string;
   orderId: string;
   driverId?: string;
-  status: 'waiting' | 'accepted' | 'delivering' | 'delivered';
+  status: 'waiting' | 'accepted' | 'picked_up' | 'delivering' | 'delivered';
   note?: string;
+  deliveryFee?: number;
+  total?: number;
+  customerId?: string;
+  customerName?: string;
+  restaurantName?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface DeliveryListParams {
-  status?: 'waiting' | 'accepted' | 'delivering' | 'delivered';
+  status?: 'waiting' | 'accepted' | 'picked_up' | 'delivering' | 'delivered';
   orderId?: string;
   driverId?: string;
   page?: number;
@@ -48,8 +53,13 @@ export const DeliveryAPI = {
     return res.data.data;
   },
 
-  updateDeliveryStatus: async (deliveryId: string, status: 'waiting' | 'accepted' | 'delivering' | 'delivered'): Promise<Delivery> => {
+  updateDeliveryStatus: async (deliveryId: string, status: 'waiting' | 'accepted' | 'picked_up' | 'delivering' | 'delivered'): Promise<Delivery> => {
     const res = await api.patch<{ success: boolean; message: string; data: Delivery }>(`/delivery/${deliveryId}/status`, { status });
+    return res.data.data;
+  },
+
+  getDriverStats: async (): Promise<{ total_deliveries: number; total_earnings: number; today_deliveries: number; today_earnings: number; monthly_earnings: number; earnings_by_day?: { date: string; earnings: number }[] }> => {
+    const res = await api.get<{ success: boolean; data: { total_deliveries: number; total_earnings: number; today_deliveries: number; today_earnings: number; monthly_earnings: number; earnings_by_day?: { date: string; earnings: number }[] } }>('/delivery/stats');
     return res.data.data;
   },
 };

@@ -1,13 +1,30 @@
 import { useQuery } from '@tanstack/react-query';
 import { AdminAPI, ADMIN_QUERY_KEY } from '../../shared/services/admin.api';
 import { AdminLoading } from '../components/AdminLoading';
-import { Users, Store, ShoppingBag, AlertCircle, CheckSquare, Ticket } from 'lucide-react';
+import { Users, Store, AlertCircle, CheckSquare, Ticket } from 'lucide-react';
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 
 export function AdminDashboardPage() {
   const { data: stats, isLoading } = useQuery({
     queryKey: [ADMIN_QUERY_KEY, 'stats'],
     queryFn: () => AdminAPI.getStats(),
   });
+
+  const dashboardStats = stats ?? {
+    total_users: 0,
+    total_customers: 0,
+    total_merchants: 0,
+    total_drivers: 0,
+    total_admins: 0,
+    active_drivers: 0,
+    active_restaurants: 0,
+    api_health: 'Healthy',
+    api_uptime: 0,
+    total_tickets: 0,
+    open_tickets: 0,
+    closed_tickets: 0,
+    resolved_tickets: 0,
+  };
 
   if (isLoading) {
     return <AdminLoading text="Loading dashboard..." />;
@@ -21,27 +38,49 @@ export function AdminDashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard title="Total Users" value={stats?.total_users || 0} icon={Users} color="text-blue-500" />
-        <StatCard title="Customers" value={stats?.total_customers || 0} icon={Users} color="text-indigo-500" />
-        <StatCard title="Merchants" value={stats?.total_merchants || 0} icon={Store} color="text-purple-500" />
-        <StatCard title="Drivers" value={stats?.total_drivers || 0} icon={Users} color="text-cyan-500" />
+        <StatCard title="Total Users" value={dashboardStats.total_users} icon={Users} color="text-blue-500" />
+        <StatCard title="Active Drivers" value={dashboardStats.active_drivers ?? dashboardStats.total_drivers} icon={Users} color="text-cyan-500" />
+        <StatCard title="Active Restaurants" value={dashboardStats.active_restaurants} icon={Store} color="text-purple-500" />
+        <StatCard title="API Health" value={dashboardStats.api_health || 'Healthy'} icon={CheckSquare} color="text-green-500" />
         
-        <StatCard title="Pending Merchants" value={stats?.pending_merchants || 0} icon={AlertCircle} color="text-orange-500" />
-        <StatCard title="Approved Merchants" value={stats?.approved_merchants || 0} icon={Store} color="text-green-500" />
-        <StatCard title="Pending Drivers" value={stats?.pending_drivers || 0} icon={AlertCircle} color="text-yellow-500" />
-        <StatCard title="Approved Drivers" value={stats?.approved_drivers || 0} icon={Users} color="text-emerald-500" />
-        <StatCard title="Rejected Applications" value={stats?.rejected_applications || 0} icon={AlertCircle} color="text-red-500" />
+        <StatCard title="API Uptime (hrs)" value={dashboardStats.api_uptime ? (dashboardStats.api_uptime / 3600).toFixed(1) : '0.0'} icon={AlertCircle} color="text-emerald-500" />
+        <StatCard title="Open Tickets" value={dashboardStats.open_tickets} icon={AlertCircle} color="text-red-500" />
+        <StatCard title="Resolved Tickets" value={dashboardStats.resolved_tickets || dashboardStats.closed_tickets} icon={CheckSquare} color="text-indigo-500" />
+        <StatCard title="Total Tickets" value={dashboardStats.total_tickets} icon={Ticket} color="text-slate-500" />
+      </div>
 
-        <StatCard title="Total Orders" value={stats?.total_orders || 0} icon={ShoppingBag} color="text-sky-500" />
-        <StatCard title="Active Orders" value={stats?.active_orders || 0} icon={ShoppingBag} color="text-blue-400" />
-        <StatCard title="Today's Orders" value={stats?.today_orders || 0} icon={ShoppingBag} color="text-amber-500" />
-        
-        <StatCard title="Total Tickets" value={stats?.total_tickets || 0} icon={AlertCircle} color="text-purple-600" />
-        <StatCard title="Open Tickets" value={stats?.open_tickets || 0} icon={AlertCircle} color="text-red-500" />
-        <StatCard title="Closed Tickets" value={stats?.closed_tickets || 0} icon={CheckSquare} color="text-green-500" />
-        
-        <StatCard title="Total Promotions" value={stats?.total_promotions || 0} icon={Ticket} color="text-pink-500" />
-        <StatCard title="Active Promotions" value={stats?.active_promotions || 0} icon={Ticket} color="text-rose-500" />
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+        <div className="bg-white p-6 rounded-lg shadow-sm border">
+          <h3 className="text-lg font-bold mb-4">User Distribution</h3>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={[
+                    { name: 'Customers', value: dashboardStats.total_customers },
+                    { name: 'Merchants', value: dashboardStats.total_merchants },
+                    { name: 'Drivers', value: dashboardStats.total_drivers },
+                    { name: 'Admins', value: dashboardStats.total_admins },
+                  ]}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label
+                >
+                  <Cell fill="#6366f1" />
+                  <Cell fill="#a855f7" />
+                  <Cell fill="#06b6d4" />
+                  <Cell fill="#3b82f6" />
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
     </div>
   );

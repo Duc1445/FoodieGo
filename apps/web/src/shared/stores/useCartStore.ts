@@ -139,7 +139,7 @@ export const useCartStore = create<CartState>()(
 
         // ── addItem ───────────────────────────────────────────────────────────
         addItem: async (food, quantity, restaurant) => {
-          if (food.is_available === false) return false;
+          if (food.status !== 'AVAILABLE') return false;
 
           const { restaurant: currentRestaurant } = get();
           // Frontend conflict check — returns false to trigger Dialog in caller

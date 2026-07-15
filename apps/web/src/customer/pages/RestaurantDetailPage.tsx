@@ -5,7 +5,7 @@ import { Food } from '../../shared/services/food.api';
 import { Card, Badge, Skeleton, Button } from '@foodiego/ui';
 import { Star, MapPin, Clock, ArrowLeft, AlertCircle, RefreshCw, Info } from 'lucide-react';
 import { Image } from '../../shared/components/Image';
-import { PRICING } from '../../shared/constants/pricing';
+import { PRICING, formatVnd } from '../../shared/constants/pricing';
 import { ReviewList } from '../components/ReviewList';
 import { StarRating } from '../components/StarRating';
 
@@ -107,7 +107,7 @@ export function RestaurantDetailPage() {
               </div>
               <span className="flex items-center"><MapPin className="w-4 h-4 mr-1" /> {restaurant.address || "District 1, HCMC"}</span>
               <span className="flex items-center"><Clock className="w-4 h-4 mr-1" /> {restaurant.opening_time} - {restaurant.closing_time}</span>
-              <span className="flex items-center"><Info className="w-4 h-4 mr-1" /> Fee: ₫{deliveryFee.toLocaleString()} • ETA: 15-30 mins</span>
+              <span className="flex items-center"><Info className="w-4 h-4 mr-1" /> Fee: {formatVnd(deliveryFee)} • ETA: 15-30 mins</span>
             </div>
           </div>
         </div>
@@ -135,7 +135,7 @@ export function RestaurantDetailPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {category.items && category.items.length > 0 ? (
                   category.items.sort((a: any, b: any) => a.display_order - b.display_order).map((food: Food) => {
-                    const isAvailable = food.is_available !== false;
+                    const isAvailable = food.status === 'AVAILABLE';
                     
                     const cardContent = (
                       <Card className={`flex flex-row overflow-hidden hover:shadow-md transition-shadow h-32 w-full ${!isAvailable ? 'opacity-60 grayscale' : ''}`}>
@@ -157,7 +157,7 @@ export function RestaurantDetailPage() {
                             </div>
                             <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{food.description}</p>
                           </div>
-                          <div className="font-bold text-primary">₫{Number(food.price).toLocaleString()}</div>
+                          <div className="font-bold text-primary">{formatVnd(Number(food.price))}</div>
                         </div>
                       </Card>
                     );

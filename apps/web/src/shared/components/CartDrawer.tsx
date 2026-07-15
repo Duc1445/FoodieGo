@@ -3,7 +3,7 @@ import { useCartStore } from '../stores/useCartStore';
 import { Button, Badge } from '@foodiego/ui';
 import { ShoppingCart, X, Minus, Plus, Trash2 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { calculateDeliveryFee, calculateTotal } from '../constants/pricing';
+import { calculateDeliveryFee, calculateTotal, formatVnd } from '../constants/pricing';
 import { toast } from 'sonner';
 
 export function CartDrawer() {
@@ -126,7 +126,7 @@ export function CartDrawer() {
                           </button>
                         </div>
                         <div className="flex items-center justify-between mt-2">
-                          <div className="font-bold text-sm">₫{Number(item.price).toLocaleString()}</div>
+                          <div className="font-bold text-sm">{formatVnd(Number(item.price))}</div>
                           <div className="flex items-center border rounded-md overflow-hidden bg-background">
                             <button
                               className="px-2 py-1 hover:bg-accent text-muted-foreground transition-colors disabled:opacity-50"
@@ -158,15 +158,15 @@ export function CartDrawer() {
           <div className="p-6 border-t bg-card mt-auto">
             <div className="flex items-center justify-between mb-2 text-muted-foreground text-sm">
               <span>Subtotal</span>
-              <span>₫{subtotal.toLocaleString()}</span>
+              <span>{formatVnd(subtotal)}</span>
             </div>
             <div className="flex items-center justify-between mb-4 text-muted-foreground text-sm">
               <span>Delivery</span>
-              <span>₫{deliveryFee.toLocaleString()}</span>
+              <span>{formatVnd(deliveryFee)}</span>
             </div>
             <div className="flex items-center justify-between mb-6 font-bold text-lg">
               <span>Total</span>
-              <span className="text-primary">₫{total.toLocaleString()}</span>
+              <span className="text-primary">{formatVnd(total)}</span>
             </div>
             <Button
               className="w-full h-12 text-base font-bold shadow-lg hover:shadow-xl transition-shadow"
@@ -175,7 +175,7 @@ export function CartDrawer() {
                 setIsOpen(false);
               }}
             >
-              Checkout (₫{total.toLocaleString()})
+              Checkout ({formatVnd(total)})
             </Button>
 
             <div className="mt-4 text-center">

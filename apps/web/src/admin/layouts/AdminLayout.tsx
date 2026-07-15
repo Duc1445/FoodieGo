@@ -1,8 +1,7 @@
-
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../shared/stores/useAuthStore';
 import { Button } from '@foodiego/ui';
-import { Shield, Users, LogOut, CheckSquare, Ticket, LifeBuoy } from 'lucide-react';
+import { Shield, Users, LogOut, CheckSquare, Ticket, LifeBuoy, List, BadgePercent } from 'lucide-react';
 
 export function AdminLayout() {
   const user = useAuthStore((state) => state.getUser('admin'));
@@ -19,6 +18,8 @@ export function AdminLayout() {
   const navLinks = [
     { to: '/admin', icon: Shield, label: 'Dashboard' },
     { to: '/admin/users', icon: Users, label: 'Users' },
+    { to: '/admin/categories', icon: List, label: 'Categories' },
+    { to: '/admin/voucher-approvals', icon: BadgePercent, label: 'Voucher Approval' },
     { to: '/admin/approvals', icon: CheckSquare, label: 'Approvals' },
     { to: '/admin/promotions', icon: Ticket, label: 'Promotions' },
     { to: '/admin/support', icon: LifeBuoy, label: 'Support Tickets' },

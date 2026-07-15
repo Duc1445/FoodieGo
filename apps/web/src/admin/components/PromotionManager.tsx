@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, Badge } from '@foodiego/ui';
 import { Plus, Pencil, Trash2, Ticket } from 'lucide-react';
 import { toast } from 'sonner';
 import { AdminLoading } from './AdminLoading';
+import { formatVnd } from '../../shared/constants/pricing';
 
 export function PromotionManager() {
   const queryClient = useQueryClient();
@@ -155,7 +156,7 @@ function PromotionCard({ promotion, onEdit, onDelete }: PromotionCardProps) {
           <span className="font-bold text-lg text-emerald-600">
             {promotion.discount_type === 'percentage' 
               ? `${promotion.discount_value}% OFF` 
-              : `$${promotion.discount_value} OFF`}
+              : `${formatVnd(promotion.discount_value)} OFF`}
           </span>
       </CardHeader>
       <CardContent>
@@ -169,13 +170,13 @@ function PromotionCard({ promotion, onEdit, onDelete }: PromotionCardProps) {
           {promotion.min_order_value && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">Min Order</span>
-              <span>₫{promotion.min_order_value.toLocaleString()}</span>
+              <span>{formatVnd(promotion.min_order_value)}</span>
             </div>
           )}
           {promotion.max_discount_value && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">Max Discount</span>
-              <span>₫{promotion.max_discount_value.toLocaleString()}</span>
+              <span>{formatVnd(promotion.max_discount_value)}</span>
             </div>
           )}
           {promotion.usage_limit && (

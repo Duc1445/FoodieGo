@@ -23,7 +23,7 @@ export function Login() {
     try {
       const data = await AuthAPI.login({ email, password, role: 'driver' });
       
-      login(data.user, data.token);
+      login({ ...data.user, role: 'driver' }, data.token);
       toast.success('Logged in successfully!');
       navigate(getDashboardPath('driver'), { replace: true });
     } catch (err: any) {
@@ -60,8 +60,9 @@ export function Login() {
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium">Email</label>
+            <label htmlFor="driver-email" className="block text-sm font-medium">Email</label>
             <input 
+              id="driver-email"
               type="email" 
               value={email} 
               onChange={e => setEmail(e.target.value)} 
@@ -71,8 +72,9 @@ export function Login() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium">Password</label>
+            <label htmlFor="driver-password" className="block text-sm font-medium">Password</label>
             <input 
+              id="driver-password"
               type="password" 
               value={password} 
               onChange={e => setPassword(e.target.value)} 

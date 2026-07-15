@@ -106,6 +106,20 @@ export class OrderController {
           throw new AuthorizationError('Not authorized to view this order');
         }
         result = order;
+      } else if (role === 'driver') {
+        // Driver can view an order if they have a delivery assigned for it
+        const { rows: deliveryRows } = await pool.query(
+          `SELECT driver_id FROM delivery WHERE order_id = $1 LIMIT 1`,
+          [orderId],
+        );
+        const delivery = deliveryRows[0];
+        if (!delivery) {
+          throw new NotFoundError('No delivery found for this order');
+        }
+        if (delivery.driver_id !== userId) {
+          throw new AuthorizationError('You are not the assigned driver for this order');
+        }
+        result = await orderService.getOrderDetail(orderId, null); // bypass user id check
       } else {
         // Customer: check ownership
         result = await withSpan('OrderController.getOrderDetail', async (span) => {

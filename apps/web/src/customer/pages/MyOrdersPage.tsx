@@ -74,7 +74,7 @@ const OrderCard = ({ order }: { order: OrderSummary }) => {
         <Button 
           variant="outline" 
           className="w-full" 
-          onClick={() => navigate(`/order/${order.id}`)}
+          onClick={() => navigate(`/orders/${order.id}`)}
         >
           View Details
           <ExternalLink className="w-4 h-4 ml-2" />

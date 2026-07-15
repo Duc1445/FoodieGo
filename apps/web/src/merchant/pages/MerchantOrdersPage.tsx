@@ -1,9 +1,10 @@
-import { Card, CardHeader, CardTitle, CardContent, Skeleton, Badge } from '@foodiego/ui';
+import { Card, CardHeader, CardTitle, CardContent, Skeleton, Badge, Button } from '@foodiego/ui';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getMerchantOrders, updateOrderStatus, UpdateOrderStatusDto } from '../../shared/services/merchant.api';
 import { toast } from 'sonner';
-import { Package } from 'lucide-react';
+import { Package, ArrowRight } from 'lucide-react';
 import { EmptyState } from '../../shared/components/EmptyState';
+import { Link } from 'react-router-dom';
 
 export function MerchantOrdersPage() {
   const queryClient = useQueryClient();
@@ -15,14 +16,16 @@ export function MerchantOrdersPage() {
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: ({ orderId, status }: { orderId: string, status: UpdateOrderStatusDto['status'] }) => 
+    mutationFn: ({ orderId, status }: { orderId: string, status: UpdateOrderStatusDto['status'] }) =>
       updateOrderStatus(orderId, { status }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['merchantOrders'] });
       toast.success('Order status updated');
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Failed to update status');
+      console.error('Status update error:', err);
+      const errorMessage = err.response?.data?.message || err.response?.data?.error || 'Failed to update status';
+      toast.error(errorMessage);
     }
   });
 
@@ -71,6 +74,13 @@ export function MerchantOrdersPage() {
                       {order.status}
                     </Badge>
                     
+                    <Link to={`/merchant/orders/${order.id}`}>
+                      <Button variant="outline" size="sm">
+                        View Details
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </Link>
+                    
                     <select
                       className="border border-input rounded px-3 py-2 text-sm bg-white text-black"
                       value={order.status}
@@ -78,9 +88,9 @@ export function MerchantOrdersPage() {
                       disabled={updateStatusMutation.isPending || order.status === 'COMPLETED' || order.status === 'CANCELLED' || order.status === 'REFUNDED'}
                     >
                         <option value="" disabled>Update Status</option>
-                        <option value="MERCHANT_ACCEPTED" disabled={!['PENDING'].includes(order.status) && order.status !== 'MERCHANT_ACCEPTED'}>Merchant Accepted</option>
-                        <option value="PREPARING" disabled={!['MERCHANT_ACCEPTED'].includes(order.status) && order.status !== 'PREPARING'}>Preparing (Cooking)</option>
-                        <option value="READY_FOR_PICKUP" disabled={!['PREPARING'].includes(order.status) && order.status !== 'READY_FOR_PICKUP'}>Ready for Pickup</option>
+                        <option value="MERCHANT_ACCEPTED" disabled={order.status !== 'PENDING'}>Merchant Accepted</option>
+                        <option value="PREPARING" disabled={order.status !== 'MERCHANT_ACCEPTED'}>Preparing (Cooking)</option>
+                        <option value="READY_FOR_PICKUP" disabled={order.status !== 'PREPARING'}>Ready for Pickup</option>
                         <option value="CANCELLED" disabled={['COMPLETED', 'CANCELLED', 'EXPIRED', 'REFUNDED', 'DELIVERING', 'READY_FOR_PICKUP', 'DRIVER_ACCEPTED', 'PICKED_UP'].includes(order.status)}>Rejected by Merchant</option>
                     </select>
                   </div>

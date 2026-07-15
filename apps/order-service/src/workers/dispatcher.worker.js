@@ -11,18 +11,22 @@ export async function startDispatcher() {
     pollIntervalIdle: 1000,
   });
 
-  await publisher.connect();
+  try {
+    await publisher.connect();
 
-  process.on('SIGTERM', async () => {
-    await dispatcher.stop();
-  });
+    process.on('SIGTERM', async () => {
+      await dispatcher.stop();
+    });
 
-  process.on('SIGINT', async () => {
-    await dispatcher.stop();
-  });
+    process.on('SIGINT', async () => {
+      await dispatcher.stop();
+    });
 
-  dispatcher.start().catch((err) => {
-    logger.error({ err }, 'Outbox Dispatcher failed');
-  });
-  logger.info('Outbox Dispatcher started successfully');
+    dispatcher.start().catch((err) => {
+      logger.error({ err }, 'Outbox Dispatcher failed');
+    });
+    logger.info('Outbox Dispatcher started successfully');
+  } catch (err) {
+    logger.warn('Failed to start Outbox Dispatcher (RabbitMQ might be down).', err.message);
+  }
 }

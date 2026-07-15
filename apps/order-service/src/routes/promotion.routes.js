@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { body, query } from 'express-validator';
-import { authenticate, authorize } from '../middlewares/auth.middleware.js';
+import { authenticate, authorize } from '@foodiego/shared-auth';
 import { validate } from '../middlewares/validate.middleware.js';
 import { PromotionModel } from '../models/promotion.model.js';
 import promotionService from '../services/promotion.service.js';

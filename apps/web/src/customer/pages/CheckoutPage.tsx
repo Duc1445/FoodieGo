@@ -123,7 +123,7 @@ export function CheckoutPage() {
       } else if (status === 422) {
         setError(message || 'One or more items are no longer available.');
       } else if (status === 400) {
-        setError('Invalid checkout request. Please try again.');
+        setError(message || 'Invalid checkout request. Please try again.');
       } else {
         setError('Something went wrong. Please try again.');
       }

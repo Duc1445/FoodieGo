@@ -23,6 +23,15 @@ export interface OrderDetail {
   paymentMethod?: string;
   promotions?: { code: string; type: string; value: number; amount: number }[];
   delivery?: { driverId?: string; name?: string; phone?: string; vehicleInfo?: string; status?: string };
+  customerName?: string;
+  customerPhone?: string;
+  deliveryAddress?: string;
+  merchantAcceptedAt?: string;
+  preparingAt?: string;
+  readyForPickupAt?: string;
+  deliveringAt?: string;
+  completedAt?: string;
+  cancelledAt?: string;
 }
 
 export interface OrderSummary {

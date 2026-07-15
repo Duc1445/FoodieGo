@@ -89,20 +89,8 @@ export class PromotionService {
     // Sort by priority descending
     validPromotions.sort((a, b) => (b.priority || 0) - (a.priority || 0));
 
-    // Stacking rule: If multiple, all except the first must be stackable
+    // Stacking rule: If multiple, all must be stackable
     if (validPromotions.length > 1) {
-      for (let i = 1; i < validPromotions.length; i++) {
-        if (!validPromotions[i].is_stackable) {
-          return {
-            valid: false,
-            reason: `Voucher ${validPromotions[i].code} cannot be stacked with other vouchers.`,
-          };
-        }
-      }
-      // Check if the highest priority one allows others to stack on it? Usually is_stackable means it can be used with others.
-      // We assume if you use >1, ALL must be stackable OR only the first one doesn't have to be?
-      // Standard rule: ALL used vouchers must be stackable, or only 1 allowed.
-      // Let's enforce: If you use multiple, ALL must be is_stackable.
       const anyUnstackable = validPromotions.some((p) => !p.is_stackable);
       if (anyUnstackable) {
         return { valid: false, reason: 'One or more vouchers cannot be stacked.' };

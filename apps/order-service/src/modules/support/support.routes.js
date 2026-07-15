@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { param, body, query } from 'express-validator';
-import { authenticate, authorize } from '../../middlewares/auth.middleware.js';
+import { authenticate, authorize } from '@foodiego/shared-auth';
 import { validate } from '../../middlewares/validate.middleware.js';
 import * as supportController from './support.controller.js';
 
@@ -35,7 +35,7 @@ router.get(
   '/:id',
   authenticate,
   authorize('admin'),
-  param('id').isUUID(),
+  param('id').notEmpty(),
   validate,
   supportController.getTicketByIdHandler,
 );
@@ -44,10 +44,10 @@ router.patch(
   '/:id',
   authenticate,
   authorize('admin'),
-  param('id').isUUID(),
+  param('id').notEmpty(),
   body('status').optional().isIn(['OPEN', 'IN_PROGRESS', 'WAITING_USER', 'RESOLVED', 'CLOSED']),
   body('priority').optional().isIn(['LOW', 'MEDIUM', 'HIGH', 'URGENT']),
-  body('assigned_admin').optional().isUUID(),
+  body('assigned_admin').optional(),
   body('internal_notes').optional().isString(),
   validate,
   supportController.updateTicketHandler,

@@ -13,11 +13,8 @@ export class OrderController {
     }
 
     if (req.user.role === 'merchant') {
-      // TODO/NOTE: Tech debt - cross-service query.
-      // order-service is querying the user_restaurants table which logically belongs to the restaurant-service.
-      // Acceptable for MVP as we use a shared database, but needs refactoring when splitting DBs.
       const { rows } = await pool.query(
-        'SELECT restaurant_id FROM user_restaurants WHERE user_id = $1',
+        'SELECT id as restaurant_id FROM restaurants WHERE owner_id = $1',
         [req.user.id],
       );
       if (rows.length === 0) throw new AuthorizationError('Merchant has no associated restaurant');
@@ -90,11 +87,32 @@ export class OrderController {
   async getOrderDetail(req, res, next) {
     try {
       const userId = req.user.id;
+      const role = req.user.role;
       const orderId = req.params.id;
-      const result = await withSpan('OrderController.getOrderDetail', async (span) => {
-        span.setAttribute('order.id', orderId);
-        return await orderService.getOrderDetail(orderId, userId);
-      });
+
+      // For merchants and admins, bypass the user ownership check
+      // and instead verify restaurant ownership
+      let result;
+      if (role === 'merchant' || role === 'admin') {
+        const authorizedRestaurantIds = await this._getAuthorizedRestaurantIds(req);
+        const order = await orderService.getOrderDetail(orderId, null).catch((err) => {
+          console.error('getOrderDetail error:', err);
+          return { _error: err.message };
+        }); // bypass user id check
+        if (!order || order._error)
+          throw new NotFoundError('Order not found: ' + (order ? order._error : 'null'));
+
+        if (role !== 'admin' && !authorizedRestaurantIds.includes(order.restaurantId)) {
+          throw new AuthorizationError('Not authorized to view this order');
+        }
+        result = order;
+      } else {
+        // Customer: check ownership
+        result = await withSpan('OrderController.getOrderDetail', async (span) => {
+          span.setAttribute('order.id', orderId);
+          return await orderService.getOrderDetail(orderId, userId);
+        });
+      }
       return successResponse(res, result, 'Order detail retrieved successfully');
     } catch (error) {
       next(error);

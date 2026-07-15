@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { CheckoutController } from '../controllers/checkout.controller.js';
-import { authenticate } from '../../../middlewares/auth.middleware.js';
+import { authenticate } from '@foodiego/shared-auth';
 
 const router = Router();
 const controller = new CheckoutController();

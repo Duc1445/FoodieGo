@@ -30,11 +30,13 @@ const CustomerRegister = lazy(() => import('./customer/pages/auth/Register').the
 const MerchantDashboardPage = lazy(() => import('./merchant/pages/MerchantDashboardPage').then(module => ({ default: module.MerchantDashboardPage })));
 const MerchantMenuPage = lazy(() => import('./merchant/pages/MerchantMenuPage').then(module => ({ default: module.MerchantMenuPage })));
 const MerchantOrdersPage = lazy(() => import('./merchant/pages/MerchantOrdersPage').then(module => ({ default: module.MerchantOrdersPage })));
+const MerchantOrderDetailPage = lazy(() => import('./merchant/pages/MerchantOrderDetailPage').then(module => ({ default: module.MerchantOrderDetailPage })));
 const MerchantVouchersPage = lazy(() => import('./merchant/pages/MerchantVouchersPage').then(module => ({ default: module.MerchantVouchersPage })));
 const MerchantLogin = lazy(() => import('./merchant/pages/auth/Login').then(module => ({ default: module.Login })));
 const MerchantRegister = lazy(() => import('./merchant/pages/auth/Register').then(module => ({ default: module.Register })));
 
 const AdminDashboardPage = lazy(() => import('./admin/pages/AdminDashboardPage').then(module => ({ default: module.AdminDashboardPage })));
+const AdminOrderDetailPage = lazy(() => import('./admin/pages/AdminOrderDetailPage').then(module => ({ default: module.AdminOrderDetailPage })));
 const ApprovalPage = lazy(() => import('./admin/pages/ApprovalPage').then(module => ({ default: module.ApprovalPage })));
 const UserManager = lazy(() => import('./admin/components/UserManager').then(module => ({ default: module.UserManager })));
 
@@ -45,6 +47,7 @@ const VoucherApprovalManager = lazy(() => import('./admin/components/VoucherAppr
 const AdminLogin = lazy(() => import('./admin/pages/auth/Login').then(module => ({ default: module.Login })));
 
 const DriverDashboardPage = lazy(() => import('./driver/pages/DriverDashboardPage').then(module => ({ default: module.DriverDashboardPage })));
+const DriverOrderDetailPage = lazy(() => import('./driver/pages/DriverOrderDetailPage').then(module => ({ default: module.DriverOrderDetailPage })));
 const DriverLogin = lazy(() => import('./driver/pages/auth/Login').then(module => ({ default: module.Login })));
 const DriverRegister = lazy(() => import('./driver/pages/auth/Register').then(module => ({ default: module.Register })));
 
@@ -86,7 +89,7 @@ const router = createBrowserRouter([
       { path: 'food/:id', element: <Suspense fallback={<PageLoader />}><FoodDetailPage /></Suspense> },
       { path: 'cart', element: <ProtectedRoute allowedRoles={['customer']}><Suspense fallback={<PageLoader />}><CartPage /></Suspense></ProtectedRoute> },
       { path: 'checkout', element: <ProtectedRoute allowedRoles={['customer']}><Suspense fallback={<PageLoader />}><CheckoutPage /></Suspense></ProtectedRoute> },
-      { path: 'order/:orderId', element: <ProtectedRoute allowedRoles={['customer']}><Suspense fallback={<PageLoader />}><OrderSuccessPage /></Suspense></ProtectedRoute> },
+      { path: 'orders/:orderId', element: <ProtectedRoute allowedRoles={['customer']}><Suspense fallback={<PageLoader />}><OrderSuccessPage /></Suspense></ProtectedRoute> },
       { path: 'orders', element: <ProtectedRoute allowedRoles={['customer']}><Suspense fallback={<PageLoader />}><MyOrdersPage /></Suspense></ProtectedRoute> },
       { path: 'orders/:id', element: <ProtectedRoute allowedRoles={['customer']}><Suspense fallback={<PageLoader />}><OrderDetailPage /></Suspense></ProtectedRoute> },
       { path: 'profile', element: <ProtectedRoute allowedRoles={['customer']}><Suspense fallback={<PageLoader />}><ProfilePage /></Suspense></ProtectedRoute> },
@@ -110,6 +113,7 @@ const router = createBrowserRouter([
       { index: true, element: <Suspense fallback={<PageLoader />}><MerchantDashboardPage /></Suspense> },
       { path: 'menu', element: <Suspense fallback={<PageLoader />}><MerchantMenuPage /></Suspense> },
       { path: 'orders', element: <Suspense fallback={<PageLoader />}><MerchantOrdersPage /></Suspense> },
+      { path: 'orders/:id', element: <Suspense fallback={<PageLoader />}><MerchantOrderDetailPage /></Suspense> },
       { path: 'vouchers', element: <Suspense fallback={<PageLoader />}><MerchantVouchersPage /></Suspense> },
     ],
   },
@@ -129,6 +133,7 @@ const router = createBrowserRouter([
     errorElement: <ErrorBoundary />,
     children: [
       { index: true, element: <Suspense fallback={<PageLoader />}><AdminDashboardPage /></Suspense> },
+      { path: 'orders/:id', element: <Suspense fallback={<PageLoader />}><AdminOrderDetailPage /></Suspense> },
       { path: 'approvals', element: <Suspense fallback={<PageLoader />}><ApprovalPage /></Suspense> },
       { path: 'users', element: <Suspense fallback={<PageLoader />}><UserManager /></Suspense> },
       { path: 'categories', element: <Suspense fallback={<PageLoader />}><CategoryManager /></Suspense> },
@@ -151,6 +156,7 @@ const router = createBrowserRouter([
       { index: true, element: <Suspense fallback={<PageLoader />}><DriverDashboardPage /></Suspense> },
       { path: 'available', element: <Suspense fallback={<PageLoader />}><DriverAvailableOrdersPage /></Suspense> },
       { path: 'active', element: <Suspense fallback={<PageLoader />}><DriverActiveDeliveriesPage /></Suspense> },
+      { path: 'orders/:id', element: <Suspense fallback={<PageLoader />}><DriverOrderDetailPage /></Suspense> },
       { path: 'history', element: <Suspense fallback={<PageLoader />}><DriverHistoryPage /></Suspense> },
       { path: 'earnings', element: <Suspense fallback={<PageLoader />}><DriverEarningsPage /></Suspense> },
       { path: 'profile', element: <Suspense fallback={<PageLoader />}><DriverProfilePage /></Suspense> },

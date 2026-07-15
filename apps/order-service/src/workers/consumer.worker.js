@@ -129,12 +129,16 @@ export async function startConsumers() {
   const restaurantRejectedConsumer = new RestaurantRejectedConsumer(checkoutRepo, orderService);
   const inventoryExpiredConsumer = new InventoryExpiredConsumer(checkoutRepo, orderService);
 
-  await rabbitMQ.registerConsumer(reservedConsumer, pool);
-  await rabbitMQ.registerConsumer(failedConsumer, pool);
-  await rabbitMQ.registerConsumer(paymentAuthorizedConsumer, pool);
-  await rabbitMQ.registerConsumer(paymentFailedConsumer, pool);
-  await rabbitMQ.registerConsumer(restaurantRejectedConsumer, pool);
-  await rabbitMQ.registerConsumer(inventoryExpiredConsumer, pool);
+  try {
+    await rabbitMQ.registerConsumer(reservedConsumer, pool);
+    await rabbitMQ.registerConsumer(failedConsumer, pool);
+    await rabbitMQ.registerConsumer(paymentAuthorizedConsumer, pool);
+    await rabbitMQ.registerConsumer(paymentFailedConsumer, pool);
+    await rabbitMQ.registerConsumer(restaurantRejectedConsumer, pool);
+    await rabbitMQ.registerConsumer(inventoryExpiredConsumer, pool);
 
-  logger.info('Event Consumers started successfully');
+    logger.info('Event Consumers started successfully');
+  } catch (err) {
+    logger.warn('Failed to start Event Consumers (RabbitMQ might be down).', err.message);
+  }
 }

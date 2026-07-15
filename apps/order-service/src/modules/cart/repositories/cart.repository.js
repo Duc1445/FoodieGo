@@ -7,7 +7,12 @@ export class CartRepository {
    */
   async getCart(userId) {
     const redisKey = `cart:${userId}`;
-    const cachedCart = await redis.get(redisKey);
+    let cachedCart;
+    try {
+      cachedCart = await redis.get(redisKey);
+    } catch (err) {
+      console.warn(`[Redis] Failed to get cart for user ${userId}:`, err.message);
+    }
 
     if (cachedCart) {
       return JSON.parse(cachedCart);
@@ -24,7 +29,11 @@ export class CartRepository {
     cart.items = itemsResult.rows;
 
     // Save to Redis (TTL 7 days)
-    await redis.set(redisKey, JSON.stringify(cart), 'EX', 7 * 24 * 60 * 60);
+    try {
+      await redis.set(redisKey, JSON.stringify(cart), 'EX', 7 * 24 * 60 * 60);
+    } catch (err) {
+      console.warn(`[Redis] Failed to set cart for user ${userId}:`, err.message);
+    }
     return cart;
   }
 
@@ -104,7 +113,11 @@ export class CartRepository {
       await client.query('COMMIT');
 
       // Update Cache
-      await redis.set(redisKey, JSON.stringify(cart), 'EX', 7 * 24 * 60 * 60);
+      try {
+        await redis.set(redisKey, JSON.stringify(cart), 'EX', 7 * 24 * 60 * 60);
+      } catch (err) {
+        console.warn(`[Redis] Failed to set cart cache for user ${cart.user_id}:`, err.message);
+      }
 
       return cart;
     } catch (error) {
@@ -125,7 +138,11 @@ export class CartRepository {
       await client.query('DELETE FROM carts WHERE user_id = $1', [userId]);
       await client.query('COMMIT');
 
-      await redis.del(`cart:${userId}`);
+      try {
+        await redis.del(`cart:${userId}`);
+      } catch (err) {
+        console.warn(`[Redis] Failed to delete cart cache for user ${userId}:`, err.message);
+      }
     } catch (error) {
       await client.query('ROLLBACK');
       throw error;

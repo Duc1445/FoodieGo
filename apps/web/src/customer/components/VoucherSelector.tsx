@@ -37,8 +37,9 @@ export function VoucherSelector({ orderValue, restaurantId, onVoucherApplied, ap
       }
       setIsValidating(false);
     },
-    onError: () => {
-      toast.error('Failed to validate voucher');
+    onError: (err: any) => {
+      const errorMessage = err.response?.data?.message || err.response?.data?.error || 'Failed to validate voucher';
+      toast.error(errorMessage);
       setIsValidating(false);
     },
   });

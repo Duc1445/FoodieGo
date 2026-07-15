@@ -59,7 +59,7 @@ export class OrderRepository {
                 'code', p.code,
                 'discountValue', pu.discount_value
               )
-            ), '[]')
+            ), '[]'::json)
             FROM promotion_usages pu
             JOIN promotions p ON pu.promotion_id = p.id
             WHERE pu.order_id = o.id
@@ -74,7 +74,7 @@ export class OrderRepository {
                 'itemPrice', oi.item_price
               )
             ) FILTER (WHERE oi.id IS NOT NULL), 
-            '[]'
+            '[]'::json
           ) as items
         FROM orders o
         LEFT JOIN order_items oi ON o.id = oi.order_id

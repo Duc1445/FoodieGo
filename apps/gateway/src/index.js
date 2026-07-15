@@ -27,7 +27,7 @@ app.use(cors({ origin: '*', methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] }
 // ─── Rate Limiting ─────────────────────────────────────────────────────────
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200,
+  max: 5000, // Increased for smooth local dev/testing
   message: { success: false, message: 'Too many requests, please try again later.' },
 });
 app.use(limiter);
@@ -83,7 +83,7 @@ app.use(
 );
 const searchLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 30, // Limit each IP to 30 requests per windowMs
+  max: 1000, // Increased for smooth local dev/testing
   message: {
     success: false,
     message: 'Too many search requests from this IP, please try again after a minute',

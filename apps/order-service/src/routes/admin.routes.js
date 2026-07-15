@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { param, query } from 'express-validator';
-import { authenticate, authorize } from '../middlewares/auth.middleware.js';
+import { authenticate, authorize } from '@foodiego/shared-auth';
 import { validate } from '../middlewares/validate.middleware.js';
 import * as adminController from './controllers/admin.controller.js';
 

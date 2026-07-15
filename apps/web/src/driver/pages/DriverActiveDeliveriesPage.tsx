@@ -4,10 +4,11 @@ import { DeliveryAPI, DRIVER_DELIVERIES_QUERY_KEY } from '../../shared/services/
 import { OrderAPI } from '../../shared/services/order.api';
 import { useAuthStore } from '../../shared/stores/useAuthStore';
 import { toast } from 'sonner';
-import { CheckCircle, Truck, Package } from 'lucide-react';
+import { CheckCircle, Truck, Package, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@foodiego/ui';
 import { EmptyState } from '../../shared/components/EmptyState';
+import { Link } from 'react-router-dom';
 
 export function DriverActiveDeliveriesPage() {
   const queryClient = useQueryClient();
@@ -82,6 +83,12 @@ export function DriverActiveDeliveriesPage() {
                     </div>
 
                     <div className="flex gap-2">
+                      <Link to={`/driver/orders/${delivery.orderId}`}>
+                        <Button variant="outline" size="sm">
+                          <ArrowRight className="w-4 h-4 mr-2" />
+                          Details
+                        </Button>
+                      </Link>
                       {canPickup && (
                         <Button
                           onClick={() => updateStatusMutation.mutate({ deliveryId: delivery.id, status: 'picked_up' })}

@@ -84,3 +84,8 @@ export const updateOrderStatus = async (orderId: string, data: UpdateOrderStatus
   const response = await api.patch(`/orders/${orderId}/status`, data);
   return response.data.data;
 };
+
+export const updateOrderStatusSimple = async (orderId: string, status: OrderStatus): Promise<Order> => {
+  const response = await api.patch(`/orders/${orderId}/status`, { status });
+  return response.data.data;
+};

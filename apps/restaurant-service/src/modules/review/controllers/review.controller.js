@@ -4,8 +4,8 @@ export const createReview = async (req, res, next) => {
   try {
     const reviewData = {
       userId: req.user.id,
-      restaurantId: req.body.restaurant_id,
-      orderId: req.body.order_id,
+      restaurantId: req.body.restaurantId,
+      orderId: req.body.orderId,
       rating: req.body.rating,
       comment: req.body.comment,
     };

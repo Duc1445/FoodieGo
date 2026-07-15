@@ -110,17 +110,15 @@ export function DriverOrderDetailPage() {
   };
 
   const openNavigation = () => {
-    if (order.deliveryAddress) {
-      const encodedAddress = encodeURIComponent(order.deliveryAddress);
-      window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, '_blank');
-    }
+    const query = order.deliveryAddress || order.customerName || 'Customer';
+    const encodedQuery = encodeURIComponent(query);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodedQuery}`, '_blank');
   };
 
   const openRestaurantNavigation = () => {
-    if (restaurant?.address) {
-      const encodedAddress = encodeURIComponent(restaurant.address);
-      window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, '_blank');
-    }
+    const query = restaurant?.address || restaurant?.name || 'Restaurant';
+    const encodedQuery = encodeURIComponent(query);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodedQuery}`, '_blank');
   };
 
   return (

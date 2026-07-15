@@ -6,19 +6,25 @@ export interface Delivery {
   id: string;
   orderId: string;
   driverId?: string;
-  status: 'waiting' | 'accepted' | 'picked_up' | 'delivering' | 'delivered';
+  status: 'waiting' | 'accepted' | 'delivering' | 'delivered';
   note?: string;
   deliveryFee?: number;
   total?: number;
   customerId?: string;
   customerName?: string;
+  customerPhone?: string;
+  customerAddress?: string;
   restaurantName?: string;
+  restaurantAddress?: string;
+  restaurantPhone?: string;
+  restaurantLat?: number;
+  restaurantLng?: number;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface DeliveryListParams {
-  status?: 'waiting' | 'accepted' | 'picked_up' | 'delivering' | 'delivered';
+  status?: 'waiting' | 'accepted' | 'delivering' | 'delivered';
   orderId?: string;
   driverId?: string;
   page?: number;
@@ -53,7 +59,7 @@ export const DeliveryAPI = {
     return res.data.data;
   },
 
-  updateDeliveryStatus: async (deliveryId: string, status: 'waiting' | 'accepted' | 'picked_up' | 'delivering' | 'delivered'): Promise<Delivery> => {
+  updateDeliveryStatus: async (deliveryId: string, status: 'waiting' | 'accepted' | 'delivering' | 'delivered'): Promise<Delivery> => {
     const res = await api.patch<{ success: boolean; message: string; data: Delivery }>(`/delivery/${deliveryId}/status`, { status });
     return res.data.data;
   },

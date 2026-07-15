@@ -69,7 +69,7 @@ router.post(
   body('orderValue').isFloat({ min: 0 }).withMessage('Order value must be positive'),
   body('restaurantId')
     .optional({ nullable: true, checkFalsy: true })
-    .isUUID()
+    .matches(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
     .withMessage('Restaurant ID must be a UUID'),
   validate,
   async (req, res, next) => {

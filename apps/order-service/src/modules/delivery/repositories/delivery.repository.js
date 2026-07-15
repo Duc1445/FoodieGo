@@ -53,7 +53,13 @@ export const listDeliveries = async ({
       o.total, 
       o.user_id as customer_id,
       u.full_name as customer_name,
-      r.name as restaurant_name
+      u.phone as customer_phone,
+      u.address as customer_address,
+      r.name as restaurant_name,
+      r.address as restaurant_address,
+      r.phone as restaurant_phone,
+      r.latitude as restaurant_lat,
+      r.longitude as restaurant_lng
     FROM delivery d
     LEFT JOIN orders o ON d.order_id = o.id
     LEFT JOIN users u ON o.user_id = u.id

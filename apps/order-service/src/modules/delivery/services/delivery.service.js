@@ -20,11 +20,8 @@ export const assignDriver = async (deliveryId, driverId) => {
 export const updateStatus = async (deliveryId, status, context = {}) => {
   const delivery = await deliveryRepository.updateStatus(deliveryId, status);
   if (delivery && delivery.order_id) {
-    if (status === 'picked_up') {
-      await orderService
-        .changeOrderStatus(delivery.order_id, 'PICKED_UP', context)
-        .catch(console.error);
-    } else if (status === 'delivering') {
+    if (status === 'delivering') {
+      // 'delivering' covers the pick-up + on-the-way phase (picked_up is not a valid DB status)
       await orderService
         .changeOrderStatus(delivery.order_id, 'DELIVERING', context)
         .catch(console.error);

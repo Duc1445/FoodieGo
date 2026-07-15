@@ -21,6 +21,34 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+      rabbitmq:
+        image: rabbitmq:3-management-alpine
+        ports:
+          - 5672:5672
+          - 15672:15672
+        env:
+          RABBITMQ_DEFAULT_USER: guest
+          RABBITMQ_DEFAULT_PASS: guest
+        options: >-
+          --health-cmd "rabbitmq-diagnostics -q ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      postgres:
+        image: postgres:15-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: foodiego
+          POSTGRES_PASSWORD: foodiego123
+          POSTGRES_DB: foodiego
+        options: >-
+          --health-cmd "pg_isready -U foodiego"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -48,6 +76,9 @@ jobs:
         run: pnpm test
         env:
           REDIS_URL: redis://localhost:6379
+          RABBITMQ_URL: amqp://guest:guest@localhost:5672
+          DATABASE_URL: postgresql://foodiego:foodiego123@localhost:5432/foodiego
+          NODE_ENV: test
 
       - name: Build Projects
         run: pnpm build

@@ -62,10 +62,9 @@ router.get('/active', async (req, res, next) => {
   }
 });
 
-// POST validate voucher code
+// POST validate voucher code (public - needed for checkout before authentication)
 router.post(
   '/validate',
-  authenticate,
   body('code').trim().notEmpty().withMessage('Voucher code is required'),
   body('orderValue').isFloat({ min: 0 }).withMessage('Order value must be positive'),
   body('restaurantId')
@@ -76,7 +75,8 @@ router.post(
   async (req, res, next) => {
     try {
       const { code, orderValue, restaurantId } = req.body;
-      const userId = req.user.id;
+      // userId is optional for validation - if authenticated, use it for user-specific checks
+      const userId = req.user?.id || null;
 
       const result = await promotionService.validateVoucher(code, userId, orderValue, restaurantId);
       res.json({ success: true, data: result });

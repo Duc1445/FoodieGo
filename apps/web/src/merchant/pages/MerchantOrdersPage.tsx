@@ -22,7 +22,7 @@ export function MerchantOrdersPage() {
       toast.success('Order status updated');
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.error?.message || 'Failed to update status');
+      toast.error(err.response?.data?.message || 'Failed to update status');
     }
   });
 

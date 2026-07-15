@@ -4,7 +4,7 @@ import { context, propagation } from '@opentelemetry/api';
 
 /**
  * Saga Timeout Worker
- * Polls for PENDING orders older than 5 minutes and automatically cancels them.
+ * Polls for PENDING orders older than 30 minutes and automatically cancels them.
  * Emits compensating transactions.
  */
 export async function runTimeoutSweep() {
@@ -16,7 +16,7 @@ export async function runTimeoutSweep() {
     const timeoutResult = await client.query(`
       UPDATE orders 
       SET status = 'EXPIRED', updated_at = NOW()
-      WHERE status = 'PENDING' AND created_at < NOW() - INTERVAL '5 MINUTES'
+      WHERE status = 'PENDING' AND created_at < NOW() - INTERVAL '30 MINUTES'
       RETURNING id, is_payment_authorized, is_inventory_reserved, idempotency_key
     `);
 

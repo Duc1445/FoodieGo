@@ -47,6 +47,8 @@ router.patch(
   param('id').isUUID(),
   body('status').optional().isIn(['OPEN', 'IN_PROGRESS', 'WAITING_USER', 'RESOLVED', 'CLOSED']),
   body('priority').optional().isIn(['LOW', 'MEDIUM', 'HIGH', 'URGENT']),
+  body('assigned_admin').optional().isUUID(),
+  body('internal_notes').optional().isString(),
   validate,
   supportController.updateTicketHandler,
 );

@@ -20,6 +20,10 @@ const validateCreate = [
     .isIn(['AVAILABLE', 'OUT_OF_STOCK', 'HIDDEN', 'DISCONTINUED'])
     .withMessage('Invalid status'),
   body('display_order').optional().isInt(),
+  body('preparation_time')
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage('Preparation time must be a positive integer'),
 ];
 
 const validateUpdate = [
@@ -31,6 +35,10 @@ const validateUpdate = [
     .isIn(['AVAILABLE', 'OUT_OF_STOCK', 'HIDDEN', 'DISCONTINUED'])
     .withMessage('Invalid status'),
   body('display_order').optional({ checkFalsy: true }).isInt(),
+  body('preparation_time')
+    .optional({ checkFalsy: true })
+    .isInt({ min: 1 })
+    .withMessage('Preparation time must be a positive integer'),
 ];
 
 router.get('/items', menuController.getAll.bind(menuController));

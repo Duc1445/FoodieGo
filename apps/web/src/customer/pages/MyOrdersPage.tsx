@@ -88,6 +88,7 @@ export function MyOrdersPage() {
   const { data: orders, isLoading, isError } = useQuery({
     queryKey: ['my-orders'],
     queryFn: OrderAPI.getOrders,
+    refetchInterval: 5000, // Poll every 5s for live updates
   });
 
   if (isLoading) {

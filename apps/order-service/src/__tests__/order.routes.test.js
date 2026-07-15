@@ -133,11 +133,25 @@ describe('Order Routes & Logic', () => {
     db.query.mockResolvedValueOnce({ rows: [{ restaurant_id: 'rest-1' }] });
     // Mock order detail in controller
     mockClient.query.mockResolvedValueOnce({
-      rows: [{ id: 'order-1', user_id: customerId, restaurant_id: 'rest-1', status: 'CONFIRMED' }],
+      rows: [
+        {
+          id: 'order-1',
+          user_id: customerId,
+          restaurant_id: 'rest-1',
+          status: 'MERCHANT_ACCEPTED',
+        },
+      ],
     });
     // Mock order detail in service
     mockClient.query.mockResolvedValueOnce({
-      rows: [{ id: 'order-1', user_id: customerId, restaurant_id: 'rest-1', status: 'CONFIRMED' }],
+      rows: [
+        {
+          id: 'order-1',
+          user_id: customerId,
+          restaurant_id: 'rest-1',
+          status: 'MERCHANT_ACCEPTED',
+        },
+      ],
     });
     // Mock update query
     mockClient.query.mockResolvedValueOnce({

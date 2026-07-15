@@ -33,8 +33,8 @@ export function DriverAvailableOrdersPage() {
       <div className="flex items-center gap-3 mb-6">
         <MapPin className="w-8 h-8 text-primary" />
         <div>
-          <h1 className="text-2xl font-bold">Available Orders</h1>
-          <p className="text-muted-foreground">Orders waiting for a driver</p>
+          <h1 className="text-2xl font-bold text-foreground">Available Orders</h1>
+          <p className="text-foreground/70">Orders waiting for a driver</p>
         </div>
       </div>
 
@@ -47,7 +47,7 @@ export function DriverAvailableOrdersPage() {
               ))}
             </div>
           ) : !availableDeliveries || availableDeliveries.length === 0 ? (
-            <EmptyState 
+            <EmptyState
               icon={MapPin}
               title="No orders available"
               description="Wait for new orders to arrive."

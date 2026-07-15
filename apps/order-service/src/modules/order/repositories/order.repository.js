@@ -46,7 +46,7 @@ export class OrderRepository {
               'driverId', d.driver_id,
               'status', d.status,
               'driverName', u.full_name,
-              'driverPhone', u.phone_number
+              'driverPhone', u.phone
             )
             FROM delivery d
             LEFT JOIN users u ON d.driver_id = u.id

@@ -23,7 +23,7 @@ export function VoucherApprovalManager() {
       queryClient.invalidateQueries({ queryKey: PROMOTIONS_QUERY_KEY });
       toast.success('Voucher approved');
     },
-    onError: () => toast.error('Failed to approve voucher'),
+    onError: (err: any) => toast.error(err.response?.data?.message || 'Failed to approve voucher'),
   });
 
   const rejectMutation = useMutation({
@@ -34,7 +34,7 @@ export function VoucherApprovalManager() {
       setRejectingId(null);
       setReason('');
     },
-    onError: () => toast.error('Failed to reject voucher'),
+    onError: (err: any) => toast.error(err.response?.data?.message || 'Failed to reject voucher'),
   });
 
   if (isLoading) return <AdminLoading text="Loading pending vouchers..." />;

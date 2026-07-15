@@ -62,7 +62,7 @@ export const CartAPI = {
   /** PUT /cart/items — returns updated BackendCart. */
   addItem: async (menuItemId: string, quantity: number): Promise<BackendCart> => {
     const res = await api.put<{ data: BackendCart }>('/cart/items', {
-      menu_item_id: menuItemId,
+      menuItemId: menuItemId,
       quantity,
     });
     return res.data.data;

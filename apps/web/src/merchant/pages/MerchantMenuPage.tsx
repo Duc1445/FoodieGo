@@ -156,23 +156,15 @@ export function MerchantMenuPage() {
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium">Image Upload</label>
+                <label className="text-sm font-medium">Image URL</label>
                 <Input 
-                  className="bg-white text-black border-input cursor-pointer" 
-                  type="file" 
-                  accept="image/*"
-                  onChange={() => {
-                    // Disabled by CTO: Do not save local blob URLs to database
-                    // if (e.target.files && e.target.files[0]) {
-                    //   const file = e.target.files[0];
-                    //   const fakeUrl = URL.createObjectURL(file);
-                    //   setFormData({...formData, image_url: fakeUrl});
-                    // }
-                  }} 
+                  className="bg-white text-black border-input" 
+                  type="url" 
+                  placeholder="https://example.com/image.jpg"
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({...formData, image_url: e.target.value})}
                 />
-                {/* Image preview disabled:
                 {formData.image_url && <img src={formData.image_url} alt="Preview" className="mt-2 h-20 rounded object-cover" />}
-                */}
               </div>
               <div>
                 <label className="text-sm font-medium">Category</label>
@@ -294,23 +286,15 @@ export function MerchantMenuPage() {
                                     </div>
                                   </div>
                                   <div>
-                                    <label className="text-sm font-medium">Image Upload</label>
+                                    <label className="text-sm font-medium">Image URL</label>
                                     <Input 
-                                      className="bg-white text-black border-input cursor-pointer" 
-                                      type="file" 
-                                      accept="image/*"
-                                      onChange={() => {
-                                        // Disabled by CTO: Do not save local blob URLs to database
-                                        // if (e.target.files && e.target.files[0]) {
-                                        //   const file = e.target.files[0];
-                                        //   const fakeUrl = URL.createObjectURL(file);
-                                        //   setEditingItem({...editingItem, image_url: fakeUrl});
-                                        // }
-                                      }} 
+                                      className="bg-white text-black border-input" 
+                                      type="url" 
+                                      placeholder="https://example.com/image.jpg"
+                                      value={editingItem.image_url || ''}
+                                      onChange={(e) => setEditingItem({...editingItem, image_url: e.target.value})}
                                     />
-                                    {/* Image preview disabled:
                                     {editingItem.image_url && <img src={editingItem.image_url} alt="Preview" className="mt-2 h-20 rounded object-cover" />}
-                                    */}
                                   </div>
                                   <div>
                                     <label className="text-sm font-medium">Category</label>

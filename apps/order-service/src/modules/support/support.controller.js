@@ -86,14 +86,12 @@ export const updateTicketHandler = async (req, res, next) => {
     const { status, priority, assigned_admin, internal_notes } = req.body;
 
     if (existingTicket.status === 'CLOSED') {
-      return res
-        .status(403)
-        .json({ success: false, error: { message: 'CLOSED tickets are read-only' } });
+      return res.status(403).json({ success: false, message: 'CLOSED tickets are read-only' });
     }
 
     if (status && status !== existingTicket.status) {
       const transitions = {
-        OPEN: ['IN_PROGRESS', 'RESOLVED', 'CLOSED'],
+        OPEN: ['IN_PROGRESS', 'WAITING_USER', 'RESOLVED', 'CLOSED'],
         IN_PROGRESS: ['WAITING_USER', 'RESOLVED', 'CLOSED'],
         WAITING_USER: ['IN_PROGRESS', 'RESOLVED', 'CLOSED'],
         RESOLVED: ['CLOSED', 'IN_PROGRESS'], // Re-open support
@@ -103,9 +101,7 @@ export const updateTicketHandler = async (req, res, next) => {
       if (!allowed.includes(status)) {
         return res.status(400).json({
           success: false,
-          error: {
-            message: `Cannot transition ticket from ${existingTicket.status} to ${status}`,
-          },
+          message: `Cannot transition ticket from ${existingTicket.status} to ${status}`,
         });
       }
     }

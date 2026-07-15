@@ -41,8 +41,8 @@ export function DriverActiveDeliveriesPage() {
       <div className="flex items-center gap-3 mb-6">
         <Truck className="w-8 h-8 text-primary" />
         <div>
-          <h1 className="text-2xl font-bold">Active Deliveries</h1>
-          <p className="text-muted-foreground">Manage your current orders</p>
+          <h1 className="text-2xl font-bold text-foreground">Active Deliveries</h1>
+          <p className="text-foreground/70">Manage your current orders</p>
         </div>
       </div>
 
@@ -51,7 +51,7 @@ export function DriverActiveDeliveriesPage() {
           <Skeleton className="h-32 w-full rounded-lg" />
         ) : currentActive.length === 0 ? (
           <div className="bg-card border rounded-lg">
-            <EmptyState 
+            <EmptyState
               icon={Package}
               title="No active deliveries"
               description="You do not have any active deliveries. Go to Available Orders to accept one."

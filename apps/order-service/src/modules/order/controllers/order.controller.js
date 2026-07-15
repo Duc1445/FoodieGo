@@ -110,8 +110,12 @@ export class OrderController {
       // Authorize that the merchant owns the restaurant for this order
       const authorizedRestaurantIds = await this._getAuthorizedRestaurantIds(req);
 
-      const order = await orderService.getOrderDetail(orderId, null).catch(() => null); // bypass user id check
-      if (!order) throw new NotFoundError('Order not found');
+      const order = await orderService.getOrderDetail(orderId, null).catch((err) => {
+        console.error('getOrderDetail error:', err);
+        return { _error: err.message };
+      }); // bypass user id check
+      if (!order || order._error)
+        throw new NotFoundError('Order not found: ' + (order ? order._error : 'null'));
 
       if (role !== 'admin' && !authorizedRestaurantIds.includes(order.restaurantId)) {
         throw new AuthorizationError('Not authorized to update this order');

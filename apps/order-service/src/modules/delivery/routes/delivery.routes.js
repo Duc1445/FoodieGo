@@ -38,7 +38,7 @@ router.patch(
   authorize('driver'),
   param('id').isUUID().withMessage('id must be a valid UUID'),
   body('status')
-    .isIn(['waiting', 'accepted', 'delivering', 'delivered'])
+    .isIn(['waiting', 'accepted', 'picked_up', 'delivering', 'delivered'])
     .withMessage('Invalid delivery status'),
   validate,
   deliveryController.updateDeliveryStatus,

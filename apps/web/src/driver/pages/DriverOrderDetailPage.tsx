@@ -109,16 +109,16 @@ export function DriverOrderDetailPage() {
     statusMutation.mutate(newStatus);
   };
 
-  const openNavigation = () => {
+  const getNavigationUrl = () => {
     const query = order.deliveryAddress || order.customerName || 'Customer';
     const encodedQuery = encodeURIComponent(query);
-    window.open(`https://www.google.com/maps/search/?api=1&query=${encodedQuery}`, '_blank');
+    return `https://www.google.com/maps/search/?api=1&query=${encodedQuery}`;
   };
 
-  const openRestaurantNavigation = () => {
+  const getRestaurantNavigationUrl = () => {
     const query = restaurant?.address || restaurant?.name || 'Restaurant';
     const encodedQuery = encodeURIComponent(query);
-    window.open(`https://www.google.com/maps/search/?api=1&query=${encodedQuery}`, '_blank');
+    return `https://www.google.com/maps/search/?api=1&query=${encodedQuery}`;
   };
 
   return (
@@ -176,7 +176,7 @@ export function DriverOrderDetailPage() {
             <CardContent className="space-y-3">
               <div className="font-medium">{restaurant?.name || 'Unknown Restaurant'}</div>
               {restaurant?.address && (
-                <div className="flex items-start gap-2text-sm text-muted-foreground">
+                <div className="flex items-start gap-2 text-sm text-muted-foreground">
                   <MapPin className="w-4 h-4 text-muted-foreground mt-1" />
                   <span>{restaurant.address}</span>
                 </div>
@@ -189,9 +189,11 @@ export function DriverOrderDetailPage() {
                   </a>
                 </div>
               )}
-              <Button onClick={openRestaurantNavigation} className="w-full mt-2" variant="outline">
-                <Navigation className="w-4 h-4 mr-2" />
-                Navigate to Restaurant
+              <Button asChild className="w-full mt-2" variant="outline">
+                <a href={getRestaurantNavigationUrl()} target="_blank" rel="noopener noreferrer">
+                  <Navigation className="w-4 h-4 mr-2" />
+                  Navigate to Restaurant
+                </a>
               </Button>
             </CardContent>
           </Card>
@@ -222,9 +224,11 @@ export function DriverOrderDetailPage() {
                   </a>
                 </div>
               )}
-              <Button onClick={openNavigation} className="w-full mt-2" variant="outline">
-                <Navigation className="w-4 h-4 mr-2" />
-                Navigate to Customer
+              <Button asChild className="w-full mt-2" variant="outline">
+                <a href={getNavigationUrl()} target="_blank" rel="noopener noreferrer">
+                  <Navigation className="w-4 h-4 mr-2" />
+                  Navigate to Customer
+                </a>
               </Button>
             </CardContent>
           </Card>

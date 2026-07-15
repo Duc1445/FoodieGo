@@ -16,7 +16,7 @@ async function loadSchemaFile(uri) {
   let filePath;
   if (uri.startsWith('https://foodiego.com/schemas/')) {
     // Convert foodiego schema URLs to local file paths
-    const schemaPath = uri.replace('https://foodiego.com/schemas/', '');
+    const schemaPath = uri.replace('https://foodiego.com/schemas/common/', '');
     filePath = path.join(rootDir, 'packages', 'contracts', 'events', 'common', schemaPath);
   } else if (uri.startsWith('./')) {
     // Relative path from current schema file - resolve against contracts/events/common

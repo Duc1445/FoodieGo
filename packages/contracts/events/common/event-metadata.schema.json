@@ -3,9 +3,9 @@
   "$id": "https://foodiego.com/schemas/common/event-metadata.schema.json",
   "type": "object",
   "properties": {
-    "eventId": { "$ref": "uuid.schema.json" },
-    "correlationId": { "$ref": "uuid.schema.json" },
-    "occurredAt": { "$ref": "timestamp.schema.json" },
+    "eventId": { "$ref": "./uuid.schema.json" },
+    "correlationId": { "$ref": "./uuid.schema.json" },
+    "occurredAt": { "$ref": "./timestamp.schema.json" },
     "traceId": { "type": "string" },
     "schemaVersion": { "type": "string" }
   },

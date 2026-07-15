@@ -17,7 +17,7 @@ export function DriverActiveDeliveriesPage() {
 
   const { data: activeDeliveries, isLoading } = useQuery({
     queryKey: [...DRIVER_DELIVERIES_QUERY_KEY, 'active', user?.id],
-    queryFn: () => DeliveryAPI.listDeliveries({ driverId: user?.id }),
+    queryFn: () => DeliveryAPI.listDeliveries({ driverId: user?.id, limit: 50, sort: '-created_at' }),
     refetchInterval: 15000,
     enabled: !!user?.id,
   });

@@ -12,7 +12,7 @@ export function DriverAvailableOrdersPage() {
 
   const { data: availableDeliveries, isLoading } = useQuery({
     queryKey: [...DRIVER_DELIVERIES_QUERY_KEY, 'available'],
-    queryFn: () => DeliveryAPI.listDeliveries({ status: 'waiting' }),
+    queryFn: () => DeliveryAPI.listDeliveries({ status: 'waiting', limit: 50, sort: '-created_at' }),
     refetchInterval: 15000,
   });
 

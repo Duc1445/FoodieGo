@@ -14,7 +14,7 @@ export class OrderController {
 
     if (req.user.role === 'merchant') {
       const { rows } = await pool.query(
-        'SELECT id as restaurant_id FROM restaurants WHERE owner_id = $1',
+        'SELECT restaurant_id FROM user_restaurants WHERE user_id = $1',
         [req.user.id],
       );
       if (rows.length === 0) throw new AuthorizationError('Merchant has no associated restaurant');

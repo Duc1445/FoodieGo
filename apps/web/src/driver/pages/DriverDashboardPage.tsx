@@ -17,7 +17,7 @@ export function DriverDashboardPage() {
 
   const { data: deliveries } = useQuery({
     queryKey: [...DRIVER_DELIVERIES_QUERY_KEY, 'all', user?.id],
-    queryFn: () => DeliveryAPI.listDeliveries({ driverId: user?.id, limit: 100 }),
+    queryFn: () => DeliveryAPI.listDeliveries({ driverId: user?.id, limit: 100, sort: '-created_at' }),
     enabled: !!user?.id,
   });
 

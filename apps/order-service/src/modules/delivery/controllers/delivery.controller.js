@@ -8,6 +8,8 @@ const mapDeliveryToCamelCase = (d) => ({
   deliveryFee: d.delivery_fee,
   total: d.total,
   customerId: d.customer_id,
+  customerName: d.customer_name,
+  restaurantName: d.restaurant_name,
   createdAt: d.created_at,
   updatedAt: d.updated_at,
 });

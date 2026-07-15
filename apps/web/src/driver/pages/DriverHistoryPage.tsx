@@ -10,7 +10,7 @@ export function DriverHistoryPage() {
 
   const { data: deliveries, isLoading } = useQuery({
     queryKey: [...DRIVER_DELIVERIES_QUERY_KEY, 'history', user?.id],
-    queryFn: () => DeliveryAPI.listDeliveries({ driverId: user?.id, status: 'delivered', limit: 100 }),
+    queryFn: () => DeliveryAPI.listDeliveries({ driverId: user?.id, status: 'delivered', limit: 100, sort: '-created_at' }),
     enabled: !!user?.id,
   });
 

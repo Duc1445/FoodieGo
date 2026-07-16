@@ -72,6 +72,11 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Run Database Migrations
+        run: node infrastructure/postgres/migrations/migrate.js
+        env:
+          DATABASE_URL: postgresql://foodiego:foodiego123@localhost:5432/foodiego
+
       - name: Run Tests
         run: pnpm test
         env:

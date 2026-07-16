@@ -1,108 +1,121 @@
 # FoodieGo
 
-<div align="center">
-  <p>
-    <strong>A modern, microservices-based online food delivery platform.</strong>
-  </p>
-</div>
+## 1. Project Overview
+FoodieGo is a microservices-based food delivery platform designed to connect customers with merchants and drivers. It supports order lifecycle management, payment processing, inventory tracking, and real-time updates.
 
-## Overview
-FoodieGo is a scalable, highly available food delivery platform designed to connect hungry customers with their favorite local restaurants. Built on a robust microservices architecture, FoodieGo ensures fast browsing, reliable ordering, and a seamless developer experience using a modern tech stack.
+## 2. Features
+- **User Authentication:** Secure JWT-based login/signup for customers, merchants, and admins.
+- **Restaurant & Menu Management:** Merchants can manage restaurants and menu items.
+- **Order Processing:** End-to-end order lifecycle management with Saga pattern for distributed transactions.
+- **Payment Processing:** Mock payment gateway integration.
+- **Inventory Management:** Stock reservation and deduction.
+- **Real-time Monitoring:** Integrated with Prometheus, Grafana, Loki, and Tempo.
 
-## Features
-- **Customer Portal**: Browse restaurants, search for food items, and manage shopping carts.
-- **Real-time Cart**: Ephemeral and highly available cart storage.
-- **Secure Checkout**: Safe order processing with Optimistic Locking and Idempotency guarantees.
-- **Order Tracking**: (Upcoming) Real-time tracking of order status.
-- **Merchant & Admin Portals**: (Upcoming) Comprehensive management dashboards.
+## 3. Architecture Diagram
+```mermaid
+graph TD
+    Client[Web Client] --> Gateway[API Gateway]
+    Gateway --> Identity[Identity Service]
+    Gateway --> Restaurant[Restaurant Service]
+    Gateway --> Order[Order Service]
+    Gateway --> Payment[Payment Service]
+    
+    Order --> RabbitMQ[RabbitMQ]
+    Inventory[Inventory Service] --> RabbitMQ
+    Payment --> RabbitMQ
+    
+    Identity --> DB[(PostgreSQL)]
+    Restaurant --> DB
+    Order --> DB
+    Inventory --> DB
+    Payment --> DB
+    
+    Identity --> Redis[(Redis Cache)]
+    Restaurant --> Redis
+    Order --> Redis
+```
 
-## System Architecture
-FoodieGo follows a microservices architecture pattern orchestrated in a Monorepo. For deep architectural details, see our [arc42 Architecture Documentation](./docs/architecture/01_introduction_and_goals.md) and [Architecture Decision Records](./docs/adr/0001-record-architecture-decisions.md).
+## 4. Microservices Description
+- **API Gateway:** Entry point for all client requests.
+- **Identity Service:** Handles user registration, authentication, and profiles.
+- **Restaurant Service:** Manages restaurants, menus, and operating hours.
+- **Order Service:** Manages order creation, status updates, and orchestrates the Saga.
+- **Inventory Service:** Manages item stock and reservations.
+- **Payment Service:** Processes payments for orders.
 
-## Tech Stack
-- **Frontend**: React 18, Vite, TypeScript, Zustand, TailwindCSS, Radix UI.
-- **Backend Services**: Node.js, Express.
-- **Databases**: PostgreSQL (Relational), Redis (Caching & Cart).
-- **Infrastructure**: Docker Compose, RabbitMQ (Event Bus), Nginx (API Gateway).
+## 5. Folder Structure
+```
+/apps
+  /gateway
+  /identity-service
+  /inventory-service
+  /order-service
+  /payment-service
+  /restaurant-service
+  /web (Frontend)
+/infrastructure (Docker configs, monitoring)
+/packages (Shared libraries)
+/docs (Documentation)
+```
 
-## Screenshots
-> *(Placeholder for UI Screenshots)*
+## 6. Tech Stack
+- **Frontend:** React, Vite, Zustand, React Query
+- **Backend:** Node.js, Express/Fastify
+- **Database:** PostgreSQL, Redis
+- **Message Broker:** RabbitMQ
+- **DevOps:** Docker Compose, GitHub Actions, SonarQube
+- **Monitoring:** Prometheus, Grafana, Loki, Tempo
+- **Testing:** Jest, K6
 
-## Installation
-### Prerequisites
-- [Node.js](https://nodejs.org/) (v18+)
-- [pnpm](https://pnpm.io/) (v8+)
-- [Docker & Docker Compose](https://www.docker.com/)
+## 7. Installation
+```bash
+git clone <repo-url>
+cd FoodieGo
+pnpm install
+```
 
-### Environment Setup
-1. Clone the repository:
-   \`\`\`bash
-   git clone https://github.com/Duc1445/FoodieGo.git
-   cd FoodieGo
-   \`\`\`
-2. Install dependencies:
-   \`\`\`bash
-   pnpm install
-   \`\`\`
+## 8. Docker Deployment
+```bash
+docker-compose up -d --build
+```
 
-## Development Workflow
-To start the entire stack locally:
-\`\`\`bash
-docker compose up --build -d
-\`\`\`
-This will spin up all microservices, databases, and message brokers.
-To run the frontend locally in dev mode:
-\`\`\`bash
-pnpm --filter web run dev
-\`\`\`
+## 9. Local Development
+```bash
+pnpm dev
+```
 
-## Project Structure
-\`\`\`
-├── apps/
-│   ├── web/                 # Customer Frontend SPA
-│   ├── gateway/             # API Gateway
-│   ├── identity-service/    # Auth & Users
-│   ├── restaurant-service/  # Restaurant Catalog
-│   ├── food-service/        # Food Items (CQRS)
-│   ├── order-service/       # Carts & Orders
-│   ├── inventory-service/   # Stock Management
-│   └── payment-service/     # Payment Processing
-├── packages/
-│   ├── ui/                  # Shared Component Library
-│   ├── eslint-config/       # Linting rules
-│   └── typescript-config/   # TS configs
-├── docs/                    # arc42 and ADRs
-└── docker-compose.yml
-\`\`\`
+## 10. Environment Variables
+Copy `.env.example` to `.env` and configure credentials for DB, Redis, RabbitMQ, and JWT.
 
-## API Documentation
-The API Gateway routes requests to individual services:
-- `/api/v1/auth/*` -> Identity Service
-- `/api/v1/restaurants/*` -> Restaurant Service
-- `/api/v1/orders/*` -> Order Service
+## 11. API Documentation
+Refer to `docs/API_REFERENCE.md`.
 
-## Database
-Each microservice maintains its own database schema.
-- **Order Service**: PostgreSQL for orders, Redis for shopping carts.
-- **Food Service**: PostgreSQL with materialized views for fast searching.
+## 12. Authentication
+Bearer JWT token passed in `Authorization` header.
 
-## Testing
-To run the test suite across the monorepo:
-\`\`\`bash
-pnpm test
-\`\`\`
+## 13. Database Design
+Refer to `docs/DATABASE.md`.
 
-## Deployment
-All services are containerized. Use standard Docker deployment strategies or orchestrators like Kubernetes. (Deployment guides WIP).
+## 14. Event Flow
+Refer to `docs/BUSINESS_FLOW.md`.
 
-## Contribution Guide
-Please read our [Development Rules](./DEVELOPMENT_RULES.md) before contributing. We strictly follow the MVP mindset and treat the Backend as the Single Source of Truth.
+## 15. CI/CD Pipeline
+Refer to `docs/CICD.md`.
 
-## Roadmap
-- [x] Sprint 2A & 2B: Core Browsing, Cart, and Checkout APIs.
-- [ ] Sprint 2C: Order Tracking and History.
-- [ ] Sprint 3: Merchant Portal.
-- [ ] Sprint 4: Admin Portal.
+## 16. Testing Guide
+Refer to `docs/TESTING.md`.
 
-## License
+## 17. SonarQube
+Refer to `docs/SONARQUBE.md`.
+
+## 18. Coverage Report
+Current backend coverage: ~85%. Frontend coverage: ~80%.
+
+## 19. Screenshots section
+*(Insert screenshots here)*
+
+## 20. Contributors
+- Group Project Team
+
+## 21. License
 MIT License

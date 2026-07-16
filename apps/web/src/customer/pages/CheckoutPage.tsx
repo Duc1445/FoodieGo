@@ -111,7 +111,7 @@ export function CheckoutPage() {
         description: `Order ID: ${result.orderId}`,
         duration: 5000,
       });
-      navigate(`/`);
+      navigate(`/orders/success/${result.orderId}`);
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response?.status;
       const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;

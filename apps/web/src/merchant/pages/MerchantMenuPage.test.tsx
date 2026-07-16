@@ -3,17 +3,24 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MerchantMenuPage } from './MerchantMenuPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 import { getMerchantMenu, getGlobalCategories, createMenuItem, updateMenuItem, deleteMenuItem } from '../../shared/services/merchant.api';
 
 // Mock dependencies
-vi.mock('../../shared/services/merchant.api', () => ({
-  getMerchantMenu: vi.fn(),
-  getGlobalCategories: vi.fn().mockResolvedValue([]),
-  createMenuItem: vi.fn(),
-  updateMenuItem: vi.fn(),
-  deleteMenuItem: vi.fn(),
-  MERCHANT_MENU_QUERY_KEY: ['merchant-menu'],
-}));
+vi.mock('../../shared/services/merchant.api', () => {
+  return {
+    getMerchantMenu: vi.fn(),
+    getGlobalCategories: vi.fn().mockResolvedValue([]),
+    createMenuItem: vi.fn(),
+    updateMenuItem: vi.fn(),
+    deleteMenuItem: vi.fn(),
+    getMerchantStats: vi.fn(),
+    getMerchantOrders: vi.fn(),
+    updateOrderStatus: vi.fn(),
+    updateOrderStatusSimple: vi.fn(),
+    MERCHANT_MENU_QUERY_KEY: ['merchant-menu'],
+  };
+});
 
 describe('MerchantMenuPage', () => {
   let queryClient: QueryClient;

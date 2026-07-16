@@ -82,20 +82,21 @@ describe('CheckoutPage Address Flow', () => {
 
     // Wait for address to load
     await waitFor(() => {
-      expect(screen.getAllByRole('radio')[0]).toBeInTheDocument();
+      expect(screen.getAllByRole('radio').length).toBeGreaterThan(0);
     });
 
-    // Address should be auto-selected (the first radio button, payment methods are also radios)
+    // Address should be auto-selected (the first radio button)
+    const radioBtns = screen.getAllByRole('radio');
     await waitFor(() => {
-      const radioBtns = screen.getAllByRole('radio');
       expect(radioBtns[0]).toBeChecked();
     });
 
-    await waitFor(() => {
-      // Submit form
-      const submitBtn = screen.getByRole('button', { name: /Place Order/i });
-      fireEvent.click(submitBtn);
+    // Submit form
+    const submitBtn = await screen.findByRole('button', { name: /Place Order/i });
+    fireEvent.click(submitBtn);
 
+    // Verify checkout was called with the correct address
+    await waitFor(() => {
       expect(CheckoutAPI.checkout).toHaveBeenCalledWith(expect.objectContaining({
         addressId: 'addr-1'
       }));
@@ -115,26 +116,27 @@ describe('CheckoutPage Address Flow', () => {
     renderComponent();
 
     // Should render AddressForm (manual inputs)
-    await waitFor(() => {
-      expect(screen.getByPlaceholderText('Enter your delivery address')).toBeInTheDocument();
-    });
+    const addressInput = await screen.findByPlaceholderText('Enter your delivery address');
+    expect(addressInput).toBeInTheDocument();
 
     // Fill out form
-    fireEvent.change(screen.getByPlaceholderText('Enter your delivery address'), { target: { value: '456 New St' } });
+    fireEvent.change(addressInput, { target: { value: '456 New St' } });
     fireEvent.change(screen.getByPlaceholderText('Enter your phone number'), { target: { value: '0987654321' } });
 
+    // Submit form
+    const submitBtn = await screen.findByRole('button', { name: /Place Order/i });
+    fireEvent.click(submitBtn);
+    
+    // Wait for address creation and checkout
     await waitFor(() => {
-      const submitBtn = screen.getByRole('button', { name: /Place Order/i });
-      fireEvent.click(submitBtn);
-      
-      // It should create the address first
       expect(AuthAPI.addAddress).toHaveBeenCalledWith('user-1', {
         address: '456 New St',
         phone: '0987654321',
         isDefault: false
       });
-      
-      // Then use the new address ID for checkout
+    });
+
+    await waitFor(() => {
       expect(CheckoutAPI.checkout).toHaveBeenCalledWith(expect.objectContaining({
         addressId: 'new-addr-1'
       }));

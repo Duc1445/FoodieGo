@@ -1,4 +1,5 @@
 -- Migration 003: Sprint 3 Merchant Portal Schema Updates
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Add user_restaurants mapping table
 CREATE TABLE IF NOT EXISTS user_restaurants (

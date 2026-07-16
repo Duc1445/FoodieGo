@@ -2,10 +2,12 @@ import pool from '../config/database.js';
 import { logger, metrics } from '../context.js';
 import { withSpan, extractTraceContext, runWithContext } from '@foodiego/tracing';
 
+let intervalId;
+
 export async function startWebhookWorker(paymentService, paymentRepository) {
   const POLLING_INTERVAL = parseInt(process.env.WEBHOOK_WORKER_POLLING_INTERVAL || '1000', 10);
 
-  setInterval(async () => {
+  intervalId = setInterval(async () => {
     try {
       const pendingWebhooks = await paymentRepository.getPendingWebhooks();
 
@@ -83,4 +85,12 @@ export async function startWebhookWorker(paymentService, paymentRepository) {
   }, POLLING_INTERVAL);
 
   logger.info(`Webhook Worker started (interval: ${POLLING_INTERVAL}ms)`);
+}
+
+export function stopWebhookWorker() {
+  if (intervalId) {
+    clearInterval(intervalId);
+    intervalId = null;
+    logger.info('Webhook Worker stopped');
+  }
 }

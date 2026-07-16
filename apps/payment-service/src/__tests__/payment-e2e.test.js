@@ -6,7 +6,7 @@ import { PaymentDomainService } from '../domain/payment.service.js';
 import { GatewayRegistry } from '../infrastructure/gateways/gateway.registry.js';
 import { MockGateway } from '../infrastructure/gateways/mock.gateway.js';
 import { OrderCancelledConsumer } from '../workers/consumer.worker.js';
-import { startWebhookWorker } from '../workers/webhook.worker.js';
+import { startWebhookWorker, stopWebhookWorker } from '../workers/webhook.worker.js';
 import { startReconciliationWorker } from '../workers/reconciliation.worker.js';
 import crypto from 'crypto';
 import { setTimeout } from 'timers/promises';
@@ -70,6 +70,7 @@ describe('Payment Service E2E Hardening Test', () => {
   afterAll(async () => {
     if (rabbitAvailable) {
       await rabbitAdapter.close();
+      stopWebhookWorker();
     }
     await pool.end();
   });

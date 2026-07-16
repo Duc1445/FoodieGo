@@ -48,7 +48,9 @@ app.use('/api/v1/support', supportRoutes);
 
 // ─── Error Handler ─────────────────────────────────────────────────────────
 app.use((err, req, res, _next) => {
-  req.log?.error({ err }, 'Unhandled error');
+  if (process.env.NODE_ENV !== 'test') {
+    req.log?.error({ err }, 'Unhandled error');
+  }
   res.status(err.statusCode || 500).json({ success: false, message: err.message });
 });
 

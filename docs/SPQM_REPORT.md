@@ -57,9 +57,9 @@ Dựa trên dữ liệu commit thực tế từ GitHub (hơn 110 commits):
 
 | **Chỉ số (Metric)**             | **Cách đo / Công cụ** | **Baseline** | **Kết quả cuối** | **Mục tiêu**        |
 | ------------------------------- | --------------------- | ------------ | ---------------- | ------------------- |
-| Test result (Pass rate)         | Vitest/Playwright/Jest| N/A          | 100% Pass        | 100% Pass           |
-| Tần suất Commit/Merge           | Git Log               | Dưới 5/tuần  | ~110 commits     | Liên tục tích hợp   |
-| CI pipeline pass rate (%)       | GitHub Actions        | Thường xuyên đỏ| 100% xanh      | 100%                |
+| Test result (Pass rate)         | Vitest/Playwright/Jest| N/A          | Mixed            | Green before submission |
+| Tần suất Commit/Merge           | Git Log               | Dưới 5/tuần  | Estimated high activity | Liên tục tích hợp   |
+| CI pipeline pass rate (%)       | GitHub Actions        | Thường xuyên đỏ| Partial green    | 100%                |
 
 **3.2 Chỉ số giao hàng DORA**
 
@@ -83,7 +83,19 @@ Nhận xét: Dự án có cường độ làm việc cao trong khoảng thời g
 | **✅ Điều làm tốt (Keep)** | **⚠ Vấn đề gặp phải (Problem)** | **→ Hành động cải tiến (Act)** |
 | -------------------------- | ------------------------------- | ------------------------------ |
 | Thêm Shipper Portal        | Một số Unit tests fail trên CI  | Sửa lại Mock API, thêm kiểm tra rabbitMQ |
-*Velocity: Hoàn thiện tính năng, fix bugs và đạt 100% Pass CI.*
+*Velocity: Hoàn thiện tính năng, fix bugs và chuẩn bị evidence submission.*
+
+**Sprint 3 (estimated)**
+| **Điều làm tốt (Keep)** | **Vấn đề gặp phải (Problem)** | **Hành động cải tiến (Act)** |
+| -------------------------- | ------------------------------- | ------------------------------ |
+| Saga, webhook, inbox/outbox | Coverage không đồng đều giữa các service | Bổ sung test cho order, identity, payment |
+*Velocity: Tập trung làm sạch quan hệ giữa service và tăng coverage.*
+
+**Sprint 4 (estimated)**
+| **Điều làm tốt (Keep)** | **Vấn đề gặp phải (Problem)** | **Hành động cải tiến (Act)** |
+| -------------------------- | ------------------------------- | ------------------------------ |
+| Documentation hardening    | Sonar config và screenshot evidence còn thiếu | Chốt docs, chụp dashboard, record demo |
+*Velocity: Dành cho submission hardening và chốt evidence.*
 
 **5. Tự đánh giá CMMI**
 
@@ -97,10 +109,17 @@ Nhóm đang ở mức: **3 - Defined** (Quy trình được định nghĩa rõ r
 | Requirements Management                                     | 4        | Commits/PRs    |
 | Project Planning & Monitoring                               | 4        | Sprint Log     |
 | Configuration Management                                    | 5        | Git Workflow (tốt) |
-| Measurement & Analysis                                      | 4        | GitHub Actions |
-| Process & Product Quality Assurance                         | 4        | Tests/SonarQube|
-| Verification & Validation                                   | 4        | Auto Tests (100% Pass) |
+| Measurement & Analysis                                      | 3        | Coverage, CI, and pipeline artifacts exist but are not uniform |
+| Process & Product Quality Assurance                         | 3        | Tests/SonarQube, with remaining gaps |
+| Verification & Validation                                   | 3        | Automated tests exist, but the latest web run is not fully green |
+
+**5.3 Improvement Plan**
+- Raise coverage in `identity-service`, `restaurant-service`, and `order-service`.
+- Fix the failing web tests.
+- Reconcile `sonar-project.properties` with the current workspace layout.
+- Capture SonarQube and UI screenshots.
+- Re-run CI immediately before submission.
 
 **6. Tổng kết & cam kết**
-Dự án được xây dựng với cường độ cao, triển khai đúng cấu trúc Microservices, sử dụng Git và CI bài bản. Mọi bài kiểm tra đã chạy thành công (Pass full CI), dự án đạt chuẩn SPQM Level 3 với quy trình định nghĩa rõ ràng, quản lý rủi ro tốt và code coverage toàn diện.
+Dự án được xây dựng với cường độ cao, triển khai đúng cấu trúc Microservices, sử dụng Git và CI bài bản. Tuy nhiên, bằng chứng hiện tại cho thấy web test chưa green hoàn toàn và coverage phân tán theo service, nên việc chốt evidence cuối cùng trước khi nộp là rất quan trọng.
 Chúng tôi cam kết báo cáo phản ánh trung thực quá trình làm việc và số liệu của nhóm.

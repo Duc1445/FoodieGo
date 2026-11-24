@@ -3,32 +3,29 @@
 **Target Duration: 5 Minutes**
 
 ## [00:00 - 00:30] Introduction
-*Visual: Start with the FoodieGo Home Page (Frontend).*
-"Hello, this is the final submission demo for FoodieGo, our microservices-based food delivery platform. Our team registered for Level 2 objectives, focusing on architectural patterns, solid test coverage, and continuous integration."
+*Visual: Start on the FoodieGo landing page.*
+"Hello, this is the final submission demo for FoodieGo. FoodieGo is a microservices-based food delivery platform with a React frontend, Node.js services, PostgreSQL, Redis, RabbitMQ, Docker Compose, GitHub Actions, and SonarQube documentation."
 
 ## [00:30 - 01:30] Architecture
-*Visual: Show the Architecture Diagram from `ARCHITECTURE.md` or a quick look at `docker-compose.yml`.*
-"Under the hood, FoodieGo uses a microservices architecture. We have services for Identity, Restaurant, Order, Inventory, and Payment. They communicate synchronously via an API Gateway and asynchronously through RabbitMQ for event-driven flows, such as the Order Saga."
+*Visual: Show `docs/ARCHITECTURE.md` and the compose topology.*
+"The system is organized around an API gateway and several domain services: identity, restaurant, order, inventory, payment, and the food projection service. The gateway is the public entry point, while RabbitMQ supports event-driven flows and compensation."
 
-## [01:30 - 03:00] Features (App Walkthrough)
-*Visual: Run through the app.*
-"Let's walk through the core flow. 
-First, we log in as a customer. We can browse restaurants fetched from the Restaurant Service. 
-We add items to the cart and place an order. 
-When the order is placed, the Order Service initiates a saga. It publishes an event to reserve stock in the Inventory Service. Once reserved, we simulate a payment through the Payment Service. Finally, the order state is updated to confirmed."
+## [01:30 - 03:00] Features
+*Visual: Walk through the app as customer, merchant, driver, and admin.*
+"As a customer, I can browse restaurants, manage a cart, and check out with an idempotency key. As a merchant, I can manage menu items and vouchers. As a driver, I can accept deliveries and update their status. As an admin, I can review users, restaurants, orders, support tickets, and dashboard data."
 
 ## [03:00 - 04:00] Pipeline
-*Visual: Show GitHub Actions dashboard.*
-"Moving to DevOps, our CI/CD pipeline runs on GitHub Actions. On every pull request, the pipeline builds the code, runs the linter, executes all unit tests, and uploads the coverage report."
+*Visual: Show GitHub Actions workflow files and the Actions tab.*
+"The CI/CD pipeline runs lint, typecheck, migrations, tests, and build steps through GitHub Actions. Additional workflows handle contracts, security scans, and release tagging."
 
 ## [04:00 - 04:30] SonarQube
-*Visual: Show SonarQube dashboard.*
-"We use SonarQube as our Quality Gate. As you can see, we have zero critical bugs and vulnerabilities. Our code coverage is consistently above 80%, satisfying the Level 2 requirements. Duplications are well under the 5% threshold."
+*Visual: Show `docs/SONARQUBE.md` and the dashboard screenshot placeholders.*
+"SonarQube is part of the submission evidence. The docs describe the quality gate, but the final dashboard screenshot still needs to be captured from the latest successful analysis."
 
 ## [04:30 - 04:50] Testing
-*Visual: Show terminal running `pnpm test` or Jest coverage output.*
-"Here is a quick look at our test suite running. We utilized Jest for unit testing across all services, ensuring reliable business logic. We also employ k6 for load testing the gateway."
+*Visual: Show terminal output from test runs or coverage artifacts.*
+"Testing is layered across the backend, the contracts package, and the frontend. The repository contains coverage artifacts for each service, and the testing doc records the current gaps that still need cleanup before final submission."
 
 ## [04:50 - 05:00] Conclusion
-*Visual: Back to Home Page or Team Slide.*
-"This concludes our demo. The SPQM report and all architectural documents are available in the repository. Thank you for watching."
+*Visual: Return to the landing page or team slide.*
+"This concludes the demo. The repository includes the architecture, API, database, testing, CI/CD, SonarQube, and SPQM documentation needed for final review."

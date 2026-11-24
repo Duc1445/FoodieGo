@@ -52,7 +52,7 @@ describe('OrderDetailPage', () => {
     queryClient.clear();
   });
 
-  it.skip('Loading - shows skeleton loader', () => {
+  it('Loading - shows skeleton loader', () => {
     vi.mocked(OrderAPI.getOrderDetail).mockImplementation(() => new Promise(() => {}));
     
     const { container } = renderWithProviders(<OrderDetailPage />);
@@ -62,7 +62,7 @@ describe('OrderDetailPage', () => {
     expect(container.querySelector('.animate-pulse')).toBeInTheDocument();
   });
 
-  it.skip('Successful Detail Fetch - displays items, total, and timeline', async () => {
+  it('Successful Detail Fetch - displays items, total, and timeline', async () => {
     const mockOrder = {
       id: '12345678-bbbb-cccc-dddd-eeeeeeeeeeee',
       userId: 'u1',
@@ -122,7 +122,7 @@ describe('OrderDetailPage', () => {
     expect(screen.getByText('Order Placed')).toBeInTheDocument();
   });
 
-  it.skip('Error - API failure shows error state', async () => {
+  it('Error - API failure shows error state', async () => {
     vi.mocked(OrderAPI.getOrderDetail).mockRejectedValueOnce({
       response: { status: 404 }
     });
@@ -133,7 +133,7 @@ describe('OrderDetailPage', () => {
     expect(screen.getByText("The order you're looking for doesn't exist.")).toBeInTheDocument();
   });
 
-  it.skip('Timeline - tests PREPARING status logic', async () => {
+  it('Timeline - tests PREPARING status logic', async () => {
     const mockOrder = {
       id: '12345678-bbbb-cccc-dddd-eeeeeeeeeeee',
       userId: 'u1',
@@ -164,24 +164,24 @@ describe('OrderDetailPage', () => {
     expect(placedStepContainer).toBeTruthy();
     
     // Check if "Confirmed" is marked as completed  
-    const confirmedEl = screen.getByText('Confirmed');
+    const confirmedEl = screen.getByText(/Confirmed/);
     const confirmedStepContainer = confirmedEl.closest('[data-testid="timeline-step"]') || confirmedEl.parentElement;
     expect(confirmedStepContainer).toBeTruthy();
     
     // Check if "Preparing" is active (should have active styling)
-    const preparingEl = screen.getByText('Preparing');
+    const preparingEl = screen.getByText(/Preparing/);
     const preparingStepContainer = preparingEl.closest('[data-testid="timeline-step"]') || preparingEl.parentElement;
     // Verify that Preparing exists and is in the document
     expect(preparingStepContainer).toBeTruthy();
     expect(preparingEl).toBeInTheDocument();
 
     // Check if "Ready" exists in the timeline
-    const readyEl = screen.getByText('Ready');
+    const readyEl = screen.getByText(/Ready/);
     const readyStepContainer = readyEl.closest('[data-testid="timeline-step"]') || readyEl.parentElement;
     expect(readyStepContainer).toBeTruthy();
   });
 
-  it.skip('Advance Status (DEV) button works and refreshes data', async () => {
+  it('Advance Status (DEV) button works and refreshes data', async () => {
     // Mock DEV environment
     vi.stubEnv('DEV', true);
 

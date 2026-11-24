@@ -50,14 +50,14 @@ describe('MerchantMenuPage', () => {
           name: 'Burger',
           price: 10500,
           category_id: 'cat-1',
-          is_available: true,
+          status: 'AVAILABLE',
           restaurant_id: 'rest-1',
         }
       ]
     }
   ];
 
-  it.skip('renders menu items', async () => {
+  it('renders menu items', async () => {
     vi.mocked(getMerchantMenu).mockResolvedValue(mockItems);
     render(
       <QueryClientProvider client={queryClient}>
@@ -67,10 +67,10 @@ describe('MerchantMenuPage', () => {
 
     const nameText = await screen.findByText('Burger');
     expect(nameText).toBeInTheDocument();
-    expect(screen.getByText('10,500 VND')).toBeInTheDocument();
+    expect(screen.getByText(/\$?\s*10500\.00/)).toBeInTheDocument();
   });
 
-  it.skip('can open add dialog and submit form', async () => {
+  it('can open add dialog and submit form', async () => {
     vi.mocked(getMerchantMenu).mockResolvedValue(mockItems);
     vi.mocked(createMenuItem).mockResolvedValue({} as any);
     
@@ -86,11 +86,15 @@ describe('MerchantMenuPage', () => {
     await userEvent.click(screen.getByText('Add Item'));
     
     // Fill form
-    await userEvent.type(screen.getByPlaceholderText('Item Name'), 'Fries');
-    const priceInput = screen.getByPlaceholderText('Price');
+    const nameInput = await screen.findByPlaceholderText('Item Name');
+    await userEvent.type(nameInput, 'Fries');
+    
+    const priceInput = screen.getByPlaceholderText('e.g. 50000');
     await userEvent.clear(priceInput);
     await userEvent.type(priceInput, '5');
-    await userEvent.selectOptions(screen.getByLabelText('Category'), 'cat-1');
+    
+    const selects = screen.getAllByRole('combobox');
+    await userEvent.selectOptions(selects[0], 'cat-1');
     
     // Submit
     await userEvent.click(screen.getByRole('button', { name: 'Create Item' }));
@@ -100,12 +104,12 @@ describe('MerchantMenuPage', () => {
         name: 'Fries',
         price: 5,
         category_id: 'cat-1',
-        is_available: true
+        status: 'AVAILABLE'
       }));
     });
   });
 
-  it.skip('can edit a menu item', async () => {
+  it('can edit a menu item', async () => {
     vi.mocked(getMerchantMenu).mockResolvedValue(mockItems);
     vi.mocked(updateMenuItem).mockResolvedValue({} as any);
 
@@ -120,7 +124,7 @@ describe('MerchantMenuPage', () => {
     // Open edit dialog
     await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
     
-    const nameInput = screen.getByDisplayValue('Burger');
+    const nameInput = await screen.findByDisplayValue('Burger');
     await userEvent.clear(nameInput);
     await userEvent.type(nameInput, 'Cheeseburger');
     
@@ -133,7 +137,7 @@ describe('MerchantMenuPage', () => {
     });
   });
 
-  it.skip('can toggle availability', async () => {
+  it('can toggle availability', async () => {
     vi.mocked(getMerchantMenu).mockResolvedValue(mockItems);
     vi.mocked(updateMenuItem).mockResolvedValue({} as any);
 
@@ -145,19 +149,18 @@ describe('MerchantMenuPage', () => {
 
     await screen.findByText('Burger');
     
-    // Toggle switch (it's the first available switch on the item)
-    // The switch has an accessible name from the label "Available"
+    // Toggle switch
     const switches = screen.getAllByRole('switch');
     await userEvent.click(switches[0]);
     
     await waitFor(() => {
       expect(updateMenuItem).toHaveBeenCalledWith('item-1', expect.objectContaining({
-        is_available: false
+        status: 'OUT_OF_STOCK'
       }));
     });
   });
 
-  it.skip('can delete an item', async () => {
+  it('can delete an item', async () => {
     vi.mocked(getMerchantMenu).mockResolvedValue(mockItems);
     vi.mocked(deleteMenuItem).mockResolvedValue({} as any);
 
@@ -184,3 +187,4 @@ describe('MerchantMenuPage', () => {
     });
   });
 });
+
